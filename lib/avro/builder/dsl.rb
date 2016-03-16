@@ -1,10 +1,12 @@
 require 'avro'
 require 'avro/builder/dsl_attributes'
+require 'avro/builder/namespaceable'
 require 'avro/builder/type_factory'
 require 'avro/builder/types'
 require 'avro/builder/field'
 require 'avro/builder/record'
 require 'avro/builder/file_handler'
+require 'avro/builder/schema_serializer_reference_state'
 
 module Avro
   module Builder
@@ -82,7 +84,6 @@ module Avro
       def to_json(validate: true, pretty: true)
         hash = to_h
         (pretty ? JSON.pretty_generate(hash) : hash.to_json).tap do |json|
-          # puts json
           # Parse the schema to validate before returning
           ::Avro::Schema.parse(json) if validate
         end

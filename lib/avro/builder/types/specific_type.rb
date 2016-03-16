@@ -8,11 +8,14 @@ module Avro
 
         def self.included(base)
           base.extend ClassMethods
-          base.delegate :type_name, to: :class
         end
 
         # Override initialize so that type name is not required
         def initialize
+        end
+
+        def type_name
+          self.class.type_name
         end
 
         module ClassMethods

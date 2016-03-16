@@ -13,7 +13,6 @@ module Avro
 
       def self.included(base)
         base.extend ClassMethods
-        base.delegate :load_paths, to: :class
       end
 
       def read_file(name)
@@ -24,7 +23,7 @@ module Avro
 
       def find_file(name)
         file_name = "#{name.to_s.sub(/\.rb$/, '')}.rb"
-        matches = load_paths.flat_map do |load_path|
+        matches = self.class.load_paths.flat_map do |load_path|
           Dir["#{load_path}/**/*.rb"].select do |file_path|
             file_path.end_with?(file_name)
           end

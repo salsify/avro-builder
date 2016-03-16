@@ -1,4 +1,5 @@
 require 'avro/builder/types/configurable_type'
+require 'avro/builder/namespaceable'
 
 module Avro
   module Builder
@@ -26,7 +27,7 @@ module Avro
               name: generated_name,
               type: type_name,
               namespace: namespace
-            }.merge(overrides).compact
+            }.merge(overrides).select { |_, v| !v.nil? }
           end
         end
 
@@ -39,7 +40,7 @@ module Avro
             type: type_name,
             namespace: namespace,
             aliases: aliases
-          }.merge(overrides).compact
+          }.merge(overrides).select { |_, v| !v.nil? }
         end
       end
     end

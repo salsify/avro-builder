@@ -17,7 +17,10 @@ module Avro
     module DslAttributes
       def self.included(base)
         base.extend ClassMethods
-        base.delegate :dsl_attribute_names, to: :class
+      end
+
+      def has_dsl_attribute?(name)
+        self.class.dsl_attribute_names.include?(name.to_sym)
       end
 
       module ClassMethods

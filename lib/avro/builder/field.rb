@@ -10,7 +10,7 @@ module Avro
       include Avro::Builder::Namespaceable
       include Avro::Builder::TypeFactory
 
-      INTERNAL_ATTRIBUTES = %i(optional).freeze
+      INTERNAL_ATTRIBUTES = Set.new(%i(optional)).freeze
 
       attr_accessor :type, :optional, :builder
 
@@ -21,12 +21,12 @@ module Avro
         @builder = builder
         @name = name.to_s
 
-        internal.slice(*INTERNAL_ATTRIBUTES).each do |key, value|
-          send("#{key}=", value)
+        internal.each do |key, value|
+          send("#{key}=", value) if INTERNAL_ATTRIBUTES.include?(key)
         end
 
         options.each do |key, value|
-          send(key, value) if dsl_attribute_names.include?(key.to_sym)
+          send(key, value) if has_dsl_attribute?(key)
         end
 
         @type = builder.lookup(type_name, required: false) ||
@@ -63,7 +63,7 @@ module Avro
           doc: doc,
           default: default,
           aliases: aliases
-        }.compact
+        }.select { |_, v| !v.nil? }
       end
 
       private

@@ -9,7 +9,7 @@ module Avro
         include Avro::Builder::TypeFactory
 
         def builder
-          field.try(:builder) || super
+          (!field.nil? && field.builder) || super
         end
 
         def find_or_create_type(type_name)
