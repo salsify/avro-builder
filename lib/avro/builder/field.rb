@@ -63,7 +63,7 @@ module Avro
           doc: doc,
           default: default,
           aliases: aliases
-        }.select { |_, v| !v.nil? }
+        }.reject { |_, v| v.nil? }
       end
 
       private

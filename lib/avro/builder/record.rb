@@ -56,7 +56,7 @@ module Avro
             doc: doc,
             aliases: aliases,
             fields: fields.values.map { |field| field.serialize(reference_state) }
-          }.select { |_, v| !v.nil? }
+          }.reject { |_, v| v.nil? }
         end
       end
 

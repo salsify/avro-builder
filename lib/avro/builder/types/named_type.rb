@@ -27,7 +27,7 @@ module Avro
               name: generated_name,
               type: type_name,
               namespace: namespace
-            }.merge(overrides).select { |_, v| !v.nil? }
+            }.merge(overrides).reject { |_, v| v.nil? }
           end
         end
 
@@ -40,7 +40,7 @@ module Avro
             type: type_name,
             namespace: namespace,
             aliases: aliases
-          }.merge(overrides).select { |_, v| !v.nil? }
+          }.merge(overrides).reject { |_, v| v.nil? }
         end
       end
     end
