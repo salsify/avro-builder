@@ -1,5 +1,9 @@
 # Avro::Builder
 
+[![Build Status](https://travis-ci.org/salsify/avro-builder.svg?branch=master)][travis]
+
+[travis]: http://travis-ci.org/salsify/avro-builder
+
 `Avro::Builder` provides a Ruby DSL to create [Apache Avro](https://avro.apache.org/docs/current/) Schemas.
 
 This DSL was created because:
