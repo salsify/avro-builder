@@ -1,8 +1,27 @@
 # Avro::Builder
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/avro/builder`. To experiment with that code, run `bin/console` for an interactive prompt.
+`Avro::Builder` provides a Ruby DSL to create [Apache Avro](https://avro.apache.org/docs/current/) Schemas.
 
-TODO: Delete this and the text above, and describe your gem
+This DSL was created because:
+* The [Avro IDL](https://avro.apache.org/docs/current/idl.html) is not supported in Ruby.
+* The Avro IDL can only be used to define Protocols.
+* Schemas can be extracted as JSON from an IDL Protocol but support
+  for imports is still limited.
+
+## Features
+* The syntax is designed for ease-of-use.
+* Definitions can be imported by name. This includes auto-loading from a configured
+  set of paths. This allows definitions to split across files and even reused
+  between projects.
+* Record definitions can inherit from other record definitions.
+
+## Limitations
+
+* Only Avro Schemas, not Protocols are supported.
+* See [Issues](https://github.com/salsify/avro-builder/issues) for functionality
+  that has yet to be implemented.
+* This is alpha quality code. There may be breaking changes until version 1.0 is
+  released.
 
 ## Installation
 
@@ -22,7 +41,104 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+To use `Avro::Builder` define a schema:
+
+```ruby
+namespace 'com.example'
+
+fixed :password, 8
+
+enum :user_type, :ADMIN, :REGULAR
+
+record :user do
+  required :id, :long
+  required :user_name, :string
+  required :type, :user_type, default: :REGULAR
+  required :pw, :password
+  optional :full_name, :string
+end
+```
+
+The schema definition may be passed as a string or a block to
+`Avro::Builder.build`.
+
+This generates the following Avro JSON schema:
+```json
+{
+  "type": "record",
+  "name": "user",
+  "namespace": "com.example",
+  "fields": [
+    {
+      "name": "id",
+      "type": "long"
+    },
+    {
+      "name": "user_name",
+      "type": "string"
+    },
+    {
+      "name": "type",
+      "type": {
+        "name": "user_type",
+        "type": "enum",
+        "symbols": [
+          "ADMIN",
+          "REGULAR"
+        ],
+        "namespace": "com.example"
+      },
+      "default": "REGULAR"
+    },
+    {
+      "name": "pw",
+      "type": {
+        "name": "password",
+        "type": "fixed",
+        "size": 8,
+        "namespace": "com.example"
+      }
+    },
+    {
+      "name": "full_name",
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  ]
+}
+```
+
+### Required and Optional
+
+Fields for a record a specified as `required` or `optional`. Optional fields are
+implemented as a union in Avro, where `null` is the first type in the union.
+
+### Named Types
+
+`fixed` and `enum` fields may be specified inline as part of a record
+or as standalone named types.
+
+### Auto-loading and Imports
+
+Specify paths to search for definitions:
+
+```ruby
+Avro::Builder.add_load_path('/path/to/dsl/files')
+```
+
+Undefined references are automatically loaded from a file with the same name.
+The load paths are searched for `.rb` file with a matching name.
+
+Files may also be explicitly imported using `import <filename>`.
+
+### Extends
+
+A previously defined record may be referenced in the definition of another
+record using `extends <record_name>`. This adds all of the fields from
+the referenced record to the current record. The current record may override
+fields in the record that it extends.
 
 ## Development
 
@@ -32,8 +148,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/avro-builder.
-
+Issues and pull requests are welcome on GitHub at https://github.com/salsify/avro-builder.
 
 ## License
 

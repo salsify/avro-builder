@@ -1,0 +1,7 @@
+require 'avro/builder/types/type'
+require 'avro/builder/types/specific_type'
+require 'avro/builder/types/named_type'
+require 'avro/builder/types/enum_type'
+require 'avro/builder/types/fixed_type'
+require 'avro/builder/types/array_type'
+require 'avro/builder/types/map_type'
