@@ -1,13 +1,6 @@
 require 'avro/builder/version'
 require 'avro/builder/dsl'
 
-# Things to do:
-# - support for error? (useful outside protocol?)
-# - support for union
-# - support for logical types
-# - nested record support
-# - add more validations?
-
 module Avro
   module Builder
 
@@ -19,6 +12,11 @@ module Avro
     # Accepts a string or block to eval and returns an Avro::Schema
     def self.build_schema(str = nil, &block)
       Avro::Builder::DSL.new(str, &block).as_schema
+    end
+
+    # Add paths that will be searched for definitions
+    def self.add_load_path(*paths)
+      Avro::Builder::DSL.load_paths.merge(paths)
     end
   end
 end
