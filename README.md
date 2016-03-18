@@ -143,16 +143,8 @@ end
 
 ### Unions
 
-A union may be specified within a record:
-
-```ruby
-record :my_record do
-  union :my_union, :string, :int
-end
-```
-
-Unions may also be specified using `required` and `optional` with the `:union`
-type:
+A union may be specified within a record using `required` and `optional` with
+the `:union` type:
 
 ```ruby
 record :my_record_with_unions do
