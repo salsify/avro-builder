@@ -41,6 +41,11 @@ module Avro
         add_field(new_field)
       end
 
+      # Alternate syntax to add a union field
+      def union(name, *types, **options, &block)
+        required(name, :union, { types: types }.merge(options), &block)
+      end
+
       # Adds fields from the record with the specified name to the current
       # record.
       def extends(name)

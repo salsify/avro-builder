@@ -21,6 +21,23 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "enum with symbols in hash" do
+    subject do
+      described_class.build do
+        enum :enum1, symbols: [:ONE, :TWO], doc: 'Uses hash'
+      end
+    end
+    let(:expected) do
+      {
+        name: :enum1,
+        type: :enum,
+        doc: 'Uses hash',
+        symbols: [:ONE, :TWO]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
   context "enum type with options" do
     subject do
       described_class.build do
@@ -91,6 +108,22 @@ describe Avro::Builder do
         name: :eight,
         type: :fixed,
         size: 8
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "fixed type with size in hash" do
+    subject do
+      described_class.build do
+        fixed :eight, size: 9
+      end
+    end
+    let(:expected) do
+      {
+        name: :eight,
+        type: :fixed,
+        size: 9
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
@@ -385,6 +418,211 @@ describe Avro::Builder do
         fields: [
           { name: :first, type: [:null, :string] },
           { name: :second, type: :int }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "union" do
+    subject do
+      described_class.build do
+        record :record_with_union do
+          required :s_or_i, :union, types: %i(string int)
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :record_with_union,
+        fields: [
+          { name: :s_or_i, type: [:string, :int] }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "union dsl method" do
+    context "union" do
+      subject do
+        described_class.build do
+          record :record_with_union do
+            union :s_or_i, :string, :int
+          end
+        end
+      end
+      let(:expected) do
+        {
+          type: :record,
+          name: :record_with_union,
+          fields: [
+            { name: :s_or_i, type: [:string, :int] }
+          ]
+        }
+      end
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+  end
+
+  context "union dsl method with types option" do
+    context "union" do
+      subject do
+        described_class.build do
+          record :record_with_union do
+            union :s_or_i, types: [:string, :int]
+          end
+        end
+      end
+      let(:expected) do
+        {
+          type: :record,
+          name: :record_with_union,
+          fields: [
+            { name: :s_or_i, type: [:string, :int] }
+          ]
+        }
+      end
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+  end
+
+    context "union dsl method with types dsl attribute" do
+      context "union" do
+        subject do
+          described_class.build do
+            record :record_with_union do
+              union :s_or_i do
+                types [:string, :int]
+              end
+            end
+          end
+        end
+      let(:expected) do
+        {
+          type: :record,
+          name: :record_with_union,
+          fields: [
+            { name: :s_or_i, type: [:string, :int] }
+          ]
+        }
+      end
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+  end
+
+  context "union dsl method with types dsl splat" do
+    context "union" do
+      subject do
+        described_class.build do
+          record :record_with_union do
+            union :s_or_i do
+              types :string, :int
+            end
+          end
+        end
+      end
+      let(:expected) do
+        {
+          type: :record,
+          name: :record_with_union,
+          fields: [
+            { name: :s_or_i, type: [:string, :int] }
+          ]
+        }
+      end
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+  end
+
+  context "optional union" do
+    subject do
+      described_class.build do
+        record :record_with_optional_union do
+          optional :s_or_i, :union, types: %i(string int)
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :record_with_optional_union,
+        fields: [
+          { name: :s_or_i, type: [:null, :string, :int] }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "optional union that contains null" do
+    subject do
+      described_class.build do
+        record :record_with_opt_union_with_null do
+          optional :s_or_i, :union, types: %i(string null int)
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :record_with_opt_union_with_null,
+        fields: [
+          { name: :s_or_i, type: [:null, :string, :int] }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "union with references to named types" do
+    subject do
+      described_class.build do
+        fixed :f_type, 5
+        enum :e_type, :A, :B
+
+        record :union_with_refs do
+          required :u, :union, types: %i(f_type e_type)
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :union_with_refs,
+        fields: [
+          {
+            name: :u,
+            type: [
+              { name: :f_type, type: :fixed, size: 5 },
+              { name: :e_type, type: :enum, symbols: %i(A B) }
+            ]
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "union with repeated reference" do
+    subject do
+      described_class.build do
+        fixed :f_type, 5
+
+        record :union_with_repeated_ref do
+          required :g, :f_type
+          required :u, :union, types: %i(null f_type)
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :union_with_repeated_ref,
+        fields: [
+          { name: :g, type: { name: :f_type, type: :fixed, size: 5 } },
+          { name: :u, type: [:null, :f_type] }
         ]
       }
     end

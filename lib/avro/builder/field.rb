@@ -68,10 +68,10 @@ module Avro
 
       private
 
-      # Optional types must be serialized as an array.
+      # Optional types must be serialized as a union -- an array of types.
       def serialized_type(reference_state)
         result = type.serialize(reference_state)
-        optional ? [:null, result] : result
+        optional ? type.class.union_with_null(result) : result
       end
     end
   end

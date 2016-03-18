@@ -116,13 +116,53 @@ This generates the following Avro JSON schema:
 
 ### Required and Optional
 
-Fields for a record a specified as `required` or `optional`. Optional fields are
+Fields for a record are specified as `required` or `optional`. Optional fields are
 implemented as a union in Avro, where `null` is the first type in the union.
 
 ### Named Types
 
 `fixed` and `enum` fields may be specified inline as part of a record
 or as standalone named types.
+
+```ruby
+# Either syntax is supported for specifying the size
+fixed :f, 4
+fixed :g, size: 8
+
+# Either syntax is supported for specifying symbols
+enum :e, :X, :Y, :Z
+enum :d, symbols: [:A, :B]
+
+record :my_record_with_named do
+  required :f_ref, :f
+  required :fixed_inline, :fixed, size: 9
+  required :e_ref, :e
+  required :enum_inline, :enum, symbols: [:P, :Q]
+end
+```
+
+### Unions
+
+A union may be specified within a record:
+
+```ruby
+record :my_record do
+  union :my_union, :string, :int
+end
+```
+
+Unions may also be specified using `required` and `optional` with the `:union`
+type:
+
+```ruby
+record :my_record_with_unions do
+  required :req_union, :union, types: [:string, :int]
+  optional :opt_union, :union, types: [:float, :long]
+end
+```
+
+For an optional union, `null` is automatically added as the first type for
+the union.
 
 ### Auto-loading and Imports
 

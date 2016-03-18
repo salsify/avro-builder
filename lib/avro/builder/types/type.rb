@@ -25,6 +25,11 @@ module Avro
         def configure_options(_options = {})
           # No-op
         end
+
+        # Optional fields are represented as a union of the type with :null.
+        def self.union_with_null(serialized)
+          [:null, serialized]
+        end
       end
     end
   end

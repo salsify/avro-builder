@@ -44,7 +44,8 @@ module Avro
       end
 
       def fixed(name, size = nil, options = {}, &block)
-        type(name, :fixed, { size: size }.merge(options), &block)
+        size_option = size.is_a?(Hash) ? size : { size: size }
+        type(name, :fixed, size_option.merge(options), &block)
       end
 
       def type(name, type_name, options = {}, &block)
