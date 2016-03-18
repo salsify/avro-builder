@@ -1,6 +1,3 @@
-require 'avro/builder/types/configurable_type'
-require 'avro/builder/types/type_referencer'
-
 module Avro
   module Builder
     module Types
