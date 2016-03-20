@@ -141,6 +141,58 @@ record :my_record_with_named do
 end
 ```
 
+### Nested Records
+
+Nested records may be created by referring to the name of the previously
+defined record or using the field type `:record`.
+
+```ruby
+record :sub_rec do
+  required :i, :int
+end
+
+record :top_rec do
+  required :sub, :sub_rec
+end
+```
+
+Definining a subrecord inline:
+
+```ruby
+record :my_rec do
+  required :nested, :record do
+    required :s, :string
+  end
+end
+```
+
+Nested subrecords defined without an explicit name are given a generated
+name based on the name of the field and record that they are nested within.
+In the example above, the subrecord would have the generated name
+`__my_rec_nested_record`:
+
+```json
+{
+  "type": "record",
+  "name": "my_rec",
+  "fields": [
+    {
+      "name": "nested",
+      "type": {
+        "type": "record",
+        "name": "__my_rec_nested_record",
+        "fields": [
+          {
+            "name": "s",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
 ### Unions
 
 A union may be specified within a record using `required` and `optional` with

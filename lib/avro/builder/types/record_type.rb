@@ -1,16 +1,14 @@
 module Avro
   module Builder
-    # This class represents a record in an Avro schema.
-    class Record
-      include Avro::Builder::DslAttributes
-      include Avro::Builder::Namespaceable
+    module Types
+    # This class represents a record in an Avro schema. Records may be defined
+    # at the top-level or as the type for a field in a record.
+    # TODO: Fix indent! This will be done as a separate commit to limit diff.
+    class RecordType < Avro::Builder::Types::NamedType
 
-      attr_accessor :builder
-      attr_reader :name
+      dsl_attributes :doc
 
-      dsl_attributes :doc, :aliases, :namespace
-
-      def initialize(name, options = {})
+      def initialize(name = nil, options = {})
         @name = name
         options.each do |key, value|
           send(key, value)
@@ -21,6 +19,7 @@ module Avro
       def required(name, type_name, options = {}, &block)
         new_field = Avro::Builder::Field.new(name: name,
                                              type_name: type_name,
+                                             record: self,
                                              builder: builder,
                                              internal: { namespace: namespace },
                                              options: options,
@@ -33,9 +32,10 @@ module Avro
       def optional(name, type_name, options = {}, &block)
         new_field = Avro::Builder::Field.new(name: name,
                                              type_name: type_name,
+                                             record: self,
                                              builder: builder,
                                              internal: { namespace: namespace,
-                                                         optional: true },
+                                                         optional_field: true },
                                              options: options,
                                              &block)
         add_field(new_field)
@@ -59,6 +59,7 @@ module Avro
           }.reject { |_, v| v.nil? }
         end
       end
+      alias_method :serialize, :to_h
 
       protected
 
@@ -79,6 +80,13 @@ module Avro
       def fields
         @fields ||= {}
       end
+
+      # A record may be defined as a top-level schema or as the
+      # type for a field.
+      def builder
+        super || field.builder
+      end
+    end
     end
   end
 end

@@ -228,7 +228,7 @@ describe Avro::Builder do
         type: :record,
         fields: [
           { name: :e1, type: { type: :enum, name: :e_enum, symbols: %i(A B) } },
-          { name: :e2, type: { type: :enum, name: :__e2_enum, symbols: %i(X Y) } }
+          { name: :e2, type: { type: :enum, name: :__with_enum_e2_enum, symbols: %i(X Y) } }
         ]
       }
     end
@@ -253,7 +253,7 @@ describe Avro::Builder do
         type: :record,
         fields: [
           { name: :f1, type: { name: :f5, type: :fixed, size: 5 } },
-          { name: :f2, type: { name: :__f2_fixed, type: :fixed, size: 6 } }
+          { name: :f2, type: { name: :__with_fixed_f2_fixed, type: :fixed, size: 6 } }
         ]
       }
     end
@@ -489,9 +489,12 @@ describe Avro::Builder do
       described_class.build do
         fixed :f_type, 5
         enum :e_type, :A, :B
+        record :rec do
+          required :s, :string
+        end
 
         record :union_with_refs do
-          required :u, :union, types: %i(f_type e_type)
+          required :u, :union, types: %i(f_type e_type rec)
         end
       end
     end
@@ -504,7 +507,8 @@ describe Avro::Builder do
             name: :u,
             type: [
               { name: :f_type, type: :fixed, size: 5 },
-              { name: :e_type, type: :enum, symbols: %i(A B) }
+              { name: :e_type, type: :enum, symbols: %i(A B) },
+              { name: :rec, type: :record, fields: [{ name: :s, type: :string }] }
             ]
           }
         ]
@@ -642,6 +646,192 @@ describe Avro::Builder do
           { name: :id, type: :long },
           { name: :value, type: :string }
         ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "record with subrecord reference" do
+    subject do
+      described_class.build do
+        record :sub_rec do
+          namespace 'com.example.A'
+          required :i, :int
+        end
+
+        record :top_rec do
+          namespace 'com.example.B'
+          required :sub, :sub_rec
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :top_rec,
+        namespace: 'com.example.B',
+        type: :record,
+        fields: [
+          { name: :sub,
+              type: {
+              name: :sub_rec,
+              namespace: 'com.example.A',
+              type: :record,
+              fields: [{ name: :i, type: :int }]
+            } }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "inline, nested record" do
+    subject do
+      described_class.build do
+        namespace 'com.example'
+
+        record :my_rec do
+          required :nested, :record do
+            required :s, :string
+          end
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :my_rec,
+        namespace: 'com.example',
+        type: :record,
+        fields: [{
+                   name: :nested,
+                   type: {
+                     name: :__my_rec_nested_record,
+                     namespace: 'com.example',
+                     type: :record,
+                     fields: [{ name: :s, type: :string }]
+                   }
+                 }]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "inline, nested record with namespace" do
+    subject do
+      described_class.build do
+        namespace 'com.example'
+
+        record :my_rec do
+          required :nested, :record do
+            namespace 'com.example.sub'
+            required :s, :string
+          end
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :my_rec,
+        namespace: 'com.example',
+        type: :record,
+        fields: [{
+                   name: :nested,
+                   type: {
+                     name: :__my_rec_nested_record,
+                     namespace: 'com.example.sub',
+                     type: :record,
+                     fields: [{ name: :s, type: :string }]
+                   }
+                 }]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "triple-nested record" do
+    subject do
+      described_class.build do
+        namespace 'com.example'
+        record :A do
+          required :B, :record do
+            required :C, :record do
+              required :s, :string
+              optional :i, :int
+            end
+          end
+          required :C, :record do
+            doc 'This record has a unique generated name'
+            optional :b, :bytes
+          end
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :A,
+        namespace: 'com.example',
+        type: :record,
+        fields: [{
+                   name: :B,
+                   type: {
+                     name: :__A_B_record,
+                     namespace: 'com.example',
+                     type: :record,
+                     fields: [{
+                       name: :C,
+                       type: {
+                         name: :__A_B_C_record,
+                         namespace: 'com.example',
+                         type: :record,
+                         fields: [{ name: :s, type: :string },
+                                  { name: :i, type: [:null, :int] }]
+                       }
+                     }]
+                   }
+                 },
+                 {
+                   name: :C,
+                   type: {
+                     name: :__A_C_record,
+                     namespace: 'com.example',
+                     type: :record,
+                     fields: [
+                       { name: :b, type: [:null, :bytes] }
+                     ]
+                   },
+                   doc: 'This record has a unique generated name'
+                 }]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+
+  context "inline, named, nested record" do
+    subject do
+      described_class.build do
+        record :my_rec do
+          namespace 'com.example'
+          required :nested, :record do
+            name :nested_rec
+            required :s, :string
+          end
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :my_rec,
+        namespace: 'com.example',
+        type: :record,
+        fields: [{
+          name: :nested,
+          type: {
+            name: :nested_rec,
+            namespace: 'com.example',
+            type: :record,
+            fields: [{ name: :s, type: :string }]
+          }
+        }]
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }

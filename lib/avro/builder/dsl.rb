@@ -4,7 +4,6 @@ require 'avro/builder/namespaceable'
 require 'avro/builder/type_factory'
 require 'avro/builder/types'
 require 'avro/builder/field'
-require 'avro/builder/record'
 require 'avro/builder/file_handler'
 require 'avro/builder/schema_serializer_reference_state'
 
@@ -85,6 +84,8 @@ module Avro
       def to_json(validate: true, pretty: true)
         hash = to_h
         (pretty ? JSON.pretty_generate(hash) : hash.to_json).tap do |json|
+          # Uncomment the next line to debug:
+          # puts json
           # Parse the schema to validate before returning
           ::Avro::Schema.parse(json) if validate
         end
@@ -111,10 +112,11 @@ module Avro
       end
 
       def build_record(name, options, &block)
-        Record.new(name, options.merge(namespace: namespace)).tap do |record|
-          record.builder = builder
-          record.instance_eval(&block)
-        end
+        Avro::Builder::Types::RecordType
+          .new(name, options.merge(namespace: namespace)).tap do |record|
+            record.builder = builder
+            record.instance_eval(&block)
+          end
       end
 
       def eval_file(name)
