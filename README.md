@@ -166,9 +166,9 @@ record :my_rec do
 end
 ```
 
-Nested subrecords defined without an explicit name are given a generated
+Nested record types defined without an explicit name are given a generated
 name based on the name of the field and record that they are nested within.
-In the example above, the subrecord would have the generated name
+In the example above, the nested record type would have the generated name
 `__my_rec_nested_record`:
 
 ```json
