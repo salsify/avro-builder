@@ -10,15 +10,16 @@ module Avro
       include Avro::Builder::Namespaceable
       include Avro::Builder::TypeFactory
 
-      INTERNAL_ATTRIBUTES = Set.new(%i(optional)).freeze
+      INTERNAL_ATTRIBUTES = Set.new(%i(optional_field)).freeze
 
-      attr_accessor :type, :optional, :builder
+      attr_accessor :type, :optional_field, :builder, :record
 
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :aliases, :default, :order
 
-      def initialize(name:, type_name:, builder:, internal: {}, options: {}, &block)
+      def initialize(name:, type_name:, record:, builder:, internal: {}, options: {}, &block)
         @builder = builder
+        @record = record
         @name = name.to_s
 
         internal.each do |key, value|
@@ -42,8 +43,12 @@ module Avro
         super || type.respond_to?(id, include_all)
       end
 
-      def method_missing(id, *args)
-        type.respond_to?(id) ? type.send(id, *args) : super
+      def method_missing(id, *args, &block)
+        type.respond_to?(id) ? type.send(id, *args, &block) : super
+      end
+
+      def name_fragment
+        record.name_fragment
       end
 
       # Delegate setting name explicitly via DSL to type
@@ -68,10 +73,10 @@ module Avro
 
       private
 
-      # Optional types must be serialized as a union -- an array of types.
+      # Optional fields must be serialized as a union -- an array of types.
       def serialized_type(reference_state)
         result = type.serialize(reference_state)
-        optional ? type.class.union_with_null(result) : result
+        optional_field ? type.class.union_with_null(result) : result
       end
     end
   end

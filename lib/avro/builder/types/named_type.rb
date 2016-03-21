@@ -12,10 +12,21 @@ module Avro
         include Avro::Builder::Namespaceable
         include Avro::Builder::Types::ConfigurableType
 
-        dsl_attributes :name, :namespace, :aliases
+        dsl_attributes :namespace, :aliases
 
-        def generated_name
-          name || "__#{field.name}_#{type_name}"
+        dsl_attribute :name do |value = nil|
+          if value
+            @name = value
+          else
+            @name || "__#{name_fragment}_#{type_name}"
+          end
+        end
+
+        # Named types that do not have an explicit name are assigned
+        # a named based on the field and its nesting.
+        def name_fragment
+          [field && field.name_fragment,
+           @name || (field && field.name)].compact.join('_')
         end
 
         # As a type for a field
@@ -24,7 +35,7 @@ module Avro
         def serialize(reference_state, overrides: {})
           reference_state.definition_or_reference(fullname) do
             {
-              name: generated_name,
+              name: name,
               type: type_name,
               namespace: namespace
             }.merge(overrides).reject { |_, v| v.nil? }
