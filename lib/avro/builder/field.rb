@@ -68,7 +68,9 @@ module Avro
           doc: doc,
           default: default,
           aliases: aliases
-        }.reject { |_, v| v.nil? }
+        }.reject { |_, v| v.nil? }.tap do |result|
+          result.merge!(default: nil) if optional_field
+        end
       end
 
       private

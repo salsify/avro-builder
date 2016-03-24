@@ -1,5 +1,9 @@
 # avro-builder changelog
 
+## v0.3.1
+- A `null` default should automatically be added for optional fields to match
+  the `:null` first member of the union.
+
 ## v0.3.0
 - Add support for nested records. This includes the ability to reference a
   previously defined record as a type.

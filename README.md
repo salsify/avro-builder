@@ -108,7 +108,8 @@ This generates the following Avro JSON schema:
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "default": null
     }
   ]
 }
@@ -117,7 +118,8 @@ This generates the following Avro JSON schema:
 ### Required and Optional
 
 Fields for a record are specified as `required` or `optional`. Optional fields are
-implemented as a union in Avro, where `null` is the first type in the union.
+implemented as a union in Avro, where `null` is the first type in the union and
+the field has a default value of `null`.
 
 ### Named Types
 
@@ -206,7 +208,7 @@ end
 ```
 
 For an optional union, `null` is automatically added as the first type for
-the union.
+the union and the field defaults to `null`.
 
 ### Auto-loading and Imports
 

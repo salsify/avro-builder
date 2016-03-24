@@ -175,9 +175,9 @@ describe Avro::Builder do
           { name: :b, type: :boolean },
           { name: :s, type: :string },
           { name: :i, type: :int },
-          { name: :l, type: [:null, :long] },
+          { name: :l, type: [:null, :long], default: nil },
           { name: :f, type: :float },
-          { name: :d, type: [:null, :double] },
+          { name: :d, type: [:null, :double], default: nil },
           { name: :many_bits, type: :bytes }
         ]
       }
@@ -202,7 +202,7 @@ describe Avro::Builder do
         name: :rec,
         namespace: 'com.example.foo',
         fields: [
-          { name: :id, type: [:null, :long] },
+          { name: :id, type: [:null, :long], default: nil },
           { name: :type, type: :string }
         ]
       }
@@ -280,9 +280,9 @@ describe Avro::Builder do
         name: :refs,
         fields: [
           { name: :must_id, type: { name: :id, type: :fixed, size: 8 } },
-          { name: :maybe_id, type: [:null, :id] },
+          { name: :maybe_id, type: [:null, :id], default: nil },
           { name: :must_enum, type: { name: :e, type: :enum, symbols: %i(X Y Z) } },
-          { name: :maybe_enum, type: [:null, :e] }
+          { name: :maybe_enum, type: [:null, :e], default: nil }
         ]
       }
     end
@@ -308,8 +308,11 @@ describe Avro::Builder do
         name: :enum_refs,
         namespace: 'com.example',
         fields: [
-          { name: :maybe_enum, type: [:null,
-                                      { name: :e, type: :enum, symbols: %i(A B), namespace: 'com.example' }] },
+          {
+            name: :maybe_enum,
+            default: nil,
+            type: [:null,
+                   { name: :e, type: :enum, symbols: %i(A B), namespace: 'com.example' }] },
           { name: :must_enum, type: 'com.example.e' }
         ]
       }
@@ -416,7 +419,7 @@ describe Avro::Builder do
         type: :record,
         name: :extended,
         fields: [
-          { name: :first, type: [:null, :string] },
+          { name: :first, type: [:null, :string], default: nil },
           { name: :second, type: :int }
         ]
       }
@@ -457,7 +460,7 @@ describe Avro::Builder do
         type: :record,
         name: :record_with_optional_union,
         fields: [
-          { name: :s_or_i, type: [:null, :string, :int] }
+          { name: :s_or_i, type: [:null, :string, :int], default: nil }
         ]
       }
     end
@@ -477,7 +480,7 @@ describe Avro::Builder do
         type: :record,
         name: :record_with_opt_union_with_null,
         fields: [
-          { name: :s_or_i, type: [:null, :string, :int] }
+          { name: :s_or_i, type: [:null, :string, :int], default: nil }
         ]
       }
     end
@@ -783,7 +786,7 @@ describe Avro::Builder do
                          namespace: 'com.example',
                          type: :record,
                          fields: [{ name: :s, type: :string },
-                                  { name: :i, type: [:null, :int] }]
+                                  { name: :i, type: [:null, :int], default: nil }]
                        }
                      }]
                    }
@@ -795,7 +798,7 @@ describe Avro::Builder do
                      namespace: 'com.example',
                      type: :record,
                      fields: [
-                       { name: :b, type: [:null, :bytes] }
+                       { name: :b, type: [:null, :bytes], default: nil }
                      ]
                    },
                    doc: 'This record has a unique generated name'
