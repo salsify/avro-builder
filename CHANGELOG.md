@@ -1,5 +1,12 @@
 # avro-builder changelog
 
+## v0.3.2
+- Fix a bug that allowed the partial matching of filenames.
+- Fix a bug that prevented namespace from being specified as an option on
+  records.
+- Fix a bug that prevented loading references qualified by namespace.
+- Do not attempt to import schema files for builtin types.
+
 ## v0.3.1
 - A `null` default should automatically be added for optional fields to match
   the `:null` first member of the union.

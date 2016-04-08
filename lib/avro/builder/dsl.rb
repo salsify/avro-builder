@@ -39,26 +39,16 @@ module Avro
       ## DSL methods for Types
 
       def enum(name, *symbols, **options, &block)
-        type(name, :enum, { symbols: symbols }.merge(options), &block)
+        create_named_type(name, :enum, { symbols: symbols }.merge(options), &block)
       end
 
       def fixed(name, size = nil, options = {}, &block)
         size_option = size.is_a?(Hash) ? size : { size: size }
-        type(name, :fixed, size_option.merge(options), &block)
-      end
-
-      def type(name, type_name, options = {}, &block)
-        build_type(type_name,
-                   builder: self,
-                   internal: { name: name, namespace: namespace },
-                   options: options,
-                   &block).tap do |type|
-          add_schema_object(type)
-        end
+        create_named_type(name, :fixed, size_option.merge(options), &block)
       end
 
       # Lookup an Avro schema object by name, possibly fully qualified by namespace.
-      def lookup(key, required: true)
+      def lookup_named_type(key)
         key_str = key.to_s
         object = schema_objects[key_str]
 
@@ -67,11 +57,8 @@ module Avro
           object = schema_objects[key_str]
         end
 
-        raise "Schema object #{key} not found" if required && !object
+        raise "Schema object #{key} not found" unless object
         object
-      rescue
-        raise if required
-        nil
       end
 
       # Return the last schema object processed as a Hash representing
@@ -111,9 +98,19 @@ module Avro
         schema_objects[object.fullname] = object if object.namespace
       end
 
+      def create_named_type(name, type_name, options = {}, &block)
+        create_and_configure_builtin_type(type_name,
+                                          builder: self,
+                                          internal: { name: name, namespace: namespace },
+                                          options: options,
+                                          &block).tap do |type|
+          add_schema_object(type)
+        end
+      end
+
       def build_record(name, options, &block)
         Avro::Builder::Types::RecordType
-          .new(name, options.merge(namespace: namespace)).tap do |record|
+          .new(name, { namespace: namespace }.merge(options)).tap do |record|
             record.builder = builder
             record.instance_eval(&block)
           end

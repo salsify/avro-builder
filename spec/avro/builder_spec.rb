@@ -210,6 +210,29 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "record with namespace as an option" do
+    subject do
+      described_class.build do
+        record :rec, namespace: 'com.example.foo' do
+          optional :id, :long
+          required :type, :string
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :rec,
+        namespace: 'com.example.foo',
+        fields: [
+          { name: :id, type: [:null, :long], default: nil },
+          { name: :type, type: :string }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
   context "record with inline enum" do
     subject do
       described_class.build do

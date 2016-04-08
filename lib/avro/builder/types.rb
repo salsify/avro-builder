@@ -1,5 +1,5 @@
 require 'avro/builder/types/type'
-require 'avro/builder/types/specific_type'
+require 'avro/builder/types/complex_type'
 require 'avro/builder/types/configurable_type'
 require 'avro/builder/types/type_referencer'
 require 'avro/builder/types/named_type'

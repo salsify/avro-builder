@@ -12,8 +12,12 @@ module Avro
           (!field.nil? && field.builder) || super
         end
 
-        def find_or_create_type(type_name)
-          builder.lookup(type_name, required: false) || create_type(type_name)
+        def create_builtin_or_lookup_named_type(type_name)
+          if builtin_type?(type_name)
+            create_builtin_type(type_name)
+          else
+            builder.lookup_named_type(type_name)
+          end
         end
       end
     end

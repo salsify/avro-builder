@@ -2,9 +2,9 @@ module Avro
   module Builder
     module Types
 
-      # This module provides common functionality for Types with a specific
-      # type name vs the generic Type class.
-      module SpecificType
+      # This module provides common functionality for non-primitive types
+      # that do not require a name to be created.
+      module ComplexType
 
         def self.included(base)
           base.extend ClassMethods
