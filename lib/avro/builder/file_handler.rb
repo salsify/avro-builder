@@ -22,14 +22,14 @@ module Avro
       private
 
       def find_file(name)
-        file_name = "#{name.to_s.sub(/\.rb$/, '')}.rb"
+        file_name = "/#{name.to_s.gsub('.', '/').sub(/^\//, '').sub(/\.rb$/, '')}.rb"
         matches = self.class.load_paths.flat_map do |load_path|
           Dir["#{load_path}/**/*.rb"].select do |file_path|
             file_path.end_with?(file_name)
           end
         end
         raise "Multiple matches: #{matches}" if matches.size > 1
-        raise "File not found #{name}" if matches.empty?
+        raise "File not found #{file_name}" if matches.empty?
 
         matches.first
       end

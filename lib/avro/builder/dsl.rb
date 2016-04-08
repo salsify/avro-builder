@@ -58,7 +58,7 @@ module Avro
       end
 
       # Lookup an Avro schema object by name, possibly fully qualified by namespace.
-      def lookup(key, required: true)
+      def lookup(key)
         key_str = key.to_s
         object = schema_objects[key_str]
 
@@ -67,11 +67,8 @@ module Avro
           object = schema_objects[key_str]
         end
 
-        raise "Schema object #{key} not found" if required && !object
+        raise "Schema object #{key} not found" unless object
         object
-      rescue
-        raise if required
-        nil
       end
 
       # Return the last schema object processed as a Hash representing
@@ -113,7 +110,7 @@ module Avro
 
       def build_record(name, options, &block)
         Avro::Builder::Types::RecordType
-          .new(name, options.merge(namespace: namespace)).tap do |record|
+          .new(name, { namespace: namespace }.merge(options)).tap do |record|
             record.builder = builder
             record.instance_eval(&block)
           end

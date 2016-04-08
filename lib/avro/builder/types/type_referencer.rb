@@ -13,7 +13,7 @@ module Avro
         end
 
         def find_or_create_type(type_name)
-          builder.lookup(type_name, required: false) || create_type(type_name)
+          create_type(type_name) || builder.lookup(type_name)
         end
       end
     end

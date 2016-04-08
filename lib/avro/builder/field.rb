@@ -30,8 +30,10 @@ module Avro
           send(key, value) if has_dsl_attribute?(key)
         end
 
-        @type = builder.lookup(type_name, required: false) ||
-          build_type(type_name, field: self, internal: internal, options: options)
+        @type = build_type(type_name,
+                           field: self,
+                           internal: internal,
+                           options: options) || builder.lookup(type_name)
 
         # DSL calls must be evaluated after the type has been constructed
         instance_eval(&block) if block_given?
