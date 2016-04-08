@@ -8,10 +8,11 @@ module Avro
         include Avro::Builder::DslAttributes
 
         attr_reader :type_name
-        attr_accessor :field, :builder
 
-        def initialize(type_name)
+        def initialize(type_name, builder:, field: nil)
           @type_name = type_name
+          @builder = builder
+          @field = field
         end
 
         def serialize(_reference_state)
@@ -30,6 +31,10 @@ module Avro
         def self.union_with_null(serialized)
           [:null, serialized]
         end
+
+        private
+
+        attr_accessor :field, :builder
       end
     end
   end

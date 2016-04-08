@@ -12,8 +12,6 @@ module Avro
 
       INTERNAL_ATTRIBUTES = Set.new(%i(optional_field)).freeze
 
-      attr_accessor :type, :optional_field, :builder, :record
-
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :aliases, :default, :order
 
@@ -33,6 +31,7 @@ module Avro
         @type = if builtin_type?(type_name)
                   create_and_configure_builtin_type(type_name,
                                                     field: self,
+                                                    builder: builder,
                                                     internal: internal,
                                                     options: options)
                 else
@@ -80,6 +79,8 @@ module Avro
       end
 
       private
+
+      attr_accessor :type, :optional_field, :builder, :record
 
       # Optional fields must be serialized as a union -- an array of types.
       def serialized_type(reference_state)

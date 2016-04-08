@@ -1,6 +1,7 @@
 require 'avro'
 require 'avro/builder/dsl_attributes'
 require 'avro/builder/namespaceable'
+require 'avro/builder/definition_proxy'
 require 'avro/builder/type_factory'
 require 'avro/builder/types'
 require 'avro/builder/field'
@@ -26,7 +27,7 @@ module Avro
 
       # Define an Avro schema record
       def record(name, options = {}, &block)
-        add_schema_object(build_record(name, options, &block))
+        add_schema_object(build_record(name, options: options, &block))
       end
 
       # Imports from the file with specified name fragment.
@@ -45,20 +46,6 @@ module Avro
       def fixed(name, size = nil, options = {}, &block)
         size_option = size.is_a?(Hash) ? size : { size: size }
         type(name, :fixed, size_option.merge(options), &block)
-      end
-
-      # Lookup an Avro schema object by name, possibly fully qualified by namespace.
-      def lookup_named_type(key)
-        key_str = key.to_s
-        object = schema_objects[key_str]
-
-        unless object
-          import(key)
-          object = schema_objects[key_str]
-        end
-
-        raise "Schema object #{key} not found" unless object
-        object
       end
 
       # Return the last schema object processed as a Hash representing
@@ -85,7 +72,7 @@ module Avro
       private
 
       def builder
-        self
+        @proxy ||= Avro::Builder::DefinitionProxy.new(self, schema_objects)
       end
 
       def schema_objects
@@ -100,7 +87,7 @@ module Avro
 
       def type(name, type_name, options = {}, &block)
         create_and_configure_builtin_type(type_name,
-                                          builder: self,
+                                          builder: builder,
                                           internal: { name: name, namespace: namespace },
                                           options: options,
                                           &block).tap do |type|
@@ -108,12 +95,11 @@ module Avro
         end
       end
 
-      def build_record(name, options, &block)
-        Avro::Builder::Types::RecordType
-          .new(name, { namespace: namespace }.merge(options)).tap do |record|
-            record.builder = builder
-            record.instance_eval(&block)
-          end
+      def build_record(name, options: {}, &block)
+        Avro::Builder::Types::RecordType.new(name,
+                                             options: { namespace: namespace }.merge(options),
+                                             builder: builder,
+                                             &block)
       end
 
       def eval_file(name)
