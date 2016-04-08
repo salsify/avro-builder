@@ -39,12 +39,12 @@ module Avro
       ## DSL methods for Types
 
       def enum(name, *symbols, **options, &block)
-        type(name, :enum, { symbols: symbols }.merge(options), &block)
+        create_named_type(name, :enum, { symbols: symbols }.merge(options), &block)
       end
 
       def fixed(name, size = nil, options = {}, &block)
         size_option = size.is_a?(Hash) ? size : { size: size }
-        type(name, :fixed, size_option.merge(options), &block)
+        create_named_type(name, :fixed, size_option.merge(options), &block)
       end
 
       # Lookup an Avro schema object by name, possibly fully qualified by namespace.
@@ -98,7 +98,7 @@ module Avro
         schema_objects[object.fullname] = object if object.namespace
       end
 
-      def type(name, type_name, options = {}, &block)
+      def create_named_type(name, type_name, options = {}, &block)
         create_and_configure_builtin_type(type_name,
                                           builder: self,
                                           internal: { name: name, namespace: namespace },
