@@ -7,11 +7,14 @@ module Avro
 
         dsl_attributes :doc
 
-        def initialize(name = nil, options = {})
+        def initialize(name = nil, options: {}, builder:, field: nil, &block)
+          @type_name = :record
           @name = name
-          options.each do |key, value|
-            send(key, value)
-          end
+          @builder = builder
+          @field = field
+
+          configure_options(options)
+          instance_eval(&block) if block_given?
         end
 
         # Add a required field to the record
@@ -78,12 +81,6 @@ module Avro
 
         def fields
           @fields ||= {}
-        end
-
-        # A record may be defined as a top-level schema or as the
-        # type for a field.
-        def builder
-          super || field.builder
         end
       end
     end

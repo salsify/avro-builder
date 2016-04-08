@@ -8,13 +8,9 @@ module Avro
       module TypeReferencer
         include Avro::Builder::TypeFactory
 
-        def builder
-          (!field.nil? && field.builder) || super
-        end
-
         def create_builtin_or_lookup_named_type(type_name)
           if builtin_type?(type_name)
-            create_builtin_type(type_name)
+            create_builtin_type(type_name, field: field, builder: builder)
           else
             builder.lookup_named_type(type_name)
           end
