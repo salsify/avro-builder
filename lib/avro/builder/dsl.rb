@@ -47,18 +47,8 @@ module Avro
         type(name, :fixed, size_option.merge(options), &block)
       end
 
-      def type(name, type_name, options = {}, &block)
-        build_type(type_name,
-                   builder: self,
-                   internal: { name: name, namespace: namespace },
-                   options: options,
-                   &block).tap do |type|
-          add_schema_object(type)
-        end
-      end
-
       # Lookup an Avro schema object by name, possibly fully qualified by namespace.
-      def lookup(key)
+      def lookup_named_type(key)
         key_str = key.to_s
         object = schema_objects[key_str]
 
@@ -106,6 +96,16 @@ module Avro
         @last_object = object
         schema_objects[object.name.to_s] = object
         schema_objects[object.fullname] = object if object.namespace
+      end
+
+      def type(name, type_name, options = {}, &block)
+        create_and_configure_builtin_type(type_name,
+                                          builder: self,
+                                          internal: { name: name, namespace: namespace },
+                                          options: options,
+                                          &block).tap do |type|
+          add_schema_object(type)
+        end
       end
 
       def build_record(name, options, &block)

@@ -43,7 +43,7 @@ module Avro
         # Adds fields from the record with the specified name to the current
         # record.
         def extends(name)
-          fields.merge!(builder.lookup(name).duplicated_fields)
+          fields.merge!(builder.lookup_named_type(name).duplicated_fields)
         end
 
         def to_h(reference_state = SchemaSerializerReferenceState.new)

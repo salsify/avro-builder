@@ -22,6 +22,10 @@ module Avro
       private
 
       def find_file(name)
+        # Ensure that the file_name that is searched for begins with a slash (/)
+        # and ends with a .rb extension. Additionally, if the name contains
+        # a namespace then ensure that periods (.) are replaced by forward
+        # slashes. E.g. for 'test.example' search for '/test/example.rb'.
         file_name = "/#{name.to_s.gsub('.', '/').sub(/^\//, '').sub(/\.rb$/, '')}.rb"
         matches = self.class.load_paths.flat_map do |load_path|
           Dir["#{load_path}/**/*.rb"].select do |file_path|
