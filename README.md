@@ -60,6 +60,8 @@ record :user do
   required :type, :user_type, default: :REGULAR
   required :pw, :password
   optional :full_name, :string
+  required :nicknames, :array, items: :string
+  required :permissions, :map, values: :bytes
 end
 ```
 
@@ -110,6 +112,20 @@ This generates the following Avro JSON schema:
         "string"
       ],
       "default": null
+    },
+    {
+      "name": "nicknames",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "permissions",
+      "type": {
+        "type": "map",
+        "values": "bytes"
+      }
     }
   ]
 }
@@ -243,4 +259,3 @@ Issues and pull requests are welcome on GitHub at https://github.com/salsify/avr
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
