@@ -26,7 +26,7 @@ module Avro
 
       # Define an Avro schema record
       def record(name, options = {}, &block)
-        add_schema_object(build_record(name, options, &block))
+        create_named_type(name, :record, options, &block)
       end
 
       # Imports from the file with specified name fragment.
@@ -106,14 +106,6 @@ module Avro
                                           &block).tap do |type|
           add_schema_object(type)
         end
-      end
-
-      def build_record(name, options, &block)
-        Avro::Builder::Types::RecordType
-          .new(name, { namespace: namespace }.merge(options)).tap do |record|
-            record.builder = builder
-            record.instance_eval(&block)
-          end
       end
 
       def eval_file(name)
