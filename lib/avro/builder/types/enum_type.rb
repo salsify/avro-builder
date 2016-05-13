@@ -24,7 +24,7 @@ module Avro
 
         def validate!
           super
-          missing!(:symbols)
+          validate_required_attribute!(:symbols)
         end
 
         private

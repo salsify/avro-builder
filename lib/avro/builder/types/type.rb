@@ -45,7 +45,7 @@ module Avro
                                            name: @name)
         end
 
-        def missing!(attribute_name)
+        def validate_required_attribute!(attribute_name)
           value = public_send(attribute_name)
           if value.nil? || value.respond_to?(:empty?) && value.empty?
             required_attribute_error!(attribute_name)

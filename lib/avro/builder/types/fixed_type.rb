@@ -15,7 +15,7 @@ module Avro
 
         def validate!
           super
-          missing!(:size)
+          validate_required_attribute!(:size)
         end
 
         private

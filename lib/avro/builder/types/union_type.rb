@@ -28,7 +28,7 @@ module Avro
         end
 
         def validate!
-          missing!(:types)
+          validate_required_attribute!(:types)
         end
       end
     end

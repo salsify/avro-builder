@@ -22,7 +22,7 @@ module Avro
         end
 
         def validate!
-          missing!(:values)
+          validate_required_attribute!(:values)
         end
       end
     end

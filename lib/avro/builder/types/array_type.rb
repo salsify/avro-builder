@@ -15,7 +15,7 @@ module Avro
         end
 
         def validate!
-          missing!(:items)
+          validate_required_attribute!(:items)
         end
 
         def serialize(referenced_state)
