@@ -30,6 +30,27 @@ module Avro
         def self.union_with_null(serialized)
           [:null, serialized]
         end
+
+        # Subclasses should override this method to check for the presence
+        # of required DSL attributes.
+        def validate!
+        end
+
+        private
+
+        def required_attribute_error!(attribute_name)
+          raise RequiredAttributeError.new(type: type_name,
+                                           attribute: attribute_name,
+                                           field: field && field.name,
+                                           name: @name)
+        end
+
+        def validate_required_attribute!(attribute_name)
+          value = public_send(attribute_name)
+          if value.nil? || value.respond_to?(:empty?) && value.empty?
+            required_attribute_error!(attribute_name)
+          end
+        end
       end
     end
   end

@@ -26,6 +26,10 @@ module Avro
         def self.union_with_null(serialized)
           serialized.reject { |type| type.to_s == NULL_TYPE }.unshift(:null)
         end
+
+        def validate!
+          validate_required_attribute!(:types)
+        end
       end
     end
   end

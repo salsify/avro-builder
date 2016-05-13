@@ -97,6 +97,55 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "enum with block" do
+    subject do
+      described_class.build do
+        enum do
+          name :enum3
+          symbols :A, :B
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :enum3,
+        type: :enum,
+        symbols: [:A, :B]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "enum without symbols" do
+    subject do
+      described_class.build_schema do
+        enum :broken_enum
+      end
+    end
+
+    it "is invalid" do
+      expect { subject }.
+        to raise_error(Avro::Builder::RequiredAttributeError,
+                       "attribute :symbols missing for 'broken_enum' of type :enum")
+    end
+  end
+
+  context "enum without name" do
+    subject do
+      described_class.build_schema do
+        enum do
+          symbols %(A B)
+        end
+      end
+    end
+
+    it "is invalid" do
+      expect { subject }.
+        to raise_error(Avro::Builder::RequiredAttributeError,
+                       'attribute :name missing for type :enum')
+    end
+  end
+
   context "fixed type" do
     subject do
       described_class.build do
@@ -149,6 +198,55 @@ describe Avro::Builder do
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "fixed with block" do
+    subject do
+      described_class.build do
+        fixed do
+          name :eight
+          size 9
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :eight,
+        type: :fixed,
+        size: 9
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "fixed without size" do
+    subject do
+      described_class.build do
+        fixed :broken_fixed
+      end
+    end
+
+    it "is invalid" do
+      expect { subject }.
+        to raise_error(Avro::Builder::RequiredAttributeError,
+                       "attribute :size missing for 'broken_fixed' of type :fixed")
+    end
+  end
+
+  context "fixed without name" do
+    subject do
+      described_class.build do
+        fixed do
+          size 2
+        end
+      end
+    end
+
+    it "is invalid" do
+      expect { subject }.
+        to raise_error(Avro::Builder::RequiredAttributeError,
+                       'attribute :name missing for type :fixed')
+    end
   end
 
   context "record" do
@@ -450,6 +548,22 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "record without name" do
+    subject do
+      described_class.build do
+        record do
+          required :i, :int
+        end
+      end
+    end
+
+    it "is invalid" do
+      expect { subject }.
+        to raise_error(Avro::Builder::RequiredAttributeError,
+                       'attribute :name missing for type :record')
+    end
+  end
+
   context "union" do
     subject do
       described_class.build do
@@ -567,6 +681,22 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "union without types" do
+    subject do
+      described_class.build do
+        record :broken_union do
+          required :u, :union
+        end
+      end
+    end
+
+    it "is invalid" do
+      expect { subject }.
+        to raise_error(Avro::Builder::RequiredAttributeError,
+                       "attribute :types missing for field 'u' of type :union")
+    end
+  end
+
   context "map" do
     subject do
       described_class.build do
@@ -609,6 +739,22 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "map without values type" do
+    subject do
+      described_class.build do
+        record :broken_map do
+          required :m, :map
+        end
+      end
+    end
+
+    it "is invalid" do
+      expect { subject }.
+        to raise_error(Avro::Builder::RequiredAttributeError,
+                       "attribute :values missing for field 'm' of type :map")
+    end
+  end
+
   context "array" do
     subject do
       described_class.build do
@@ -649,6 +795,22 @@ describe Avro::Builder do
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "array without items type" do
+    subject do
+      described_class.build do
+        record :broken_array do
+          required :a, :array
+        end
+      end
+    end
+
+    it "is invalid" do
+      expect { subject }.
+        to raise_error(Avro::Builder::RequiredAttributeError,
+                       "attribute :items missing for field 'a' of type :array")
+    end
   end
 
   context "record with extends" do

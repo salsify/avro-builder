@@ -41,6 +41,7 @@ module Avro
 
         # DSL calls must be evaluated after the type has been constructed
         instance_eval(&block) if block_given?
+        @type.validate!
       end
 
       ## Delegate additional DSL calls to the type
