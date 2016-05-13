@@ -24,7 +24,7 @@ This DSL was created because:
 * Only Avro Schemas, not Protocols are supported.
 * See [Issues](https://github.com/salsify/avro-builder/issues) for functionality
   that has yet to be implemented.
-* This is alpha quality code. There may be breaking changes until version 1.0 is
+* This is beta quality code. There may be breaking changes until version 1.0 is
   released.
 
 ## Installation

@@ -14,6 +14,10 @@ module Avro
           end
         end
 
+        def validate!
+          missing!(:items)
+        end
+
         def serialize(referenced_state)
           {
             type: type_name,

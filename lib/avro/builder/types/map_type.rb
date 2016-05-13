@@ -20,6 +20,10 @@ module Avro
             values: values.serialize(referenced_state)
           }
         end
+
+        def validate!
+          missing!(:values)
+        end
       end
     end
   end

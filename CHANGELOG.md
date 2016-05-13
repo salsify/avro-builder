@@ -1,5 +1,10 @@
 # avro-builder changelog
 
+## v0.4.0
+- Add validation for required DSL attributes that are not specified.
+- Allow name to be configured via a block for top-level record, enum, and fixed
+  types.
+
 ## v0.3.2
 - Fix a bug that allowed the partial matching of filenames.
 - Fix a bug that prevented namespace from being specified as an option on

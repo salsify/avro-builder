@@ -22,6 +22,11 @@ module Avro
           super(reference_state, overrides: serialized_attributes)
         end
 
+        def validate!
+          super
+          missing!(:symbols)
+        end
+
         private
 
         def serialized_attributes
