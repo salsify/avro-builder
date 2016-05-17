@@ -7,11 +7,14 @@ module Avro
 
         dsl_attributes :doc
 
-        def initialize(name = nil, options = {})
+        def initialize(name = nil, options: {}, cache:, field: nil, &block)
+          @type_name = :record
           @name = name
-          options.each do |key, value|
-            send(key, value)
-          end
+          @cache = cache
+          @field = field
+
+          configure_options(options)
+          instance_eval(&block) if block_given?
         end
 
         # Add a required field to the record
@@ -19,7 +22,7 @@ module Avro
           new_field = Avro::Builder::Field.new(name: name,
                                                type_name: type_name,
                                                record: self,
-                                               builder: builder,
+                                               cache: cache,
                                                internal: { namespace: namespace },
                                                options: options,
                                                &block)
@@ -32,7 +35,7 @@ module Avro
           new_field = Avro::Builder::Field.new(name: name,
                                                type_name: type_name,
                                                record: self,
-                                               builder: builder,
+                                               cache: cache,
                                                internal: { namespace: namespace,
                                                            optional_field: true },
                                                options: options,
@@ -43,7 +46,7 @@ module Avro
         # Adds fields from the record with the specified name to the current
         # record.
         def extends(name)
-          fields.merge!(builder.lookup_named_type(name).duplicated_fields)
+          fields.merge!(cache.lookup_named_type(name).duplicated_fields)
         end
 
         def to_h(reference_state = SchemaSerializerReferenceState.new)
@@ -78,12 +81,6 @@ module Avro
 
         def fields
           @fields ||= {}
-        end
-
-        # A record may be defined as a top-level schema or as the
-        # type for a field.
-        def builder
-          super || field.builder
         end
       end
     end

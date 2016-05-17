@@ -381,6 +381,78 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "record with inline named fixed and reference to it" do
+    subject do
+      described_class.build do
+        record :with_magic do
+          required :magic, :fixed, name: :Magic, size: 4
+          required :more_magic, :Magic
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :with_magic,
+        type: :record,
+        fields: [
+          { name: :magic, type: { name: :Magic, type: :fixed, size: 4 } },
+          { name: :more_magic, type: :Magic }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "record with reference to anonymous inline fixed" do
+    let(:generated_name) { :__with_magic_magic_fixed }
+    subject do
+      reference = generated_name
+      described_class.build do
+        record :with_magic do
+          required :magic, :fixed, size: 4
+          required :more_magic, reference
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :with_magic,
+        type: :record,
+        fields: [
+          { name: :magic, type: { name: generated_name, type: :fixed, size: 4 } },
+          { name: :more_magic, type: generated_name }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+
+  context "record with repeated definition of inline named fix" do
+    subject do
+      described_class.build do
+        record :with_magic do
+          required :magic, :fixed, name: :Magic, size: 4
+          required :more_magic, :fixed, name: :Magic, size: 5
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :with_magic,
+        type: :record,
+        fields: [
+          { name: :magic, type: { name: :Magic, type: :fixed, size: 4 } },
+          { name: :more_magic, type: { name: :Magic, type: :fixed, size: 5 } }
+        ]
+      }
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::DuplicateDefinitionError)
+    end
+  end
+
+
   context "record with type references" do
     subject do
       described_class.build do

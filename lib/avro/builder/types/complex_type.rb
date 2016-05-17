@@ -11,11 +11,8 @@ module Avro
         end
 
         # Override initialize so that type name is not required
-        def initialize
-        end
-
-        def type_name
-          self.class.type_name
+        def initialize(cache:, field: nil)
+          super(self.class.type_name, cache: cache, field: field)
         end
 
         module ClassMethods

@@ -1,5 +1,9 @@
 # avro-builder changelog
 
+## v0.5.0
+- Support references to named types that are defined inline.
+- Raise an error for duplicate definitions with the same name.
+
 ## v0.4.0
 - Add validation for required DSL attributes that are not specified.
 - Allow name to be configured via a block for top-level record, enum, and fixed
