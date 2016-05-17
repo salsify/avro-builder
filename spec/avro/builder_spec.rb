@@ -1096,4 +1096,83 @@ describe Avro::Builder do
     end
     it { is_expected.to be_json_eql(expected.to_json) }
   end
+
+  context "ambiguous reference requiring namespacing" do
+    subject do
+      described_class.build do
+        fixed :a_fix, size: 5, namespace: :test
+        fixed :a_fix, size: 6, namespace: :other
+
+        record :with_a_fix do
+          required :fix, :a_fix
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::DefinitionNotFoundError)
+    end
+  end
+
+  context "reference in a different namespace" do
+    subject do
+      described_class.build do
+        enum :my_enum, :A, namespace: :outer
+
+        record :enum_ref, namespace: :inner do
+          # Reference works even though it is in another namespace
+          required :e, :my_enum
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :enum_ref,
+        namespace: :inner,
+        fields: [
+          {
+            name: :e,
+            type: {
+              type: :enum,
+              name: :my_enum,
+              namespace: :outer,
+              symbols: %w(A)
+            }
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "references requiring namespacing" do
+    subject do
+      described_class.build do
+        import 'test.ambiguous'
+        import 'other.ambiguous'
+
+        record :with_ambiguous do
+          required :rec, 'test.ambiguous'
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :with_ambiguous,
+        type: :record,
+        fields: [
+          {
+            name: :rec,
+            type: {
+              type: :record,
+              name: :ambiguous,
+              namespace: :test,
+              fields: [{ name: :i, type: :int }]
+            }
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
 end

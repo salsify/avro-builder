@@ -34,8 +34,9 @@ module Avro
       # Imports from the file with specified name fragment.
       def import(name)
         previous_namespace = namespace
-        eval_file(name)
+        result = eval_file(name)
         namespace(previous_namespace)
+        result
       end
 
       ## DSL methods for Types
