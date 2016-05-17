@@ -15,6 +15,10 @@ module Avro
           super(self.class.type_name, cache: cache, field: field)
         end
 
+        def namespace
+          field.namespace
+        end
+
         module ClassMethods
 
           # Infer type_name based on class

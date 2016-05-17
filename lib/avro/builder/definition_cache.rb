@@ -10,13 +10,12 @@ module Avro
       end
 
       def add_schema_object(object)
-        store_if_new(object.fullname, object) if object.namespace
-        store_if_new(object.name.to_s, object)
+        store_if_new(object.fullname, object)
       end
 
       # Lookup an Avro schema object by name, possibly fully qualified by namespace.
-      def lookup_named_type(key)
-        key_str = key.to_s
+      def lookup_named_type(key, namespace = nil)
+        key_str = Avro::Name.make_fullname(key.to_s, namespace)
         object = schema_objects[key_str]
 
         unless object

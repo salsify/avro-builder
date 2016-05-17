@@ -7,7 +7,6 @@ module Avro
     # A field must be initialized with a type.
     class Field
       include Avro::Builder::DslAttributes
-      include Avro::Builder::Namespaceable
       include Avro::Builder::TypeFactory
 
       INTERNAL_ATTRIBUTES = Set.new(%i(optional_field)).freeze
@@ -36,7 +35,7 @@ module Avro
                                                     options: options)
                 else
                   named_type = true
-                  cache.lookup_named_type(type_name)
+                  cache.lookup_named_type(type_name, namespace)
                 end
 
         # DSL calls must be evaluated after the type has been constructed
@@ -57,6 +56,16 @@ module Avro
 
       def name_fragment
         record.name_fragment
+      end
+
+      # Delegate setting namespace explicitly via DSL to type
+      # and return the namespace value from the enclosing record.
+      def namespace(value = nil)
+        if value
+          type.namespace(value)
+        else
+          record.namespace
+        end
       end
 
       # Delegate setting name explicitly via DSL to type

@@ -521,7 +521,7 @@ describe Avro::Builder do
 
         namespace 'com.example.two'
         record :uses_id do
-          required :pkey, :id
+          required :pkey, 'com.example.one.id'
         end
       end
     end
@@ -921,7 +921,7 @@ describe Avro::Builder do
 
         record :top_rec do
           namespace 'com.example.B'
-          required :sub, :sub_rec
+          required :sub, 'com.example.A.sub_rec'
         end
       end
     end
