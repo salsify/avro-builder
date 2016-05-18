@@ -12,10 +12,9 @@ module Avro
       # Return a new Type instance
       def create_builtin_type(type_name, field:, cache:)
         name = type_name.to_s.downcase
-        case
-        when Avro::Schema::PRIMITIVE_TYPES.include?(name)
+        if Avro::Schema::PRIMITIVE_TYPES.include?(name)
           Avro::Builder::Types::Type.new(name, field: field, cache: cache)
-        when COMPLEX_TYPES.include?(name)
+        elsif COMPLEX_TYPES.include?(name)
           Avro::Builder::Types.const_get("#{name.capitalize}Type").new(field: field, cache: cache)
         else
           raise "Invalid builtin type: #{type_name}"

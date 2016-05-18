@@ -1,8 +1,8 @@
 module Avro
   module Builder
     module Types
-    # This class represents a record in an Avro schema. Records may be defined
-    # at the top-level or as the type for a field in a record.
+      # This class represents a record in an Avro schema. Records may be defined
+      # at the top-level or as the type for a field in a record.
       class RecordType < Avro::Builder::Types::NamedType
 
         dsl_attributes :doc

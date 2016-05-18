@@ -58,8 +58,6 @@ module Avro
           end
         end
 
-        private
-
         attr_accessor :field, :cache
       end
     end

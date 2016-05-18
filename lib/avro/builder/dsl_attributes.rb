@@ -19,7 +19,7 @@ module Avro
         base.extend ClassMethods
       end
 
-      def has_dsl_attribute?(name)
+      def dsl_attribute?(name)
         self.class.dsl_attribute_names.include?(name.to_sym)
       end
 

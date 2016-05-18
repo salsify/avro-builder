@@ -24,7 +24,7 @@ module Avro
         end
 
         options.each do |key, value|
-          send(key, value) if has_dsl_attribute?(key)
+          send(key, value) if dsl_attribute?(key)
         end
 
         @type = if builtin_type?(type_name)

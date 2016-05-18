@@ -124,9 +124,9 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }.
-        to raise_error(Avro::Builder::RequiredAttributeError,
-                       "attribute :symbols missing for 'broken_enum' of type :enum")
+      expect { subject }
+        .to raise_error(Avro::Builder::RequiredAttributeError,
+                        "attribute :symbols missing for 'broken_enum' of type :enum")
     end
   end
 
@@ -140,9 +140,9 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }.
-        to raise_error(Avro::Builder::RequiredAttributeError,
-                       'attribute :name missing for type :enum')
+      expect { subject }
+        .to raise_error(Avro::Builder::RequiredAttributeError,
+                        'attribute :name missing for type :enum')
     end
   end
 
@@ -227,9 +227,9 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }.
-        to raise_error(Avro::Builder::RequiredAttributeError,
-                       "attribute :size missing for 'broken_fixed' of type :fixed")
+      expect { subject }
+        .to raise_error(Avro::Builder::RequiredAttributeError,
+                        "attribute :size missing for 'broken_fixed' of type :fixed")
     end
   end
 
@@ -243,9 +243,9 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }.
-        to raise_error(Avro::Builder::RequiredAttributeError,
-                       'attribute :name missing for type :fixed')
+      expect { subject }
+        .to raise_error(Avro::Builder::RequiredAttributeError,
+                        'attribute :name missing for type :fixed')
     end
   end
 
@@ -505,7 +505,8 @@ describe Avro::Builder do
             name: :maybe_enum,
             default: nil,
             type: [:null,
-                   { name: :e, type: :enum, symbols: %i(A B), namespace: 'com.example' }] },
+                   { name: :e, type: :enum, symbols: %i(A B), namespace: 'com.example' }]
+          },
           { name: :must_enum, type: 'com.example.e' }
         ]
       }
@@ -630,9 +631,9 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }.
-        to raise_error(Avro::Builder::RequiredAttributeError,
-                       'attribute :name missing for type :record')
+      expect { subject }
+        .to raise_error(Avro::Builder::RequiredAttributeError,
+                        'attribute :name missing for type :record')
     end
   end
 
@@ -763,9 +764,9 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }.
-        to raise_error(Avro::Builder::RequiredAttributeError,
-                       "attribute :types missing for field 'u' of type :union")
+      expect { subject }
+        .to raise_error(Avro::Builder::RequiredAttributeError,
+                        "attribute :types missing for field 'u' of type :union")
     end
   end
 
@@ -821,9 +822,9 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }.
-        to raise_error(Avro::Builder::RequiredAttributeError,
-                       "attribute :values missing for field 'm' of type :map")
+      expect { subject }
+        .to raise_error(Avro::Builder::RequiredAttributeError,
+                        "attribute :values missing for field 'm' of type :map")
     end
   end
 
@@ -879,9 +880,9 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }.
-        to raise_error(Avro::Builder::RequiredAttributeError,
-                       "attribute :items missing for field 'a' of type :array")
+      expect { subject }
+        .to raise_error(Avro::Builder::RequiredAttributeError,
+                        "attribute :items missing for field 'a' of type :array")
     end
   end
 
@@ -931,13 +932,15 @@ describe Avro::Builder do
         namespace: 'com.example.B',
         type: :record,
         fields: [
-          { name: :sub,
-              type: {
+          {
+            name: :sub,
+            type: {
               name: :sub_rec,
               namespace: 'com.example.A',
               type: :record,
               fields: [{ name: :i, type: :int }]
-            } }
+            }
+          }
         ]
       }
     end
@@ -962,14 +965,14 @@ describe Avro::Builder do
         namespace: 'com.example',
         type: :record,
         fields: [{
-                   name: :nested,
-                   type: {
-                     name: :__my_rec_nested_record,
-                     namespace: 'com.example',
-                     type: :record,
-                     fields: [{ name: :s, type: :string }]
-                   }
-                 }]
+          name: :nested,
+          type: {
+            name: :__my_rec_nested_record,
+            namespace: 'com.example',
+            type: :record,
+            fields: [{ name: :s, type: :string }]
+          }
+        }]
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
@@ -994,14 +997,14 @@ describe Avro::Builder do
         namespace: 'com.example',
         type: :record,
         fields: [{
-                   name: :nested,
-                   type: {
-                     name: :__my_rec_nested_record,
-                     namespace: 'com.example.sub',
-                     type: :record,
-                     fields: [{ name: :s, type: :string }]
-                   }
-                 }]
+          name: :nested,
+          type: {
+            name: :__my_rec_nested_record,
+            namespace: 'com.example.sub',
+            type: :record,
+            fields: [{ name: :s, type: :string }]
+          }
+        }]
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
@@ -1031,23 +1034,23 @@ describe Avro::Builder do
         namespace: 'com.example',
         type: :record,
         fields: [{
-                   name: :B,
-                   type: {
-                     name: :__A_B_record,
-                     namespace: 'com.example',
-                     type: :record,
-                     fields: [{
-                       name: :C,
-                       type: {
-                         name: :__A_B_C_record,
-                         namespace: 'com.example',
-                         type: :record,
-                         fields: [{ name: :s, type: :string },
-                                  { name: :i, type: [:null, :int], default: nil }]
-                       }
-                     }]
-                   }
-                 },
+          name: :B,
+          type: {
+            name: :__A_B_record,
+            namespace: 'com.example',
+            type: :record,
+            fields: [{
+              name: :C,
+              type: {
+                name: :__A_B_C_record,
+                namespace: 'com.example',
+                type: :record,
+                fields: [{ name: :s, type: :string },
+                         { name: :i, type: [:null, :int], default: nil }]
+              }
+            }]
+          }
+        },
                  {
                    name: :C,
                    type: {

@@ -7,7 +7,7 @@ module Avro
       module ConfigurableType
         def configure_options(options = {})
           options.each do |key, value|
-            send(key, value) if has_dsl_attribute?(key)
+            send(key, value) if dsl_attribute?(key)
           end
         end
       end
