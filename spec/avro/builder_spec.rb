@@ -1102,6 +1102,7 @@ describe Avro::Builder do
       described_class.build do
         fixed :a_fix, size: 5, namespace: :test
         fixed :a_fix, size: 6, namespace: :other
+        fixed :a_fix, size: 7, namespace: :third
 
         record :with_a_fix do
           required :fix, :a_fix

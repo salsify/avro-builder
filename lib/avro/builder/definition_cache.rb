@@ -22,18 +22,14 @@ module Avro
         key_str = Avro::Name.make_fullname(key.to_s, namespace && namespace.to_s)
         object = schema_objects[key_str]
 
-        unless object || schema_names.include?(key.to_s)
+        if object.nil? && !schema_names.include?(key.to_s)
           object = builder.import(key)
         end
 
-        raise DefinitionNotFoundError.new(key) unless object
-        object
-      rescue DefinitionNotFoundError
-        if namespace
-          lookup_named_type(key, nil)
-        else
-          raise
-        end
+        raise DefinitionNotFoundError.new(key) if object.nil? && namespace.nil?
+
+        # Return object or retry without namespace
+        object || lookup_named_type(key, nil)
       end
 
       private
@@ -44,12 +40,12 @@ module Avro
       # ambiguous references.
       def store_by_name(object)
         key = object.name.to_s
-        schema_names.add(key)
         if schema_objects.key?(key)
           schema_objects.delete(key)
-        else
+        elsif !schema_names.include?(key)
           schema_objects.store(key, object)
         end
+        schema_names.add(key)
       end
 
       def store_by_fullname(object)

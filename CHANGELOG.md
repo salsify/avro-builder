@@ -2,7 +2,7 @@
 
 ## v0.5.0
 - Support references to named types that are defined inline.
-- Raise an error for duplicate definitions with the same name.
+- Raise an error for duplicate definitions with the same fullname.
 
 ## v0.4.0
 - Add validation for required DSL attributes that are not specified.
