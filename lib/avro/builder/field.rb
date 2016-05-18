@@ -7,18 +7,15 @@ module Avro
     # A field must be initialized with a type.
     class Field
       include Avro::Builder::DslAttributes
-      include Avro::Builder::Namespaceable
       include Avro::Builder::TypeFactory
 
       INTERNAL_ATTRIBUTES = Set.new(%i(optional_field)).freeze
 
-      attr_accessor :type, :optional_field, :builder, :record
-
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :aliases, :default, :order
 
-      def initialize(name:, type_name:, record:, builder:, internal: {}, options: {}, &block)
-        @builder = builder
+      def initialize(name:, type_name:, record:, cache:, internal: {}, options: {}, &block)
+        @cache = cache
         @record = record
         @name = name.to_s
 
@@ -33,15 +30,18 @@ module Avro
         @type = if builtin_type?(type_name)
                   create_and_configure_builtin_type(type_name,
                                                     field: self,
+                                                    cache: cache,
                                                     internal: internal,
                                                     options: options)
                 else
-                  builder.lookup_named_type(type_name)
+                  named_type = true
+                  cache.lookup_named_type(type_name, namespace)
                 end
 
         # DSL calls must be evaluated after the type has been constructed
         instance_eval(&block) if block_given?
         @type.validate!
+        @type.cache! unless named_type
       end
 
       ## Delegate additional DSL calls to the type
@@ -56,6 +56,16 @@ module Avro
 
       def name_fragment
         record.name_fragment
+      end
+
+      # Delegate setting namespace explicitly via DSL to type
+      # and return the namespace value from the enclosing record.
+      def namespace(value = nil)
+        if value
+          type.namespace(value)
+        else
+          record.namespace
+        end
       end
 
       # Delegate setting name explicitly via DSL to type
@@ -81,6 +91,8 @@ module Avro
       end
 
       private
+
+      attr_accessor :type, :optional_field, :cache, :record
 
       # Optional fields must be serialized as a union -- an array of types.
       def serialized_type(reference_state)

@@ -2,6 +2,7 @@ require 'avro'
 require 'avro/builder/errors'
 require 'avro/builder/dsl_attributes'
 require 'avro/builder/namespaceable'
+require 'avro/builder/definition_cache'
 require 'avro/builder/type_factory'
 require 'avro/builder/types'
 require 'avro/builder/field'
@@ -33,8 +34,9 @@ module Avro
       # Imports from the file with specified name fragment.
       def import(name)
         previous_namespace = namespace
-        eval_file(name)
+        result = eval_file(name)
         namespace(previous_namespace)
+        result
       end
 
       ## DSL methods for Types
@@ -46,20 +48,6 @@ module Avro
       def fixed(name = nil, size = nil, options = {}, &block)
         size_option = size.is_a?(Hash) ? size : { size: size }
         create_named_type(name, :fixed, size_option.merge(options), &block)
-      end
-
-      # Lookup an Avro schema object by name, possibly fully qualified by namespace.
-      def lookup_named_type(key)
-        key_str = key.to_s
-        object = schema_objects[key_str]
-
-        unless object
-          import(key)
-          object = schema_objects[key_str]
-        end
-
-        raise "Schema object #{key} not found" unless object
-        object
       end
 
       # Return the last schema object processed as a Hash representing
@@ -85,28 +73,18 @@ module Avro
 
       private
 
-      def builder
-        self
-      end
-
-      def schema_objects
-        @schema_objects ||= {}
-      end
-
-      def add_schema_object(object)
-        @last_object = object
-        schema_objects[object.name.to_s] = object
-        schema_objects[object.fullname] = object if object.namespace
+      def cache
+        @cache ||= Avro::Builder::DefinitionCache.new(self)
       end
 
       def create_named_type(name, type_name, options = {}, &block)
         create_and_configure_builtin_type(type_name,
-                                          builder: self,
+                                          cache: cache,
                                           internal: { name: name, namespace: namespace },
                                           options: options,
                                           &block).tap do |type|
           type.validate!
-          add_schema_object(type)
+          @last_object = cache.add_schema_object(type)
         end
       end
 

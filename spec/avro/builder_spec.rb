@@ -381,6 +381,78 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "record with inline named fixed and reference to it" do
+    subject do
+      described_class.build do
+        record :with_magic do
+          required :magic, :fixed, name: :Magic, size: 4
+          required :more_magic, :Magic
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :with_magic,
+        type: :record,
+        fields: [
+          { name: :magic, type: { name: :Magic, type: :fixed, size: 4 } },
+          { name: :more_magic, type: :Magic }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "record with reference to anonymous inline fixed" do
+    let(:generated_name) { :__with_magic_magic_fixed }
+    subject do
+      reference = generated_name
+      described_class.build do
+        record :with_magic do
+          required :magic, :fixed, size: 4
+          required :more_magic, reference
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :with_magic,
+        type: :record,
+        fields: [
+          { name: :magic, type: { name: generated_name, type: :fixed, size: 4 } },
+          { name: :more_magic, type: generated_name }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+
+  context "record with repeated definition of inline named fix" do
+    subject do
+      described_class.build do
+        record :with_magic do
+          required :magic, :fixed, name: :Magic, size: 4
+          required :more_magic, :fixed, name: :Magic, size: 5
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :with_magic,
+        type: :record,
+        fields: [
+          { name: :magic, type: { name: :Magic, type: :fixed, size: 4 } },
+          { name: :more_magic, type: { name: :Magic, type: :fixed, size: 5 } }
+        ]
+      }
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::DuplicateDefinitionError)
+    end
+  end
+
+
   context "record with type references" do
     subject do
       described_class.build do
@@ -449,7 +521,7 @@ describe Avro::Builder do
 
         namespace 'com.example.two'
         record :uses_id do
-          required :pkey, :id
+          required :pkey, 'com.example.one.id'
         end
       end
     end
@@ -849,7 +921,7 @@ describe Avro::Builder do
 
         record :top_rec do
           namespace 'com.example.B'
-          required :sub, :sub_rec
+          required :sub, 'com.example.A.sub_rec'
         end
       end
     end
@@ -1020,6 +1092,86 @@ describe Avro::Builder do
             fields: [{ name: :s, type: :string }]
           }
         }]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "ambiguous reference requiring namespacing" do
+    subject do
+      described_class.build do
+        fixed :a_fix, size: 5, namespace: :test
+        fixed :a_fix, size: 6, namespace: :other
+        fixed :a_fix, size: 7, namespace: :third
+
+        record :with_a_fix do
+          required :fix, :a_fix
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::DefinitionNotFoundError)
+    end
+  end
+
+  context "reference in a different namespace" do
+    subject do
+      described_class.build do
+        enum :my_enum, :A, namespace: :outer
+
+        record :enum_ref, namespace: :inner do
+          # Reference works even though it is in another namespace
+          required :e, :my_enum
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :enum_ref,
+        namespace: :inner,
+        fields: [
+          {
+            name: :e,
+            type: {
+              type: :enum,
+              name: :my_enum,
+              namespace: :outer,
+              symbols: %w(A)
+            }
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "references requiring namespacing" do
+    subject do
+      described_class.build do
+        import 'test.ambiguous'
+        import 'other.ambiguous'
+
+        record :with_ambiguous do
+          required :rec, 'test.ambiguous'
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :with_ambiguous,
+        type: :record,
+        fields: [
+          {
+            name: :rec,
+            type: {
+              type: :record,
+              name: :ambiguous,
+              namespace: :test,
+              fields: [{ name: :i, type: :int }]
+            }
+          }
+        ]
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }

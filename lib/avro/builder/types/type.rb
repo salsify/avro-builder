@@ -8,10 +8,11 @@ module Avro
         include Avro::Builder::DslAttributes
 
         attr_reader :type_name
-        attr_accessor :field, :builder
 
-        def initialize(type_name)
+        def initialize(type_name, cache:, field: nil)
           @type_name = type_name
+          @cache = cache
+          @field = field
         end
 
         def serialize(_reference_state)
@@ -36,6 +37,11 @@ module Avro
         def validate!
         end
 
+        # Subclasses should override this method if the type definition should
+        # be cached for reuse.
+        def cache!
+        end
+
         private
 
         def required_attribute_error!(attribute_name)
@@ -51,6 +57,10 @@ module Avro
             required_attribute_error!(attribute_name)
           end
         end
+
+        private
+
+        attr_accessor :field, :cache
       end
     end
   end

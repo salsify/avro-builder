@@ -9,7 +9,7 @@ describe Avro::Builder::FileHandler do
     subject do
       Avro::Builder.build do
         record :with_reference do
-          required :external, :external_type
+          required :external, 'test.external_type'
         end
       end
     end

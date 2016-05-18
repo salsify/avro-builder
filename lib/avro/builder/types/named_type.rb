@@ -26,6 +26,10 @@ module Avro
           required_attribute_error!(:name) if field.nil? && @name.nil?
         end
 
+        def cache!
+          cache.add_schema_object(self)
+        end
+
         # Named types that do not have an explicit name are assigned
         # a named based on the field and its nesting.
         def name_fragment
