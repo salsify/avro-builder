@@ -1,5 +1,5 @@
-inherit_from:
-  - https://raw.githubusercontent.com/salsify/salsify-rubocop/master/.rubocop.yml
+inherit_gem:
+  salsify_rubocop: conf/rubocop.yml
 
 Style/RaiseArgs:
   EnforcedStyle: compact
