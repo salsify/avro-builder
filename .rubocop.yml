@@ -1,0 +1,5 @@
+inherit_gem:
+  salsify_rubocop: conf/rubocop.yml
+
+Style/RaiseArgs:
+  EnforcedStyle: compact

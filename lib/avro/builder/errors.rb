@@ -28,15 +28,13 @@ module Avro
 
     class DefinitionNotFoundError < StandardError
       def initialize(name)
-        super("definition not found for '#{name.to_s}'.#{suggest_namespace(name)}")
+        super("definition not found for '#{name}'.#{suggest_namespace(name)}")
       end
 
       private
 
       def suggest_namespace(name)
-        unless name.to_s.index('.')
-          ' Try specifying the full namespace.'
-        end
+        ' Try specifying the full namespace.' unless name.to_s.index('.')
       end
     end
   end
