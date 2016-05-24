@@ -42,6 +42,17 @@ module Avro
         def cache!
         end
 
+        # Subclasses can override this method to indicate that the name
+        # is a method that the type exposes in the DSL. These methods are in
+        # addition to the methods for setting attributes on a type.
+        def dsl_method?(_name)
+          false
+        end
+
+        def dsl_respond_to?(name)
+          dsl_attribute?(name) || dsl_method?(name)
+        end
+
         private
 
         def required_attribute_error!(attribute_name)

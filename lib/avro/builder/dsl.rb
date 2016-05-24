@@ -84,7 +84,7 @@ module Avro
                                           options: options,
                                           &block).tap do |type|
           type.validate!
-          @last_object = cache.add_schema_object(type)
+          @last_object = type
         end
       end
 

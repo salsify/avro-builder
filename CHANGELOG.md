@@ -1,5 +1,12 @@
 # avro-builder changelog
 
+## v0.6.0
+- Support recursive definitions.
+- Coerce aliases to be represented as an array.
+- Only allow name and namespace to be set via options, not via a block, for
+  record, enum, and fixed types.
+- Allow aliases to be set on a field and a type defined inline.
+
 ## v0.5.0
 - Support references to named types that are defined inline.
 - Raise an error for duplicate definitions with the same fullname.
