@@ -19,10 +19,6 @@ module Avro
         base.extend ClassMethods
       end
 
-      def dsl_option?(name)
-        self.class.dsl_option_names.include?(name.to_sym)
-      end
-
       def dsl_attribute?(name)
         self.class.dsl_attribute_names.include?(name.to_sym)
       end
@@ -48,16 +44,6 @@ module Avro
           end
         end
 
-        # A DSL option is only settable as an option, not as method in a block.
-        def dsl_option(name, &block)
-          dsl_option_names << name
-          if block_given?
-            define_method(name, &block)
-          else
-            define_accessor(name)
-          end
-        end
-
         def dsl_attribute_alias(new_name, old_name)
           alias_method(new_name, old_name)
           add_attribute_name(new_name)
@@ -72,27 +58,11 @@ module Avro
             end
         end
 
-        def dsl_option_names
-          @dsl_option_names ||=
-            if superclass.respond_to?(:dsl_option_names)
-              superclass.dsl_option_names.dup
-            else
-              Set.new
-            end
-        end
-
         private
 
         def add_attribute_name(name)
           dsl_attribute_names << name
-          dsl_option_names << name
-        end
-
-        def define_accessor(name)
-          ivar = :"@#{name}"
-          define_method(name) do |value = nil|
-            value ? instance_variable_set(ivar, value) : instance_variable_get(ivar)
-          end
+          add_option_name(name)
         end
       end
     end

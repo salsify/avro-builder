@@ -5,6 +5,7 @@ module Avro
       # type is constructed. The type has no additional attributes, and
       # the type is serialized as just the type name.
       class Type
+        include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
 
         attr_reader :type_name

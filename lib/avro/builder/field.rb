@@ -7,6 +7,7 @@ module Avro
     # This class represents a field in a record.
     # A field must be initialized with a type.
     class Field
+      include Avro::Builder::DslOptions
       include Avro::Builder::DslAttributes
       include Avro::Builder::TypeFactory
       include Avro::Builder::Aliasable
