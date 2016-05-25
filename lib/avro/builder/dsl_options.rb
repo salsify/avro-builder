@@ -51,11 +51,11 @@ module Avro
         def define_reader(name, &block)
           if block_given?
             define_method(name) do |value = nil|
-              value ? unsupported_block_attribute(name, type_name) : instance_eval(&block)
+              value ? unsupported_block_attribute(name, avro_type_name) : instance_eval(&block)
             end
           else
             define_method(name) do |value = nil|
-              value ? unsupported_block_attribute(name, type_name) : instance_variable_get("@#{name}")
+              value ? unsupported_block_attribute(name, avro_type_name) : instance_variable_get("@#{name}")
             end
           end
         end

@@ -16,7 +16,7 @@ module Avro
 
         dsl_option :namespace
         dsl_option :name do
-          @name || "__#{name_fragment}_#{type_name}"
+          @name || "__#{name_fragment}_#{avro_type_name}"
         end
 
         dsl_attribute_alias :type_aliases, :aliases
@@ -43,7 +43,7 @@ module Avro
           reference_state.definition_or_reference(fullname) do
             {
               name: name,
-              type: type_name,
+              type: avro_type_name,
               namespace: namespace
             }.merge(overrides).reject { |_, v| v.nil? }
           end
@@ -55,7 +55,7 @@ module Avro
         def to_h(_reference_state, overrides: {})
           {
             name: name,
-            type: type_name,
+            type: avro_type_name,
             namespace: namespace,
             aliases: aliases
           }.merge(overrides).reject { |_, v| v.nil? }

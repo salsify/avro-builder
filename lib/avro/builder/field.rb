@@ -19,7 +19,7 @@ module Avro
 
       attr_reader :name
 
-      def initialize(name:, type_name:, record:, cache:, internal: {}, options: {}, &block)
+      def initialize(name:, avro_type_name:, record:, cache:, internal: {}, options: {}, &block)
         @cache = cache
         @record = record
         @name = name.to_s
@@ -33,14 +33,14 @@ module Avro
           send(key, type_options.delete(key)) if dsl_attribute?(key)
         end
 
-        @type = if builtin_type?(type_name)
-                  create_and_configure_builtin_type(type_name,
+        @type = if builtin_type?(avro_type_name)
+                  create_and_configure_builtin_type(avro_type_name,
                                                     field: self,
                                                     cache: cache,
                                                     internal: internal,
                                                     options: type_options)
                 else
-                  cache.lookup_named_type(type_name, namespace)
+                  cache.lookup_named_type(avro_type_name, namespace)
                 end
 
         # DSL calls must be evaluated after the type has been constructed
@@ -68,7 +68,7 @@ module Avro
         if value
           raise UnsupportedBlockAttributeError.new(attribute: :namespace,
                                                    field: @name,
-                                                   type: type.type_name)
+                                                   type: type.avro_type_name)
         else
           record.namespace
         end
@@ -79,7 +79,7 @@ module Avro
         if value
           raise UnsupportedBlockAttributeError.new(attribute: :name,
                                                    field: @name,
-                                                   type: type.type_name)
+                                                   type: type.avro_type_name)
         else
           # Return the name of the field
           @name

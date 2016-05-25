@@ -20,7 +20,7 @@ module Avro
 
         def serialize(referenced_state)
           {
-            type: type_name,
+            type: avro_type_name,
             items: items.serialize(referenced_state)
           }
         end

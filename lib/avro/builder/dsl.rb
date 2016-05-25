@@ -79,8 +79,8 @@ module Avro
         @cache ||= Avro::Builder::DefinitionCache.new(self)
       end
 
-      def create_named_type(name, type_name, options = {}, &block)
-        create_and_configure_builtin_type(type_name,
+      def create_named_type(name, avro_type_name, options = {}, &block)
+        create_and_configure_builtin_type(avro_type_name,
                                           cache: cache,
                                           internal: { name: name, namespace: namespace },
                                           options: options,
