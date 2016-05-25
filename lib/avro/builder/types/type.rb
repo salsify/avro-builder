@@ -5,6 +5,7 @@ module Avro
       # type is constructed. The type has no additional attributes, and
       # the type is serialized as just the type name.
       class Type
+        include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
 
         attr_reader :type_name
@@ -40,6 +41,17 @@ module Avro
         # Subclasses should override this method if the type definition should
         # be cached for reuse.
         def cache!
+        end
+
+        # Subclasses can override this method to indicate that the name
+        # is a method that the type exposes in the DSL. These methods are in
+        # addition to the methods for setting attributes on a type.
+        def dsl_method?(_name)
+          false
+        end
+
+        def dsl_respond_to?(name)
+          dsl_attribute?(name) || dsl_method?(name)
         end
 
         private

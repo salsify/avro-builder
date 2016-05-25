@@ -1,10 +1,6 @@
 require 'spec_helper'
 
 describe Avro::Builder::FileHandler do
-  before do
-    Avro::Builder.add_load_path('spec/avro/dsl')
-  end
-
   context "loading external references" do
     subject do
       Avro::Builder.build do

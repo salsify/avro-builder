@@ -5,7 +5,10 @@ module Avro
       # at the top-level or as the type for a field in a record.
       class RecordType < Avro::Builder::Types::NamedType
 
-        dsl_attributes :doc
+        DSL_METHODS = %i(required optional extends).to_set.freeze
+
+        dsl_attribute :doc
+        dsl_attribute_alias :type_doc, :doc
 
         def initialize(name = nil, options: {}, cache:, field: nil, &block)
           @type_name = :record
@@ -15,6 +18,10 @@ module Avro
 
           configure_options(options)
           instance_eval(&block) if block_given?
+        end
+
+        def dsl_method?(name)
+          DSL_METHODS.include?(name)
         end
 
         # Add a required field to the record

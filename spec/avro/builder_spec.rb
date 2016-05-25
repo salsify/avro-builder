@@ -41,8 +41,7 @@ describe Avro::Builder do
   context "enum type with options" do
     subject do
       described_class.build do
-        enum :enum2, :ONE, :TWO do
-          namespace 'com.example'
+        enum :enum2, :ONE, :TWO, namespace: 'com.example' do
           doc 'Example Enum'
           aliases %w(Foo Bar)
         end
@@ -100,8 +99,7 @@ describe Avro::Builder do
   context "enum with block" do
     subject do
       described_class.build do
-        enum do
-          name :enum3
+        enum name: :enum3 do
           symbols :A, :B
         end
       end
@@ -181,10 +179,9 @@ describe Avro::Builder do
   context "fixed type with options" do
     subject do
       described_class.build do
-        fixed :seven do
+        fixed :seven, namespace: 'com.example' do
           size 7
-          aliases ['MoreThanSix']
-          namespace 'com.example'
+          aliases 'MoreThanSix'
         end
       end
     end
@@ -203,8 +200,7 @@ describe Avro::Builder do
   context "fixed with block" do
     subject do
       described_class.build do
-        fixed do
-          name :eight
+        fixed :eight do
           size 9
         end
       end
@@ -331,12 +327,39 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "record with name via block" do
+    subject do
+      described_class.build do
+        record do
+          name :invalid
+          required :i, :int
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+    end
+  end
+
+  context "record with namespace via block" do
+    subject do
+      described_class.build do
+        record :foo do
+          namespace :invalid
+          required :i, :int
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+    end
+  end
+
   context "record with inline enum" do
     subject do
       described_class.build do
         record :with_enum do
-          required :e1, :enum do
-            name :e_enum
+          required :e1, :enum, name: :e_enum do
             symbols :A, :B
           end
           required :e2, :enum, symbols: [:X, :Y]
@@ -360,8 +383,7 @@ describe Avro::Builder do
     subject do
       described_class.build do
         record :with_fixed do
-          required :f1, :fixed do
-            name :f5
+          required :f1, :fixed, name: :f5 do
             size 5
           end
           required :f2, :fixed, size: 6
@@ -915,13 +937,11 @@ describe Avro::Builder do
   context "record with subrecord reference" do
     subject do
       described_class.build do
-        record :sub_rec do
-          namespace 'com.example.A'
+        record :sub_rec, namespace: 'com.example.A' do
           required :i, :int
         end
 
-        record :top_rec do
-          namespace 'com.example.B'
+        record :top_rec, namespace: 'com.example.B' do
           required :sub, 'com.example.A.sub_rec'
         end
       end
@@ -984,8 +1004,7 @@ describe Avro::Builder do
         namespace 'com.example'
 
         record :my_rec do
-          required :nested, :record do
-            namespace 'com.example.sub'
+          required :nested, :record, namespace: 'com.example.sub' do
             required :s, :string
           end
         end
@@ -1053,15 +1072,15 @@ describe Avro::Builder do
         },
                  {
                    name: :C,
-                   type: {
-                     name: :__A_C_record,
-                     namespace: 'com.example',
-                     type: :record,
-                     fields: [
-                       { name: :b, type: [:null, :bytes], default: nil }
-                     ]
-                   },
-                   doc: 'This record has a unique generated name'
+                    type: {
+                      name: :__A_C_record,
+                      namespace: 'com.example',
+                      type: :record,
+                      fields: [
+                        { name: :b, type: [:null, :bytes], default: nil }
+                      ]
+                    },
+                    doc: 'This record has a unique generated name'
                  }]
       }
     end
@@ -1072,10 +1091,8 @@ describe Avro::Builder do
   context "inline, named, nested record" do
     subject do
       described_class.build do
-        record :my_rec do
-          namespace 'com.example'
-          required :nested, :record do
-            name :nested_rec
+        record :my_rec, namespace: 'com.example' do
+          required :nested, :record, name: :nested_rec do
             required :s, :string
           end
         end
@@ -1098,6 +1115,38 @@ describe Avro::Builder do
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "inline record named via block" do
+    subject do
+      described_class.build do
+        record :my_rec, namespace: 'com.example' do
+          required :nested, :record do
+            name :nested_rec
+            required :s, :string
+          end
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+    end
+  end
+
+  context "inline record namespaced via block" do
+    subject do
+      described_class.build do
+        record :my_rec, namespace: 'com.example' do
+          required :nested, :record do
+            namespace 'com.example.sub'
+            required :s, :string
+          end
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+    end
   end
 
   context "ambiguous reference requiring namespacing" do
@@ -1179,4 +1228,178 @@ describe Avro::Builder do
     end
     it { is_expected.to be_json_eql(expected.to_json) }
   end
+
+  context "recursive example" do
+    # this is an example from the Avro specification
+    subject do
+      described_class.build do
+        record :LongList, aliases: :LinkedLongs do
+          required :value, :long
+          optional :next, :LongList
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :LongList,
+        aliases: [:LinkedLongs],
+        fields: [
+          { type: :long, name: :value },
+          { type: [:null, :LongList], name: :next, default: nil }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "a field with aliases and a type with aliases" do
+    subject do
+      described_class.build do
+        record :all_the_aliases, aliases: [:top_level] do
+          required :rec, :record, name: :aliased_rec, aliases: :field_alias do
+            type_aliases [:alias_rec]
+            required :i, :int
+          end
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :all_the_aliases,
+        aliases: [:top_level],
+        fields: [
+          {
+            name: :rec,
+            aliases: [:field_alias],
+            type: {
+              name: :aliased_rec,
+              type: :record,
+              aliases: [:alias_rec],
+              fields: [{ name: :i, type: :int }]
+            }
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "doc option on field" do
+    subject do
+      described_class.build do
+        record :with_documented_field do
+          required :f, :record, doc: 'field documentation' do
+            required :i, :int
+          end
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :with_documented_field,
+        fields: [{
+          name: :f,
+          doc: 'field documentation',
+          type: {
+            type: :record,
+            name: :__with_documented_field_f_record,
+            fields: [{ name: :i, type: :int }]
+          }
+        }]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+
+    context "doc attribute on field" do
+      subject do
+        described_class.build do
+          record :with_documented_field do
+            required :f, :record do
+              doc 'field documentation'
+              required :i, :int
+            end
+          end
+        end
+      end
+      let(:expected) do
+        {
+          type: :record,
+          name: :with_documented_field,
+          fields: [{
+            name: :f,
+            doc: 'field documentation',
+            type: {
+              type: :record,
+              name: :__with_documented_field_f_record,
+              fields: [{ name: :i, type: :int }]
+            }
+          }]
+        }
+      end
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+
+    context "doc option on inline type" do
+      subject do
+        described_class.build do
+          record :with_documented_field do
+            required :f, :record, type_doc: 'inline type doc' do
+              required :i, :int
+            end
+          end
+        end
+      end
+      let(:expected) do
+        {
+          type: :record,
+          name: :with_documented_field,
+          fields: [{
+            name: :f,
+            type: {
+              type: :record,
+              name: :__with_documented_field_f_record,
+              doc: 'inline type doc',
+              fields: [{ name: :i, type: :int }]
+            }
+          }]
+        }
+      end
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+  end
+
+  context "doc attribute on field and inline type" do
+    subject do
+      described_class.build do
+        record :with_documented_field do
+          required :f, :record do
+            doc 'field documentation'
+            type_doc 'inline type doc'
+            required :i, :int
+          end
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :with_documented_field,
+        fields: [{
+          name: :f,
+          doc: 'field documentation',
+          type: {
+            type: :record,
+            name: :__with_documented_field_f_record,
+            doc: 'inline type doc',
+            fields: [{ name: :i, type: :int }]
+          }
+        }]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
 end

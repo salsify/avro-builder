@@ -1,5 +1,14 @@
 # avro-builder changelog
 
+## v0.6.0 (unreleased)
+- Support recursive definitions.
+- Coerce aliases to be represented as an array.
+- Only allow name and namespace to be set via options, not via a block, for
+  record, enum, and fixed types.
+- Allow `doc` and `aliases` to be set on both a field and a type defined inline
+  for the field. To set these attributes on the inline type `type_doc` and 
+  `type_aliases` must be used in the DSL.
+
 ## v0.5.0
 - Support references to named types that are defined inline.
 - Raise an error for duplicate definitions with the same fullname.

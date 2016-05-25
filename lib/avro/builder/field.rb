@@ -1,4 +1,5 @@
 require 'avro/builder/type_factory'
+require 'avro/builder/aliasable'
 
 module Avro
   module Builder
@@ -6,13 +7,17 @@ module Avro
     # This class represents a field in a record.
     # A field must be initialized with a type.
     class Field
+      include Avro::Builder::DslOptions
       include Avro::Builder::DslAttributes
       include Avro::Builder::TypeFactory
+      include Avro::Builder::Aliasable
 
-      INTERNAL_ATTRIBUTES = Set.new(%i(optional_field)).freeze
+      INTERNAL_ATTRIBUTES = %i(optional_field).to_set.freeze
 
       # These attributes may be set as options or via a block in the DSL
-      dsl_attributes :doc, :aliases, :default, :order
+      dsl_attributes :doc, :default, :order
+
+      attr_reader :name
 
       def initialize(name:, type_name:, record:, cache:, internal: {}, options: {}, &block)
         @cache = cache
@@ -23,8 +28,9 @@ module Avro
           send("#{key}=", value) if INTERNAL_ATTRIBUTES.include?(key)
         end
 
-        options.each do |key, value|
-          send(key, value) if dsl_attribute?(key)
+        type_options = options.dup
+        options.keys.each do |key|
+          send(key, type_options.delete(key)) if dsl_attribute?(key)
         end
 
         @type = if builtin_type?(type_name)
@@ -32,26 +38,24 @@ module Avro
                                                     field: self,
                                                     cache: cache,
                                                     internal: internal,
-                                                    options: options)
+                                                    options: type_options)
                 else
-                  named_type = true
                   cache.lookup_named_type(type_name, namespace)
                 end
 
         # DSL calls must be evaluated after the type has been constructed
         instance_eval(&block) if block_given?
         @type.validate!
-        @type.cache! unless named_type
       end
 
       ## Delegate additional DSL calls to the type
 
-      def respond_to_missing?(id, include_all = false)
-        super || type.respond_to?(id, include_all)
+      def respond_to_missing?(id, _include_all)
+        type.dsl_respond_to?(id) || super
       end
 
       def method_missing(id, *args, &block)
-        type.respond_to?(id) ? type.send(id, *args, &block) : super
+        type.dsl_respond_to?(id) ? type.send(id, *args, &block) : super
       end
 
       def name_fragment
@@ -62,7 +66,9 @@ module Avro
       # and return the namespace value from the enclosing record.
       def namespace(value = nil)
         if value
-          type.namespace(value)
+          raise UnsupportedBlockAttributeError.new(attribute: :namespace,
+                                                   field: @name,
+                                                   type: type.type_name)
         else
           record.namespace
         end
@@ -71,7 +77,9 @@ module Avro
       # Delegate setting name explicitly via DSL to type
       def name(value = nil)
         if value
-          type.name(value)
+          raise UnsupportedBlockAttributeError.new(attribute: :name,
+                                                   field: @name,
+                                                   type: type.type_name)
         else
           # Return the name of the field
           @name
@@ -79,6 +87,7 @@ module Avro
       end
 
       def serialize(reference_state)
+        # TODO: order is not included here
         {
           name: name,
           type: serialized_type(reference_state),
