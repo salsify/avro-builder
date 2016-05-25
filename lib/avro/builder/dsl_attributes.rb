@@ -70,7 +70,7 @@ module Avro
         def define_accessor(name)
           ivar = :"@#{name}"
           define_method(name) do |value = nil|
-            value ? instance_variable_set(ivar, value) : instance_variable_get(ivar)
+            value.nil? ? instance_variable_get(ivar) : instance_variable_set(ivar, value)
           end
           alias_writer(name)
         end

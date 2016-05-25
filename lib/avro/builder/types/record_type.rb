@@ -5,7 +5,7 @@ module Avro
       # at the top-level or as the type for a field in a record.
       class RecordType < Avro::Builder::Types::NamedType
 
-        DSL_METHODS = Set.new(%i(required optional extends)).freeze
+        DSL_METHODS = %i(required optional extends).to_set.freeze
 
         dsl_attribute :doc
         dsl_attribute_alias :type_doc, :doc

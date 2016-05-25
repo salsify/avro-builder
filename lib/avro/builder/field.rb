@@ -12,7 +12,7 @@ module Avro
       include Avro::Builder::TypeFactory
       include Avro::Builder::Aliasable
 
-      INTERNAL_ATTRIBUTES = Set.new(%i(optional_field)).freeze
+      INTERNAL_ATTRIBUTES = %i(optional_field).to_set.freeze
 
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :default, :order
