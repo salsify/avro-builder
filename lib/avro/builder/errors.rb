@@ -37,5 +37,17 @@ module Avro
         ' Try specifying the full namespace.' unless name.to_s.index('.')
       end
     end
+
+    class UnsupportedBlockAttributeError < StandardError
+      def initialize(attribute:, type:, field: nil)
+        target = if field
+                   "field '#{field}' of type :#{type}"
+                 else
+                   "type :#{type}"
+                 end
+        super("'#{attribute}' must be set directly using an option on #{target}, "\
+              'not via a block')
+      end
+    end
   end
 end

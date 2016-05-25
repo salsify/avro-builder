@@ -31,6 +31,7 @@ module Avro
                                             &block)
         create_builtin_type(type_name, field: field, cache: cache).tap do |type|
           type.configure_options(internal.merge(options))
+          type.cache!
           type.instance_eval(&block) if block_given?
         end
       end

@@ -1,5 +1,6 @@
 require 'avro'
 require 'avro/builder/errors'
+require 'avro/builder/dsl_options'
 require 'avro/builder/dsl_attributes'
 require 'avro/builder/namespaceable'
 require 'avro/builder/definition_cache'
@@ -14,6 +15,7 @@ module Avro
     # This class is used to construct Avro schemas (not protocols) using a ruby
     # DSL
     class DSL
+      include Avro::Builder::DslOptions
       include Avro::Builder::DslAttributes
       include Avro::Builder::FileHandler
       include Avro::Builder::TypeFactory
@@ -84,7 +86,7 @@ module Avro
                                           options: options,
                                           &block).tap do |type|
           type.validate!
-          @last_object = cache.add_schema_object(type)
+          @last_object = type
         end
       end
 

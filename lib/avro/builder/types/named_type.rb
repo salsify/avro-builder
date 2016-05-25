@@ -1,5 +1,6 @@
 require 'avro/builder/types/configurable_type'
 require 'avro/builder/namespaceable'
+require 'avro/builder/aliasable'
 
 module Avro
   module Builder
@@ -11,16 +12,14 @@ module Avro
         include Avro::Builder::Types::ComplexType
         include Avro::Builder::Namespaceable
         include Avro::Builder::Types::ConfigurableType
+        include Avro::Builder::Aliasable
 
-        dsl_attributes :namespace, :aliases
-
-        dsl_attribute :name do |value = nil|
-          if value
-            @name = value
-          else
-            @name || "__#{name_fragment}_#{type_name}"
-          end
+        dsl_option :namespace
+        dsl_option :name do
+          @name || "__#{name_fragment}_#{type_name}"
         end
+
+        dsl_attribute_alias :type_aliases, :aliases
 
         def validate!
           required_attribute_error!(:name) if field.nil? && @name.nil?

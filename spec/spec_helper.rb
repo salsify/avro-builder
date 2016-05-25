@@ -5,3 +5,9 @@ require 'simplecov'
 SimpleCov.start
 
 require 'avro/builder'
+
+RSpec.configure do |config|
+  config.before do
+    Avro::Builder.add_load_path('spec/avro/dsl')
+  end
+end
