@@ -327,6 +327,34 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "record with name via block" do
+    subject do
+      described_class.build do
+        record do
+          name :invalid
+          required :i, :int
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+    end
+  end
+
+  context "record with namespace via block" do
+    subject do
+      described_class.build do
+        record :foo do
+          namespace :invalid
+          required :i, :int
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+    end
+  end
+
   context "record with inline enum" do
     subject do
       described_class.build do
@@ -1044,15 +1072,15 @@ describe Avro::Builder do
         },
                  {
                    name: :C,
-                   type: {
-                     name: :__A_C_record,
-                     namespace: 'com.example',
-                     type: :record,
-                     fields: [
-                       { name: :b, type: [:null, :bytes], default: nil }
-                     ]
-                   },
-                   doc: 'This record has a unique generated name'
+                    type: {
+                      name: :__A_C_record,
+                      namespace: 'com.example',
+                      type: :record,
+                      fields: [
+                        { name: :b, type: [:null, :bytes], default: nil }
+                      ]
+                    },
+                    doc: 'This record has a unique generated name'
                  }]
       }
     end
@@ -1087,6 +1115,38 @@ describe Avro::Builder do
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "inline record named via block" do
+    subject do
+      described_class.build do
+        record :my_rec, namespace: 'com.example' do
+          required :nested, :record do
+            name :nested_rec
+            required :s, :string
+          end
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+    end
+  end
+
+  context "inline record namespaced via block" do
+    subject do
+      described_class.build do
+        record :my_rec, namespace: 'com.example' do
+          required :nested, :record do
+            namespace 'com.example.sub'
+            required :s, :string
+          end
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+    end
   end
 
   context "ambiguous reference requiring namespacing" do

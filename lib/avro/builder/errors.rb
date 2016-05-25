@@ -40,8 +40,13 @@ module Avro
 
     class UnsupportedBlockAttributeError < StandardError
       def initialize(attribute:, type:, field: nil)
-        super("'#{attribute}' must be set directly using an option on "\
-              "field '#{field}' of type :#{type}")
+        target = if field
+                   "field '#{field}' of type :#{type}"
+                 else
+                   "type :#{type}"
+                 end
+        super("'#{attribute}' must be set directly using an option on #{target}, "\
+              'not via a block')
       end
     end
   end

@@ -15,13 +15,8 @@ module Avro
         include Avro::Builder::Aliasable
 
         dsl_option :namespace
-
-        dsl_option :name do |value = nil|
-          if value
-            @name = value
-          else
-            @name || "__#{name_fragment}_#{type_name}"
-          end
+        dsl_option :name do
+          @name || "__#{name_fragment}_#{type_name}"
         end
 
         dsl_attribute_alias :type_aliases, :aliases

@@ -24,6 +24,18 @@ module Avro
       end
 
       module ClassMethods
+        # If a block is specified then it is used to define the
+        # combined getter/setter method for the DSL attribute.
+        def dsl_attribute(name, &block)
+          if block_given?
+            add_attribute_name(name)
+            define_method(name, &block)
+            alias_writer(name)
+          else
+            dsl_attributes(name)
+          end
+        end
+
         def dsl_attributes(*names)
           raise 'a block can only be specified with dsl_attribute' if block_given?
 
@@ -33,19 +45,9 @@ module Avro
           end
         end
 
-        # If a block is specified then it is used to define the
-        # combined getter/setter method for the DSL attribute.
-        def dsl_attribute(name, &block)
-          if block_given?
-            add_attribute_name(name)
-            define_method(name, &block)
-          else
-            dsl_attributes(name)
-          end
-        end
-
         def dsl_attribute_alias(new_name, old_name)
           alias_method(new_name, old_name)
+          alias_writer(new_name)
           add_attribute_name(new_name)
         end
 
@@ -63,6 +65,21 @@ module Avro
         def add_attribute_name(name)
           dsl_attribute_names << name
           add_option_name(name)
+        end
+
+        def define_accessor(name)
+          ivar = :"@#{name}"
+          define_method(name) do |value = nil|
+            value ? instance_variable_set(ivar, value) : instance_variable_get(ivar)
+          end
+          alias_writer(name)
+        end
+
+        # The writer (name=) method is used to set attributes via options.
+        def alias_writer(name)
+          writer = "#{name}="
+          alias_method(writer, name)
+          private(writer)
         end
       end
     end

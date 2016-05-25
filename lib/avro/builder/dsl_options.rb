@@ -4,16 +4,8 @@ module Avro
     # This module provides methods for defining options that can be
     # set via the DSL on various objects.
     #
-    # These attributes can only be set as options, and not as method in
-    # DSL block.
-    #
-    # The methods generated for DSL options are combined getter/setters
-    # of the form:
-    #
-    #   option(value = nil)
-    #
-    # When a value is provided the option is set, and when it is nil the
-    # current value is returned.
+    # These attributes can only be set as options via the private
+    # #attribute= methods, and not as methods in DSL block.
     #
     # When a DSL option is defined, the class also keeps track of the
     # option names.
@@ -30,11 +22,8 @@ module Avro
         # A DSL option is only settable as an option, not as method in a block.
         def dsl_option(name, &block)
           add_option_name(name)
-          if block_given?
-            define_method(name, &block)
-          else
-            define_accessor(name)
-          end
+          define_private_writer(name)
+          define_reader(name, &block)
         end
 
         def dsl_option_names
@@ -52,12 +41,31 @@ module Avro
           dsl_option_names << name
         end
 
-        def define_accessor(name)
-          ivar = :"@#{name}"
-          define_method(name) do |value = nil|
-            value ? instance_variable_set(ivar, value) : instance_variable_get(ivar)
+        def define_private_writer(name)
+          attr_writer(name)
+          private("#{name}=")
+        end
+
+        # Define a accessor method that raises an error if called as a writer.
+        # If the optional block is specified then it is evaluated as the reader.
+        def define_reader(name, &block)
+          if block_given?
+            define_method(name) do |value = nil|
+              value ? unsupported_block_attribute(name, type_name) : instance_eval(&block)
+            end
+          else
+            define_method(name) do |value = nil|
+              value ? unsupported_block_attribute(name, type_name) : instance_variable_get("@#{name}")
+            end
           end
         end
+      end
+
+      private
+
+      def unsupported_block_attribute(attribute, type)
+        raise UnsupportedBlockAttributeError.new(attribute: attribute,
+                                                 type: type)
       end
     end
   end
