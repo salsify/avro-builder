@@ -4,7 +4,8 @@ module Avro
     # This concern is used by classes that create new Type instances.
     module TypeFactory
 
-      COMPLEX_TYPES = Set.new(%w(array enum fixed map record union).map(&:freeze)).freeze
+      NAMED_TYPES = %w(enum fixed record).map(&:freeze).to_set.freeze
+      COMPLEX_TYPES = %w(array enum fixed map record union).map(&:freeze).to_set.freeze
       BUILTIN_TYPES = Avro::Schema::PRIMITIVE_TYPES.union(COMPLEX_TYPES).freeze
 
       private
@@ -14,6 +15,8 @@ module Avro
         name = avro_type_name.to_s.downcase
         if Avro::Schema::PRIMITIVE_TYPES.include?(name)
           Avro::Builder::Types::Type.new(name, field: field, cache: cache)
+        elsif field.nil? && NAMED_TYPES.include?(name)
+          Avro::Builder.const_get(name.capitalize).new(cache: cache)
         elsif COMPLEX_TYPES.include?(name)
           Avro::Builder::Types.const_get("#{name.capitalize}Type").new(field: field, cache: cache)
         else

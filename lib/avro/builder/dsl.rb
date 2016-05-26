@@ -7,6 +7,9 @@ require 'avro/builder/definition_cache'
 require 'avro/builder/type_factory'
 require 'avro/builder/types'
 require 'avro/builder/field'
+require 'avro/builder/record'
+require 'avro/builder/enum'
+require 'avro/builder/fixed'
 require 'avro/builder/file_handler'
 require 'avro/builder/schema_serializer_reference_state'
 
@@ -60,6 +63,7 @@ module Avro
 
       # Return the last schema object processed as an Avro JSON schema
       def to_json(validate: true, pretty: true)
+
         hash = to_h
         (pretty ? JSON.pretty_generate(hash) : hash.to_json).tap do |json|
           # Uncomment the next line to debug:
@@ -82,7 +86,8 @@ module Avro
       def create_named_type(name, avro_type_name, options = {}, &block)
         create_and_configure_builtin_type(avro_type_name,
                                           cache: cache,
-                                          internal: { name: name, namespace: namespace },
+                                          internal: { _name: name,
+                                                      namespace: namespace },
                                           options: options,
                                           &block).tap do |type|
           type.validate!

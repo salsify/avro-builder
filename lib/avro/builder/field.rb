@@ -17,8 +17,6 @@ module Avro
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :default, :order
 
-      attr_reader :name
-
       def initialize(name:, avro_type_name:, record:, cache:, internal: {}, options: {}, &block)
         @cache = cache
         @record = record
@@ -66,9 +64,7 @@ module Avro
       # and return the namespace value from the enclosing record.
       def namespace(value = nil)
         if value
-          raise UnsupportedBlockAttributeError.new(attribute: :namespace,
-                                                   field: @name,
-                                                   type: type.avro_type_name)
+          type.namespace(value)
         else
           record.namespace
         end
@@ -77,9 +73,7 @@ module Avro
       # Delegate setting name explicitly via DSL to type
       def name(value = nil)
         if value
-          raise UnsupportedBlockAttributeError.new(attribute: :name,
-                                                   field: @name,
-                                                   type: type.avro_type_name)
+          type.name(value)
         else
           # Return the name of the field
           @name

@@ -1,5 +1,12 @@
 # avro-builder changelog
 
+## v0.7.0
+- Only allow `type_name` and `type_namespace` options for naming named types
+  defined inline.
+- Only allow first argument to set name, and `namespace` option for top-level
+  types.
+- Only `aliases` attribute to set aliases for top-level types.
+
 ## v0.6.0
 - Support recursive definitions.
 - Coerce aliases to be represented as an array.

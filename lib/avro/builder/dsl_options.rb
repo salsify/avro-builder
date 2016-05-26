@@ -19,11 +19,17 @@ module Avro
       end
 
       module ClassMethods
-        # A DSL option is only settable as an option, not as method in a block.
-        def dsl_option(name, &block)
+
+        # Defines a private writer with new_name= to set an attribute stored in the
+        # instance variable @name.
+        def dsl_option(name, dsl_name:)
           add_option_name(name)
-          define_private_writer(name)
-          define_reader(name, &block)
+          add_attribute_name(dsl_name)
+          aliased_writer = "#{dsl_name}="
+          define_method(aliased_writer) do |value|
+            instance_variable_set("@#{name}", value)
+          end
+          private(aliased_writer)
         end
 
         def dsl_option_names
@@ -35,37 +41,9 @@ module Avro
             end
         end
 
-        private
-
         def add_option_name(name)
           dsl_option_names << name
         end
-
-        def define_private_writer(name)
-          attr_writer(name)
-          private("#{name}=")
-        end
-
-        # Define a accessor method that raises an error if called as a writer.
-        # If the optional block is specified then it is evaluated as the reader.
-        def define_reader(name, &block)
-          if block_given?
-            define_method(name) do |value = nil|
-              value ? unsupported_block_attribute(name, avro_type_name) : instance_eval(&block)
-            end
-          else
-            define_method(name) do |value = nil|
-              value ? unsupported_block_attribute(name, avro_type_name) : instance_variable_get("@#{name}")
-            end
-          end
-        end
-      end
-
-      private
-
-      def unsupported_block_attribute(attribute, type)
-        raise UnsupportedBlockAttributeError.new(attribute: attribute,
-                                                 type: type)
       end
     end
   end
