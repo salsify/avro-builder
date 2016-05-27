@@ -63,7 +63,6 @@ module Avro
 
       # Return the last schema object processed as an Avro JSON schema
       def to_json(validate: true, pretty: true)
-
         hash = to_h
         (pretty ? JSON.pretty_generate(hash) : hash.to_json).tap do |json|
           # Uncomment the next line to debug:

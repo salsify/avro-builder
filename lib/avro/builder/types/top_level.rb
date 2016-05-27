@@ -14,6 +14,7 @@ module Avro
         def _name=(value)
           @name = value
         end
+        private :_name=
 
         # Namespace is settable as a top-level option
         attr_writer :namespace
