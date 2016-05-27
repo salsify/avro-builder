@@ -5,7 +5,7 @@
   defined inline.
 - Only allow first argument to set name, and `namespace` option for top-level
   types.
-- Only `aliases` attribute to set aliases for top-level types.
+- Only allow `aliases` attribute to set aliases for top-level types.
 
 ## v0.6.0
 - Support recursive definitions.

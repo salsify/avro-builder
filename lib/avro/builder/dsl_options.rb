@@ -20,8 +20,8 @@ module Avro
 
       module ClassMethods
 
-        # Defines a private writer with dsl_name= to set an attribute stored in the
-        # instance variable @name.
+        # Defines a private writer with #{dsl_name}= to set an attribute stored in the
+        # instance variable @#{name}.
         def dsl_option(name, dsl_name:)
           add_option_name(name)
           add_attribute_name(dsl_name)
