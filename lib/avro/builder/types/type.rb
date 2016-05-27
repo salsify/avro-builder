@@ -8,16 +8,16 @@ module Avro
         include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
 
-        attr_reader :type_name
+        attr_reader :avro_type_name
 
-        def initialize(type_name, cache:, field: nil)
-          @type_name = type_name
+        def initialize(avro_type_name, cache:, field: nil)
+          @avro_type_name = avro_type_name
           @cache = cache
           @field = field
         end
 
         def serialize(_reference_state)
-          type_name
+          avro_type_name
         end
 
         def namespace
@@ -57,7 +57,7 @@ module Avro
         private
 
         def required_attribute_error!(attribute_name)
-          raise RequiredAttributeError.new(type: type_name,
+          raise RequiredAttributeError.new(type: avro_type_name,
                                            attribute: attribute_name,
                                            field: field && field.name,
                                            name: @name)

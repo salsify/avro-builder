@@ -96,7 +96,28 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
-  context "enum with block" do
+  context "enum type_name as option" do
+    subject do
+      described_class.build do
+        enum type_name: :enum3 do
+          symbols :A, :B
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :enum3,
+        type: :enum,
+        symbols: [:A, :B]
+      }
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /name must be specified as the first argument/)
+    end
+  end
+
+  context "enum name as option" do
     subject do
       described_class.build do
         enum name: :enum3 do
@@ -111,7 +132,10 @@ describe Avro::Builder do
         symbols: [:A, :B]
       }
     end
-    it { is_expected.to be_json_eql(expected.to_json) }
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /name must be specified as the first argument/)
+    end
   end
 
   context "enum without symbols" do
@@ -195,6 +219,49 @@ describe Avro::Builder do
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "fixed type with type_aliases via block" do
+    subject do
+      described_class.build do
+        fixed :seven, namespace: 'com.example' do
+          size 7
+          type_aliases 'MoreThanSix'
+        end
+      end
+    end
+    it "raises and error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'aliases' must be used instead/)
+    end
+  end
+
+  context "fixed type with type_aliases via option" do
+    subject do
+      described_class.build do
+        fixed :seven, namespace: 'com.example', type_aliases: 'MoreThanSix' do
+          size 7
+        end
+      end
+    end
+    it "raises and error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'aliases' must be used instead/)
+    end
+  end
+
+  context "fixed type with type_namespace option" do
+    subject do
+      described_class.build do
+        fixed :seven, type_namespace: 'com.example' do
+          size 7
+        end
+      end
+    end
+    it "raises and error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'namespace' must be specified as an option/)
+    end
   end
 
   context "fixed with block" do
@@ -337,7 +404,23 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /name must be specified as the first argument/)
+    end
+  end
+
+  context "record with type_name via block" do
+    subject do
+      described_class.build do
+        record do
+          type_name :invalid
+          required :i, :int
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /name must be specified/)
     end
   end
 
@@ -351,7 +434,45 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'namespace' must be specified as an option/)
+    end
+  end
+
+  context "record with type_namespace via block" do
+    subject do
+      described_class.build do
+        record :foo do
+          type_namespace :invalid
+          required :i, :int
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'namespace' must be specified as an option/)
+    end
+  end
+
+  context "record with type_namespace as option" do
+    subject do
+      described_class.build do
+        record :foo, type_namespace: :valid do
+          required :i, :int
+        end
+      end
+    end
+    let(:expected) do
+      {
+        name: :foo,
+        type: :record,
+        namespace: :valid,
+        fields: [{ name: :i, type: :int }]
+      }
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'namespace' must be specified as an option instead/)
     end
   end
 
@@ -359,7 +480,7 @@ describe Avro::Builder do
     subject do
       described_class.build do
         record :with_enum do
-          required :e1, :enum, name: :e_enum do
+          required :e1, :enum, type_name: :e_enum do
             symbols :A, :B
           end
           required :e2, :enum, symbols: [:X, :Y]
@@ -383,7 +504,7 @@ describe Avro::Builder do
     subject do
       described_class.build do
         record :with_fixed do
-          required :f1, :fixed, name: :f5 do
+          required :f1, :fixed, type_name: :f5 do
             size 5
           end
           required :f2, :fixed, size: 6
@@ -407,7 +528,7 @@ describe Avro::Builder do
     subject do
       described_class.build do
         record :with_magic do
-          required :magic, :fixed, name: :Magic, size: 4
+          required :magic, :fixed, type_name: :Magic, size: 4
           required :more_magic, :Magic
         end
       end
@@ -454,8 +575,8 @@ describe Avro::Builder do
     subject do
       described_class.build do
         record :with_magic do
-          required :magic, :fixed, name: :Magic, size: 4
-          required :more_magic, :fixed, name: :Magic, size: 5
+          required :magic, :fixed, type_name: :Magic, size: 4
+          required :more_magic, :fixed, type_name: :Magic, size: 5
         end
       end
     end
@@ -1004,7 +1125,7 @@ describe Avro::Builder do
         namespace 'com.example'
 
         record :my_rec do
-          required :nested, :record, namespace: 'com.example.sub' do
+          required :nested, :record, type_namespace: 'com.example.sub' do
             required :s, :string
           end
         end
@@ -1092,7 +1213,7 @@ describe Avro::Builder do
     subject do
       described_class.build do
         record :my_rec, namespace: 'com.example' do
-          required :nested, :record, name: :nested_rec do
+          required :nested, :record, type_name: :nested_rec do
             required :s, :string
           end
         end
@@ -1129,14 +1250,31 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'type_name' must be specified as an option/)
+    end
+  end
+
+  context "inline record name via option via block" do
+    subject do
+      described_class.build do
+        record :my_rec, namespace: 'com.example' do
+          required :nested, :record, name: :nested_rec do
+            required :s, :string
+          end
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'type_name' must be specified as an option/)
     end
   end
 
   context "inline record namespaced via block" do
     subject do
       described_class.build do
-        record :my_rec, namespace: 'com.example' do
+        record :my_rec do
           required :nested, :record do
             namespace 'com.example.sub'
             required :s, :string
@@ -1145,7 +1283,58 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::UnsupportedBlockAttributeError)
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'type_namespace' must be specified as an option/)
+    end
+  end
+
+  context "inline record with namespace option" do
+    subject do
+      described_class.build do
+        record :my_rec do
+          required :nested, :record, namespace: :invalid do
+            required :s, :string
+          end
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'type_namespace' must be specified as an option instead/)
+    end
+  end
+
+  context "inline record type_name via block" do
+    subject do
+      described_class.build do
+        record :my_rec, namespace: 'com.example' do
+          required :nested, :record do
+            type_name :nested_rec
+            required :s, :string
+          end
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'type_name' must be specified as an option/)
+    end
+  end
+
+  context "inline record type_namespace via block" do
+    subject do
+      described_class.build do
+        record :my_rec, namespace: 'com.example' do
+          required :nested, :record do
+            type_namespace 'com.example.sub'
+            required :s, :string
+          end
+        end
+      end
+    end
+    it "raises an error" do
+      expect { subject }.to raise_error(Avro::Builder::AttributeError,
+                                        /'type_namespace' must be specified as an option/)
     end
   end
 
@@ -1257,7 +1446,7 @@ describe Avro::Builder do
     subject do
       described_class.build do
         record :all_the_aliases, aliases: [:top_level] do
-          required :rec, :record, name: :aliased_rec, aliases: :field_alias do
+          required :rec, :record, type_name: :aliased_rec, aliases: :field_alias do
             type_aliases [:alias_rec]
             required :i, :int
           end

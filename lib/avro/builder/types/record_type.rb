@@ -11,7 +11,7 @@ module Avro
         dsl_attribute_alias :type_doc, :doc
 
         def initialize(name = nil, options: {}, cache:, field: nil, &block)
-          @type_name = :record
+          @avro_type_name = :record
           @name = name
           @cache = cache
           @field = field
@@ -25,12 +25,12 @@ module Avro
         end
 
         # Add a required field to the record
-        def required(name, type_name, options = {}, &block)
+        def required(name, avro_type_name, options = {}, &block)
           new_field = Avro::Builder::Field.new(name: name,
-                                               type_name: type_name,
+                                               avro_type_name: avro_type_name,
                                                record: self,
                                                cache: cache,
-                                               internal: { namespace: namespace },
+                                               internal: { type_namespace: namespace },
                                                options: options,
                                                &block)
           add_field(new_field)
@@ -38,12 +38,12 @@ module Avro
 
         # Add an optional field to the record. In Avro this is represented
         # as a union of null and the type specified here.
-        def optional(name, type_name, options = {}, &block)
+        def optional(name, avro_type_name, options = {}, &block)
           new_field = Avro::Builder::Field.new(name: name,
-                                               type_name: type_name,
+                                               avro_type_name: avro_type_name,
                                                record: self,
                                                cache: cache,
-                                               internal: { namespace: namespace,
+                                               internal: { type_namespace: namespace,
                                                            optional_field: true },
                                                options: options,
                                                &block)

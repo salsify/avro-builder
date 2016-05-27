@@ -19,10 +19,6 @@ module Avro
         base.extend ClassMethods
       end
 
-      def dsl_attribute?(name)
-        self.class.dsl_attribute_names.include?(name.to_sym)
-      end
-
       module ClassMethods
         # If a block is specified then it is used to define the
         # combined getter/setter method for the DSL attribute.
@@ -60,12 +56,12 @@ module Avro
             end
         end
 
-        private
-
         def add_attribute_name(name)
           dsl_attribute_names << name
           add_option_name(name)
         end
+
+        private
 
         def define_accessor(name)
           ivar = :"@#{name}"
@@ -81,6 +77,10 @@ module Avro
           alias_method(writer, name)
           private(writer)
         end
+      end
+
+      def dsl_attribute?(name)
+        self.class.dsl_attribute_names.include?(name.to_sym)
       end
     end
   end

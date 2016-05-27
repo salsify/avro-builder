@@ -12,7 +12,7 @@ module Avro
 
         # Override initialize so that type name is not required
         def initialize(cache:, field: nil)
-          super(self.class.type_name, cache: cache, field: field)
+          super(self.class.avro_type_name, cache: cache, field: field)
         end
 
         def namespace
@@ -21,9 +21,9 @@ module Avro
 
         module ClassMethods
 
-          # Infer type_name based on class
-          def type_name
-            @type_name ||= name.split('::').last.sub('Type', '').downcase.to_sym
+          # Infer avro_type_name based on class
+          def avro_type_name
+            @avro_type_name ||= name.split('::').last.sub('Type', '').downcase.to_sym
           end
         end
       end

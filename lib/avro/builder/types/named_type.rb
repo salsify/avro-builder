@@ -1,6 +1,7 @@
 require 'avro/builder/types/configurable_type'
 require 'avro/builder/namespaceable'
 require 'avro/builder/aliasable'
+require 'avro/builder/types/named_error_handling'
 
 module Avro
   module Builder
@@ -14,12 +15,29 @@ module Avro
         include Avro::Builder::Types::ConfigurableType
         include Avro::Builder::Aliasable
 
-        dsl_option :namespace
-        dsl_option :name do
-          @name || "__#{name_fragment}_#{type_name}"
-        end
+        dsl_option :name, dsl_name: :type_name
+        dsl_option :namespace, dsl_name: :type_namespace
 
         dsl_attribute_alias :type_aliases, :aliases
+
+        # This module most be included after options are defined
+        include Avro::Builder::Types::NamedErrorHandling
+
+        def name(value = nil)
+          if value.nil?
+            @name || "__#{name_fragment}_#{avro_type_name}"
+          else
+            type_name_instead_of_name_error!
+          end
+        end
+
+        def namespace(value = nil)
+          if value.nil?
+            @namespace
+          else
+            type_namespace_instead_of_namespace_error!
+          end
+        end
 
         def validate!
           required_attribute_error!(:name) if field.nil? && @name.nil?
@@ -43,7 +61,7 @@ module Avro
           reference_state.definition_or_reference(fullname) do
             {
               name: name,
-              type: type_name,
+              type: avro_type_name,
               namespace: namespace
             }.merge(overrides).reject { |_, v| v.nil? }
           end
@@ -55,7 +73,7 @@ module Avro
         def to_h(_reference_state, overrides: {})
           {
             name: name,
-            type: type_name,
+            type: avro_type_name,
             namespace: namespace,
             aliases: aliases
           }.merge(overrides).reject { |_, v| v.nil? }
