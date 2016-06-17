@@ -12,6 +12,9 @@ This DSL was created because:
 * Schemas can be extracted as JSON from an IDL Protocol but support
   for imports is still limited.
 
+Additional background on why we developed `avro-builder` is provided
+[here](http://blog.salsify.com/engineering/adventures-in-avro).
+
 ## Features
 * The syntax is designed for ease-of-use.
 * Definitions can be imported by name. This includes auto-loading from a configured
