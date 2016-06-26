@@ -27,7 +27,8 @@ module Avro
 
       # An instance of the DSL is initialized with a string or a block to
       # evaluate to define Avro schema objects.
-      def initialize(str = nil, &block)
+      def initialize(str = nil, filename: nil, &block)
+        return eval_file(filename) if filename
         str ? instance_eval(str) : instance_eval(&block)
       end
 

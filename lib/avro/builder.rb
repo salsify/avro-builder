@@ -1,8 +1,14 @@
 require 'avro/builder/version'
 require 'avro/builder/dsl'
+require 'avro/builder/schema_store'
 
 module Avro
   module Builder
+    class SchemaError < StandardError; end
+
+    def self.find(filename)
+      Avro::Builder::DSL.new(filename: filename).as_schema
+    end
 
     # Accepts a string or block to eval to define a JSON schema
     def self.build(str = nil, &block)
