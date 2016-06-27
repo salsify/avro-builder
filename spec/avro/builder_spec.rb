@@ -1591,4 +1591,23 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  describe '.find' do
+    subject { described_class.find(filename) }
+
+    let(:filename) { 'with_array' }
+
+    context 'dsl directory has not been added to build path' do
+      before do
+        allow(Avro::Builder::DSL).to receive(:load_paths) { Set.new }
+      end
+
+      it 'raises file not found exception' do
+        expect{ subject }.to raise_error(RuntimeError)
+      end
+    end
+
+    context 'dsl directory has been added to build path' do
+      it { is_expected.to be_a(Avro::Schema) }
+    end
+  end
 end
