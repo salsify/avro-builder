@@ -21,6 +21,8 @@ Additional background on why we developed `avro-builder` is provided
   set of paths. This allows definitions to split across files and even reused
   between projects.
 * Record definitions can inherit from other record definitions.
+* [Schema Store](#schema-store) to load files written in the DSL and return
+  `Avro::Schema` objects.
 
 ## Limitations
 
@@ -48,7 +50,7 @@ Or install it yourself as:
 
 ## Usage
 
-To use `Avro::Builder` define a schema:
+To use `Avro::Builder`, define a schema:
 
 ```ruby
 namespace 'com.example'
@@ -248,6 +250,31 @@ A previously defined record may be referenced in the definition of another
 record using `extends <record_name>`. This adds all of the fields from
 the referenced record to the current record. The current record may override
 fields in the record that it extends.
+
+## Schema Store
+
+The `Avro::Builder::SchemaStore` can be used to load DSL files and return cached
+`Avro::Schema` objects. This schema store can be used as the schema store for
+[avromatic](https://github.com/salsify/avromatic)
+to generate models directly from schemas defined using the DSL.
+
+The schema store must be initialized with the path where DSL files are located:
+
+```ruby
+schema_store = Avro::Builder::SchemaStore.new(path: '/path/to/dsl/files')
+schema_store.find('schema_name', 'my_namespace')
+#=> Avro::Schema (for file at '/path/to/dsl/files/my_namespace/schema_name.rb')
+```
+
+To configure `Avromatic` to use this schema store and its Messaging API:
+
+```ruby
+Avromatic.configure do |config|
+  config.schema_store = Avro::Builder::SchemaStore.new(path: 'avro/dsl')
+  config.registry_url = 'https://builder:avro@avro-schema-registry.salsify.com'
+  config.build_messaging!
+end
+```
 
 ## Development
 
