@@ -1,5 +1,8 @@
 # avro-builder changelog
 
+## v0.8.0
+- Add `Avro::Builder::SchemaStore` to load DSL files and return schema objects.
+
 ## v0.7.0
 - Only allow `type_name` and `type_namespace` options for naming named types
   defined inline.

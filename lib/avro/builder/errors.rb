@@ -38,6 +38,12 @@ module Avro
       end
     end
 
+    class SchemaError < StandardError
+      def initialize(actual, expected)
+        super("expected schema '#{actual}' to define type '#{expected}'")
+      end
+    end
+
     AttributeError = Class.new(StandardError)
   end
 end
