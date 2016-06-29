@@ -1,6 +1,7 @@
 # Avro::Builder
 
 [![Build Status](https://travis-ci.org/salsify/avro-builder.svg?branch=master)][travis]
+[![Gem Version](https://badge.fury.io/rb/avro-builder.svg)](https://badge.fury.io/rb/avro-builder)
 
 [travis]: http://travis-ci.org/salsify/avro-builder
 
