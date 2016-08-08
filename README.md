@@ -49,6 +49,14 @@ Or install it yourself as:
 
     $ gem install avro-builder
 
+## Railtie
+
+When included in a Rails project, `#{Rails.root}/avro/dsl` is configured as a
+load path for the DSL.
+
+A [rake task](#avro-generate-rake-task) is also defined for generating Avro JSON
+schemas from the DSL.
+
 ## Usage
 
 To use `Avro::Builder`, define a schema:
@@ -275,6 +283,26 @@ Avromatic.configure do |config|
   config.registry_url = 'https://builder:avro@avro-schema-registry.salsify.com'
   config.build_messaging!
 end
+```
+
+### Avro Generate Rake Task
+
+There is a rake task that can be used to generate Avro schemas from all DSL
+files.
+
+A rake task is automatically defined via a Railtie for Rails projects that uses
+`#{Rails.root}/avro/dsl` as the root for Avro DSL files.
+
+Custom rake tasks can also be defined:
+
+```ruby
+require 'avro/builder/rake/avro_generate_task'
+Avro::Builder::Rake::AvroGenerateTask.new(name: :custom_gen,
+                                          dependencies: [:load_app]) do |task|
+  task.root = '/path/to/dsl/files'
+  task.load_paths << '/additional/dsl/files'
+end
+)
 ```
 
 ## Development
