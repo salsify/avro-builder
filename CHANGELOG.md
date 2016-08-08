@@ -1,5 +1,11 @@
 # avro-builder changelog
 
+## v0.9.0
+- Add rake task to generate Avro JSON schema files for all DSL files under a
+  configurable root directory.
+- Add Railtie to configure `#{Rails.root}/avro/dsl` as a load path, and define
+  `avro:generate` rake task.
+
 ## v0.8.0
 - Add `Avro::Builder::SchemaStore` to load DSL files and return schema objects.
 

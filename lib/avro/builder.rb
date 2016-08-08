@@ -21,3 +21,5 @@ module Avro
     end
   end
 end
+
+require 'avro/builder/railtie' if defined?(Rails)
