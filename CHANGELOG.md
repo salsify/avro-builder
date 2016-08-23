@@ -1,5 +1,9 @@
 # avro-builder changelog
 
+## v0.10.0 (unreleased)
+- Add support for `union`, `map`, and `array` types that are not attached
+  directly to a field.
+
 ## v0.9.0
 - Add rake task to generate Avro JSON schema files for all DSL files under a
   configurable root directory.

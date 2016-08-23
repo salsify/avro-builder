@@ -4,6 +4,7 @@ module Avro
       # This class represents a record in an Avro schema. Records may be defined
       # at the top-level or as the type for a field in a record.
       class RecordType < Avro::Builder::Types::NamedType
+        include Avro::Builder::AnonymousTypes
 
         DSL_METHODS = %i(required optional extends).to_set.freeze
 

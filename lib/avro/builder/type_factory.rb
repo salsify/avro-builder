@@ -31,11 +31,13 @@ module Avro
                                             cache: nil,
                                             internal: {},
                                             options: {},
+                                            validate_type: true,
                                             &block)
         create_builtin_type(avro_type_name, field: field, cache: cache).tap do |type|
           type.configure_options(internal.merge(options))
           type.cache!
           type.instance_eval(&block) if block_given?
+          type.validate! if validate_type
         end
       end
 

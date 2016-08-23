@@ -5,6 +5,7 @@ require 'avro/builder/dsl_attributes'
 require 'avro/builder/namespaceable'
 require 'avro/builder/definition_cache'
 require 'avro/builder/type_factory'
+require 'avro/builder/anonymous_types'
 require 'avro/builder/types'
 require 'avro/builder/field'
 require 'avro/builder/record'
@@ -83,15 +84,12 @@ module Avro
       end
 
       def create_named_type(name, avro_type_name, options = {}, &block)
-        create_and_configure_builtin_type(avro_type_name,
-                                          cache: cache,
-                                          internal: { _name: name,
-                                                      namespace: namespace },
-                                          options: options,
-                                          &block).tap do |type|
-          type.validate!
-          @last_object = type
-        end
+        @last_object = create_and_configure_builtin_type(avro_type_name,
+                                                         cache: cache,
+                                                         internal: { _name: name,
+                                                                     namespace: namespace },
+                                                         options: options,
+                                                         &block)
       end
 
       def eval_file(name)

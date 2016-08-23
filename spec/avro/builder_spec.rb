@@ -1029,6 +1029,166 @@ describe Avro::Builder do
     end
   end
 
+  context "array of unions" do
+    subject do
+      described_class.build do
+        record :unions do
+          required :a, :array, items: union(:string, :int)
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :unions,
+        fields: [
+          {
+            name: :a,
+            type: {
+              type: :array, items: [:string, :int]
+            }
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "array of unions via method" do
+    subject(:test_class) do
+      described_class.build do
+        record :unions do
+          required :a, array(union(:string, :int))
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :unions,
+        fields: [
+          {
+            name: :a,
+            type: {
+              type: :array, items: [:string, :int]
+            }
+          }
+        ]
+      }
+    end
+    it "raises an error" do
+      expect { test_class }
+        .to raise_error(/Type name must be an Avro builtin type or a previously defined type name\./)
+    end
+  end
+
+  context "array of unions with block" do
+    subject do
+      described_class.build do
+        record :unions do
+          required :a, :array, items: union { types [:string, :int] }
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :unions,
+        fields: [
+          {
+            name: :a,
+            type: {
+              type: :array, items: [:string, :int]
+            }
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "array of unions with block for a field" do
+    subject do
+      described_class.build do
+        record :unions do
+          required :a, :array do
+            items union(:null, :int)
+          end
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :unions,
+        fields: [
+          {
+            name: :a,
+            type: {
+              type: :array, items: [:null, :int]
+            }
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "union of array and map" do
+    subject do
+      described_class.build do
+        record :array_or_map do
+          required :u, :union, types: [array(:int), map(:string)]
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :array_or_map,
+        fields: [
+          {
+            name: :u,
+            type: [
+              { type: :array, items: :int },
+              { type: :map, values: :string }
+            ]
+          }
+        ]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "union field via method" do
+    subject(:test_class) do
+      described_class.build do
+        record :array_or_map do
+          required :u, union(array(:int), map(:string))
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :array_or_map,
+        fields: [
+          {
+            name: :u,
+            type: [
+              { type: :array, items: :int },
+              { type: :map, values: :string }
+            ]
+          }
+        ]
+      }
+    end
+    it "raises an error" do
+      expect { test_class }
+        .to raise_error(/Type name must be an Avro builtin type or a previously defined type name\./)
+    end
+  end
+
   context "record with extends" do
     subject do
       described_class.build do

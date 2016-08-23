@@ -173,6 +173,20 @@ record :my_record_with_named do
 end
 ```
 
+### Complex Types
+
+Array, maps and unions can each be embedded within another complex type using
+methods that match the type name:
+
+```ruby
+record :complex_types do
+  required :array_of_unions, :array, items: union(:int, :string)
+  required :array_or_map, :union, types: [array(:int), map(:int)]
+end
+```
+
+For more on unions see [below](#unions).
+
 ### Nested Records
 
 Nested records may be created by referring to the name of the previously
