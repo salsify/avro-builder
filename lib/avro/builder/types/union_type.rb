@@ -17,12 +17,7 @@ module Avro
 
         # Unions are serialized as an array of types
         def serialize(referenced_state)
-          types_array = types.map { |type| type.serialize(referenced_state) }
-          if logical_type
-            { type: types_array, logicalType: logical_type }
-          else
-            types_array
-          end
+          types.map { |type| type.serialize(referenced_state) }
         end
 
         # serialized will be an array of types. If the array includes
@@ -33,6 +28,10 @@ module Avro
 
         def validate!
           validate_required_attribute!(:types)
+        end
+
+        def logical_type=(value)
+          raise AttributeError.new("Logical types are not supported for unions: #{value}.")
         end
       end
     end

@@ -254,6 +254,38 @@ end
 For an optional union, `null` is automatically added as the first type for
 the union and the field defaults to `null`.
 
+### Logical Types
+
+The DSL supports setting a logical type on any type except a union. The logical
+types defined in the Avro [spec](https://avro.apache.org/docs/1.8.1/spec.html#Logical+Types)
+are more limited. Also, there is not yet official [support](https://issues.apache.org/jira/browse/AVRO-1695)
+for logical types in the Ruby gem.
+
+A logical type can be specified for a field using the `logical_type` attribute:
+
+```ruby
+record :with_timestamp
+ required :created_at, :long, logical_type: 'timestamp-micros'
+end
+```
+
+Primitive types with a logical type can also be embedded within complex types
+using either the generic `type` method:
+
+```ruby
+record :with_date_array
+  required :date_array, :array, type(:int, logical_type: date)
+end
+```
+
+Or using a primitive type specific method:
+
+```ruby
+record :with_date_array
+  required :date_array, :array, int(logical_type: date)
+end
+```
+
 ### Auto-loading and Imports
 
 Specify paths to search for definitions:

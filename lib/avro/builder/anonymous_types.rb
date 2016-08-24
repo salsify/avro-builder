@@ -5,21 +5,25 @@ module Avro
     module AnonymousTypes
       include Avro::Builder::TypeFactory
 
+      Avro::Schema::PRIMITIVE_TYPES_SYM.each do |type_name|
+        define_method(type_name) do |options = {}, &block|
+          type(type_name, options, &block)
+        end
+      end
+
       def union(*types, &block)
-        avro_type(__method__, { types: types }, &block)
+        type(__method__, { types: types }, &block)
       end
 
-      def array(items, &block)
-        avro_type(__method__, { items: items }, &block)
+      def array(items, options = {}, &block)
+        type(__method__, { items: items }.merge(options), &block)
       end
 
-      def map(values, &block)
-        avro_type(__method__, { values: values }, &block)
+      def map(values, options = {}, &block)
+        type(__method__, { values: values }.merge(options), &block)
       end
 
-      private
-
-      def avro_type(type_name, options = {}, &block)
+      def type(type_name, options = {}, &block)
         create_and_configure_builtin_type(type_name,
                                           cache: cache,
                                           internal: options,

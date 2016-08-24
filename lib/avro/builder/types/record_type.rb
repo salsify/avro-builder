@@ -65,6 +65,7 @@ module Avro
               namespace: namespace,
               doc: doc,
               aliases: aliases,
+              logicalType: logical_type,
               fields: fields.values.map { |field| field.serialize(reference_state) }
             }.reject { |_, v| v.nil? }
           end
