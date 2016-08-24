@@ -1,8 +1,12 @@
 # avro-builder changelog
 
-## v0.10.0 (unreleased)
-- Add support for `union`, `map`, and `array` types that are not attached
-  directly to a field.
+## v0.10.0
+- Add support for generating schemas that contain logical types.
+- Add support for `union`, `map`, and `array` methods to embed those types
+  within other complex types.
+- Add methods for primitives types (`string`, `int`, `long`, `float`, etc)
+  that allow those types, including a logical type attribute, to be embedded
+  within complex types.
 
 ## v0.9.0
 - Add rake task to generate Avro JSON schema files for all DSL files under a
