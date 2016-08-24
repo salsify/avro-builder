@@ -8,6 +8,8 @@ module Avro
         include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
 
+        dsl_attribute :logical_type
+
         attr_reader :avro_type_name
 
         def initialize(avro_type_name, cache:, field: nil)
@@ -17,15 +19,21 @@ module Avro
         end
 
         def serialize(_reference_state)
-          avro_type_name
+          if logical_type
+            { type: avro_type_name, logicalType: logical_type }
+          else
+            avro_type_name
+          end
         end
 
         def namespace
           nil
         end
 
-        def configure_options(_options = {})
-          # No-op
+        def configure_options(options = {})
+          options.each do |key, value|
+            send("#{key}=", value) if dsl_option?(key)
+          end
         end
 
         # Optional fields are represented as a union of the type with :null.

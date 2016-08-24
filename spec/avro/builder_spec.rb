@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Avro::Builder do
   it "has a version number" do
     expect(Avro::Builder::VERSION).not_to be nil
@@ -1055,7 +1053,7 @@ describe Avro::Builder do
   end
 
   context "array of unions via method" do
-    subject(:test_class) do
+    subject(:schema_json) do
       described_class.build do
         record :unions do
           required :a, array(union(:string, :int))
@@ -1077,7 +1075,7 @@ describe Avro::Builder do
       }
     end
     it "raises an error" do
-      expect { test_class }
+      expect { schema_json }
         .to raise_error(/Type name must be an Avro builtin type or a previously defined type name\./)
     end
   end
@@ -1161,7 +1159,7 @@ describe Avro::Builder do
   end
 
   context "union field via method" do
-    subject(:test_class) do
+    subject(:schema_json) do
       described_class.build do
         record :array_or_map do
           required :u, union(array(:int), map(:string))
@@ -1184,7 +1182,7 @@ describe Avro::Builder do
       }
     end
     it "raises an error" do
-      expect { test_class }
+      expect { schema_json }
         .to raise_error(/Type name must be an Avro builtin type or a previously defined type name\./)
     end
   end
