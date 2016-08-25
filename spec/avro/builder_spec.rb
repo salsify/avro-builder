@@ -1060,20 +1060,6 @@ describe Avro::Builder do
         end
       end
     end
-    let(:expected) do
-      {
-        type: :record,
-        name: :unions,
-        fields: [
-          {
-            name: :a,
-            type: {
-              type: :array, items: [:string, :int]
-            }
-          }
-        ]
-      }
-    end
     it "raises an error" do
       expect { schema_json }
         .to raise_error(/Type name must be an Avro builtin type or a previously defined type name\./)
@@ -1165,21 +1151,6 @@ describe Avro::Builder do
           required :u, union(array(:int), map(:string))
         end
       end
-    end
-    let(:expected) do
-      {
-        type: :record,
-        name: :array_or_map,
-        fields: [
-          {
-            name: :u,
-            type: [
-              { type: :array, items: :int },
-              { type: :map, values: :string }
-            ]
-          }
-        ]
-      }
     end
     it "raises an error" do
       expect { schema_json }
