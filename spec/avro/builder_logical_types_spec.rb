@@ -1,6 +1,10 @@
 describe Avro::Builder, 'logical_types' do
   let(:schema) { Avro::Schema.parse(schema_json) }
 
+  def self.with_logical_types
+    yield if Avro::Schema.instance_methods.include?(:logical_type)
+  end
+
   context "primitive types" do
     # These are the logical types supported in https://github.com/apache/avro/pull/116
 
@@ -21,8 +25,11 @@ describe Avro::Builder, 'logical_types' do
       end
 
       it { is_expected.to be_json_eql(expected.to_json) }
-      it "sets the logical type on the field" do
-        expect(schema.fields.first.type.logical_type).to eq('date')
+
+      with_logical_types do
+        it "sets the logical type on the field" do
+          expect(schema.fields.first.type.logical_type).to eq('date')
+        end
       end
     end
 
@@ -43,8 +50,10 @@ describe Avro::Builder, 'logical_types' do
       end
 
       it { is_expected.to be_json_eql(expected.to_json) }
-      it "sets the logical type on the field" do
-        expect(schema.fields.first.type.logical_type).to eq('timestamp-micros')
+      with_logical_types do
+        it "sets the logical type on the field" do
+          expect(schema.fields.first.type.logical_type).to eq('timestamp-micros')
+        end
       end
     end
 
@@ -65,8 +74,10 @@ describe Avro::Builder, 'logical_types' do
       end
 
       it { is_expected.to be_json_eql(expected.to_json) }
-      it "sets the logical type on the field" do
-        expect(schema.fields.first.type.logical_type).to eq('timestamp-millis')
+      with_logical_types do
+        it "sets the logical type on the field" do
+          expect(schema.fields.first.type.logical_type).to eq('timestamp-millis')
+        end
       end
     end
   end
@@ -92,8 +103,10 @@ describe Avro::Builder, 'logical_types' do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
-    it "sets the logical type on the field" do
-      expect(schema.fields.first.type.logical_type).to eq('duration')
+    with_logical_types do
+      it "sets the logical type on the field" do
+        expect(schema.fields.first.type.logical_type).to eq('duration')
+      end
     end
   end
 
@@ -145,8 +158,7 @@ describe Avro::Builder, 'logical_types' do
                        { type: :double, name: :real },
                        { type: [:null, :double], name: :imaginary, default: nil }
                      ]
-                   }
-                 }]
+                   } }]
       }
     end
     it { is_expected.to be_json_eql(expected.to_json) }
