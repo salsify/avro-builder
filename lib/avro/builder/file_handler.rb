@@ -19,8 +19,6 @@ module Avro
         File.read(find_file(name))
       end
 
-      private
-
       def find_file(name)
         # Ensure that the file_name that is searched for begins with a slash (/)
         # and ends with a .rb extension. Additionally, if the name contains
