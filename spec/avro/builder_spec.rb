@@ -1720,4 +1720,47 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "DSL stack trace" do
+    shared_examples_for "it reports error location in the stack trace" do
+      # rubocop:disable Lint/HandleExceptions
+      it "includes the DSL file line number" do
+        begin
+          schema_json
+        rescue => ex
+        end
+        expect(ex.backtrace[1]).to start_with('spec/avro/dsl/test/invalid.rb:4:')
+      end
+      # rubocop:enable Lint/HandleExceptions
+    end
+
+    context "loading a reference from file" do
+      subject(:schema_json) do
+        described_class.build do
+          record :with_invalid do
+            required :i, :invalid
+          end
+        end
+      end
+
+      it_behaves_like "it reports error location in the stack trace"
+    end
+
+    context "loading a DSL file" do
+      let(:file_path) { 'spec/avro/dsl/test/invalid.rb' }
+      subject(:schema_json) do
+        described_class.build(File.read(file_path), filename: file_path)
+      end
+
+      it_behaves_like "it reports error location in the stack trace"
+    end
+
+    context "loading with just a filename" do
+      let(:file_path) { 'spec/avro/dsl/test/invalid.rb' }
+      subject(:schema_json) do
+        described_class.build(filename: file_path)
+      end
+
+      it_behaves_like "it reports error location in the stack trace"
+    end
+  end
 end

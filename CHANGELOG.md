@@ -1,12 +1,19 @@
 # avro-builder changelog
 
-## v0.10.0
+## v0.11.0
 - Add support for generating schemas that contain logical types.
 - Add support for `union`, `map`, and `array` methods to embed those types
   within other complex types.
 - Add methods for primitives types (`string`, `int`, `long`, `float`, etc)
   that allow those types, including a logical type attribute, to be embedded
   within complex types.
+
+## v0.10.0
+- Include DSL file line numbers in stack traces.
+- Add optional `filename` keyword argument to `Avro::Builder.build` and
+  `.build_schema`. Filename can now be used instead of a DSL string to build
+  schemas. When a filename is used, the file location of any error is included
+  in the stack trace.
 
 ## v0.9.0
 - Add rake task to generate Avro JSON schema files for all DSL files under a
