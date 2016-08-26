@@ -6,13 +6,13 @@ module Avro
   module Builder
 
     # Accepts a string or block to eval to define a JSON schema
-    def self.build(str = nil, &block)
-      Avro::Builder::DSL.new(str, &block).to_json
+    def self.build(str = nil, filename: nil, &block)
+      Avro::Builder::DSL.new(str, filename: filename, &block).to_json
     end
 
     # Accepts a string or block to eval and returns an Avro::Schema
-    def self.build_schema(str = nil, &block)
-      Avro::Builder::DSL.new(str, &block).as_schema
+    def self.build_schema(str = nil, filename: nil, &block)
+      Avro::Builder::DSL.new(str, filename: filename, &block).as_schema
     end
 
     # Add paths that will be searched for definitions

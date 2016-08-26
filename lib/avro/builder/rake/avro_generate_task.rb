@@ -34,7 +34,7 @@ module Avro
               Dir["#{root}/**/*.rb"].each do |dsl_file|
                 puts "Generating Avro schema from #{dsl_file}"
                 output_file = dsl_file.sub('/dsl/', '/schema/').sub(/\.rb$/, '.avsc')
-                schema = Avro::Builder.build(File.read(dsl_file))
+                schema = Avro::Builder.build(filename: dsl_file)
                 FileUtils.mkdir_p(File.dirname(output_file))
                 File.write(output_file, schema.end_with?("\n") ? schema : schema << "\n")
               end

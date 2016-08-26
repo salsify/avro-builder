@@ -1,5 +1,12 @@
 # avro-builder changelog
 
+## v0.10.0
+- Include DSL file line numbers in stack traces.
+- Add optional `filename` keyword argument to `Avro::Builder.build` and
+  `.build_schema`. Filename can now be used instead of a DSL string to build
+  schemas. When a filename is used, the file location of any error is included
+  in the stack trace.
+
 ## v0.9.0
 - Add rake task to generate Avro JSON schema files for all DSL files under a
   configurable root directory.
