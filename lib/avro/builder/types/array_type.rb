@@ -3,7 +3,6 @@ module Avro
     module Types
       class ArrayType < Type
         include Avro::Builder::Types::ComplexType
-        include Avro::Builder::Types::ConfigurableType
         include Avro::Builder::Types::TypeReferencer
 
         dsl_attribute :items do |items_type = nil|
@@ -19,10 +18,8 @@ module Avro
         end
 
         def serialize(referenced_state)
-          {
-            type: avro_type_name,
-            items: items.serialize(referenced_state)
-          }
+          super(referenced_state,
+                overrides: { items: items.serialize(referenced_state) })
         end
       end
     end

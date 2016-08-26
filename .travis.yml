@@ -2,6 +2,9 @@ language: ruby
 rvm:
   - 2.2.4
   - 2.3.1
+before_script:
+  - bundle exec appraisal install --jobs=3
 script:
   - bundle exec rubocop
-  - bundle exec rspec
+  - bundle exec appraisal avro-official rspec
+  - bundle exec appraisal avro-salsify-fork rspec

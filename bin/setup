@@ -4,4 +4,5 @@ IFS=$'\n\t'
 set -vx
 
 bundle install
+appraisal install
 overcommit --install

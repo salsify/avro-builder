@@ -3,7 +3,6 @@ module Avro
     module Types
       class UnionType < Type
         include Avro::Builder::Types::ComplexType
-        include Avro::Builder::Types::ConfigurableType
         include Avro::Builder::Types::TypeReferencer
 
         NULL_TYPE = 'null'.freeze
@@ -29,6 +28,10 @@ module Avro
 
         def validate!
           validate_required_attribute!(:types)
+        end
+
+        def logical_type=(value)
+          raise AttributeError.new("Logical types are not supported for unions: #{value}.")
         end
       end
     end
