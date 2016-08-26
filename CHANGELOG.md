@@ -1,7 +1,9 @@
 # avro-builder changelog
 
 ## v0.11.0
-- Add support for generating schemas that contain logical types.
+- Add support for generating schemas that contain logical types. The official
+  Ruby `avro` gem does not yet support logical types. The `avro-salsify-fork` gem
+  can be used to encode and decode logical types.
 - Add support for `union`, `map`, and `array` methods to embed those types
   within other complex types.
 - Add methods for primitives types (`string`, `int`, `long`, `float`, etc)

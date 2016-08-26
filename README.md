@@ -258,8 +258,18 @@ the union and the field defaults to `null`.
 
 The DSL supports setting a logical type on any type except a union. The logical
 types defined in the Avro [spec](https://avro.apache.org/docs/1.8.1/spec.html#Logical+Types)
-are more limited. Also, there is not yet official [support](https://issues.apache.org/jira/browse/AVRO-1695)
-for logical types in the Ruby gem.
+are more limited.
+
+The official Ruby `avro` gem does not yet support logical types:
+[AVRO-1695](https://issues.apache.org/jira/browse/AVRO-1695).
+
+There is a `avro-salsify-fork` gem released from this
+[fork](https://github.com/salsify/avro) that includes changes to support
+encoding and decoding logical types. To use this gem, reference it in your Gemfile:
+
+```ruby
+gem 'avro-salsify-fork', require: 'avro'
+```
 
 A logical type can be specified for a field using the `logical_type` attribute:
 
