@@ -26,6 +26,10 @@ module Avro
           }.merge(overrides).reject { |_, v| v.nil? }
         end
 
+        def to_h(reference_state)
+          serialize(reference_state)
+        end
+
         module ClassMethods
 
           # Infer avro_type_name based on class

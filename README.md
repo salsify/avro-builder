@@ -185,6 +185,16 @@ record :complex_types do
 end
 ```
 
+Methods may also be used for complex types instead of separately specifying the
+type name and options:
+
+```ruby
+record :complex_types do
+  required :array_of_unions, array(union(:int, :string))
+  required :array_or_map, union(array(:int), map(:int))
+end
+```
+
 For more on unions see [below](#unions).
 
 ### Nested Records
@@ -253,6 +263,16 @@ end
 
 For an optional union, `null` is automatically added as the first type for
 the union and the field defaults to `null`.
+
+Unions may also be defined using the `union` method instead of specifying the
+`:union` type and member types separately:
+
+```ruby
+record :my_record_with_unions do
+  required :req_union, union(:string, :int)
+  optional :opt_union, union(:float, :long)
+end
+```
 
 ### Logical Types
 

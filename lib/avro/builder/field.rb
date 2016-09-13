@@ -17,7 +17,7 @@ module Avro
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :default, :order
 
-      def initialize(name:, avro_type_name:, record:, cache:, internal: {}, options: {}, &block)
+      def initialize(name:, avro_type_or_name:, record:, cache:, internal: {}, options: {}, &block)
         @cache = cache
         @record = record
         @name = name.to_s
@@ -31,19 +31,14 @@ module Avro
           send(key, type_options.delete(key)) if dsl_attribute?(key)
         end
 
-        @field_type = if builtin_type?(avro_type_name)
-                        create_and_configure_builtin_type(avro_type_name,
-                                                          field: self,
-                                                          cache: cache,
-                                                          internal: internal,
-                                                          validate_type: false,
-                                                          options: type_options)
-                      elsif avro_type_name.is_a?(Avro::Builder::Types::Type)
-                        raise 'Type name must be an Avro builtin type '\
-                              "or a previously defined type name. Got #{avro_type_name}"
-                      else
-                        cache.lookup_named_type(avro_type_name, namespace)
-                      end
+        @field_type = type_dispatch(avro_type_or_name, namespace) do |avro_type_name|
+          create_and_configure_builtin_type(avro_type_name,
+                                            field: self,
+                                            cache: cache,
+                                            internal: internal,
+                                            validate_type: false,
+                                            options: type_options)
+        end
 
         # DSL calls must be evaluated after the type has been constructed
         instance_eval(&block) if block_given?

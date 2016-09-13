@@ -26,9 +26,9 @@ module Avro
         end
 
         # Add a required field to the record
-        def required(name, avro_type_name, options = {}, &block)
+        def required(name, avro_type_or_name, options = {}, &block)
           new_field = Avro::Builder::Field.new(name: name,
-                                               avro_type_name: avro_type_name,
+                                               avro_type_or_name: avro_type_or_name,
                                                record: self,
                                                cache: cache,
                                                internal: { type_namespace: namespace },
@@ -39,9 +39,9 @@ module Avro
 
         # Add an optional field to the record. In Avro this is represented
         # as a union of null and the type specified here.
-        def optional(name, avro_type_name, options = {}, &block)
+        def optional(name, avro_type_or_name, options = {}, &block)
           new_field = Avro::Builder::Field.new(name: name,
-                                               avro_type_name: avro_type_name,
+                                               avro_type_or_name: avro_type_or_name,
                                                record: self,
                                                cache: cache,
                                                internal: { type_namespace: namespace,
