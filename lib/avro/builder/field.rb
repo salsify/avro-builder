@@ -31,7 +31,9 @@ module Avro
           send(key, type_options.delete(key)) if dsl_attribute?(key)
         end
 
-        @field_type = type_dispatch(avro_type_or_name, namespace) do |avro_type_name|
+        # Find existing Type or build a new instance of a builtin Type using
+        # the supplied block
+        @field_type = type_lookup(avro_type_or_name, namespace) do |avro_type_name|
           create_and_configure_builtin_type(avro_type_name,
                                             field: self,
                                             cache: cache,

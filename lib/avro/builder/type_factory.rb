@@ -10,7 +10,12 @@ module Avro
 
       private
 
-      def type_dispatch(avro_type_or_name, namespace = nil)
+      # Determine if avro_type_or_name is an existing Type, the name of a builtin
+      # type or a previously defined named type.
+      # If avro_type_or_name is the name of a builtin type, then that type name
+      # is yielded to build the type using a block provided by the caller using,
+      # for example, create_builtin_type or create_and_configure_builtin_type.
+      def type_lookup(avro_type_or_name, namespace = nil)
         if avro_type_or_name.is_a?(Avro::Builder::Types::Type)
           avro_type_or_name
         elsif builtin_type?(avro_type_or_name)

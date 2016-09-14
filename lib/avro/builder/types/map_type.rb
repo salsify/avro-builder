@@ -7,7 +7,7 @@ module Avro
 
         dsl_attribute :values do |value_type = nil|
           if value_type
-            @values = create_builtin_or_lookup_named_type(value_type)
+            @values = create_builtin_or_lookup_type(value_type)
           else
             @values
           end
