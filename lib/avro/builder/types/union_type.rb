@@ -9,7 +9,7 @@ module Avro
 
         dsl_attribute :types do |*types|
           if !types.empty?
-            @types = types.flatten.map { |type| create_builtin_or_lookup_named_type(type) }
+            @types = types.flatten.map { |type| create_builtin_or_lookup_type(type) }
           else
             @types
           end

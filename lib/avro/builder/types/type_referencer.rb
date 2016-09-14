@@ -8,13 +8,13 @@ module Avro
       module TypeReferencer
         include Avro::Builder::TypeFactory
 
-        def create_builtin_or_lookup_named_type(avro_type_or_name)
-          if avro_type_or_name.is_a?(Avro::Builder::Types::Type)
-            avro_type_or_name
-          elsif builtin_type?(avro_type_or_name)
-            create_builtin_type(avro_type_or_name, field: field, cache: cache)
-          else
-            cache.lookup_named_type(avro_type_or_name)
+        private
+
+        def create_builtin_or_lookup_type(avro_type_or_name)
+          # Find existing Type or build a new instance of a builtin Type using
+          # the supplied block
+          type_lookup(avro_type_or_name) do |avro_type_name|
+            create_builtin_type(avro_type_name, field: field, cache: cache)
           end
         end
       end

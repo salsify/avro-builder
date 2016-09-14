@@ -22,7 +22,7 @@ module Avro
       include Avro::Builder::DslOptions
       include Avro::Builder::DslAttributes
       include Avro::Builder::FileHandler
-      include Avro::Builder::TypeFactory
+      include Avro::Builder::AnonymousTypes
 
       dsl_attribute :namespace
 
@@ -81,6 +81,12 @@ module Avro
 
       def as_schema
         Avro::Schema.parse(to_json(validate: false))
+      end
+
+      # Override the type method from AnonymousTypes to store a reference to the
+      # last type defined.
+      def type(*)
+        @last_object = super
       end
 
       private

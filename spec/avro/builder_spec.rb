@@ -1,6 +1,102 @@
 describe Avro::Builder do
-  it "has a version number" do
-    expect(Avro::Builder::VERSION).not_to be nil
+  context "primitive types" do
+    describe "#type" do
+      subject do
+        described_class.build do
+          type(:string)
+        end
+      end
+      let(:expected) { { type: :string } }
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+
+    describe "#boolean" do
+      subject do
+        described_class.build do
+          boolean
+        end
+      end
+      let(:expected) { { type: :boolean } }
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+
+    describe "#int with logical type date" do
+      subject do
+        described_class.build do
+          int(logical_type: :date)
+        end
+      end
+      let(:expected) { { type: :int, logicalType: :date } }
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+
+    describe "#long with logical type timestamp" do
+      subject do
+        described_class.build do
+          long(logical_type: 'timestamp-micros')
+        end
+      end
+      let(:expected) { { type: :long, logicalType: 'timestamp-micros' } }
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+  end
+
+  context "complex types" do
+    describe "#array" do
+      subject do
+        described_class.build do
+          array(:int)
+        end
+      end
+      let(:expected) { { type: :array, items: :int } }
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+
+    describe "#map" do
+      subject do
+        described_class.build do
+          map(int(logical_type: :date))
+        end
+        let(:expected) { { type: :map, values: { type: :int, logicalType: :date } } }
+        it { is_expected.to be_json_eql(expected.to_json) }
+      end
+    end
+
+    describe "#union" do
+      subject do
+        described_class.build do
+          union(array(:long), :string)
+        end
+      end
+      let(:expected) { [{ type: :array, items: :long }, :string] }
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+  end
+
+  context "with a locally defined type" do
+    subject do
+      described_class.build do
+        timestamp = long(logical_type: 'timestamp-micros')
+
+        record :with_local_ref do
+          required :times, array(timestamp)
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :with_local_ref,
+        fields: [{
+          name: :times,
+          type: {
+            type: :array,
+            items: { type: :long, logicalType: 'timestamp-micros' }
+          }
+        }]
+      }
+    end
+    it { is_expected.to be_json_eql(expected.to_json) }
   end
 
   context "enum type" do
@@ -1060,10 +1156,21 @@ describe Avro::Builder do
         end
       end
     end
-    it "raises an error" do
-      expect { schema_json }
-        .to raise_error(/Type name must be an Avro builtin type or a previously defined type name\./)
+    let(:expected) do
+      {
+        type: :record,
+        name: :unions,
+        fields: [
+          {
+            name: :a,
+            type: {
+              type: :array, items: [:string, :int]
+            }
+          }
+        ]
+      }
     end
+    it { is_expected.to be_json_eql(expected.to_json) }
   end
 
   context "array of unions with block" do
@@ -1152,10 +1259,22 @@ describe Avro::Builder do
         end
       end
     end
-    it "raises an error" do
-      expect { schema_json }
-        .to raise_error(/Type name must be an Avro builtin type or a previously defined type name\./)
+    let(:expected) do
+      {
+        type: :record,
+        name: :array_or_map,
+        fields: [
+          {
+            name: :u,
+            type: [
+              { type: :array, items: :int },
+              { type: :map, values: :string }
+            ]
+          }
+        ]
+      }
     end
+    it { is_expected.to be_json_eql(expected.to_json) }
   end
 
   context "record with extends" do

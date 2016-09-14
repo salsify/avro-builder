@@ -26,6 +26,11 @@ module Avro
           end
         end
 
+        def to_h(_reference_state)
+          { type: avro_type_name, logicalType: logical_type }
+            .reject { |_, v| v.nil? }
+        end
+
         def namespace
           nil
         end
