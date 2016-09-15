@@ -316,6 +316,21 @@ record :with_date_array
 end
 ```
 
+### User-defined Types
+
+`avro-builder` allows a name to be associated with types that are not usually
+named in Avro schemas. This name will not be retained in the generated schema
+but it allows definitions to be reused across DSL files:
+
+```ruby
+define_type(:timestamp, long(logical_type: 'timestamp-millis'))
+
+record :user do
+  required :created_at, :timestamp
+  required :updated_at, :timestamp
+end
+```
+
 ### Auto-loading and Imports
 
 Specify paths to search for definitions:

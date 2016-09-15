@@ -32,6 +32,18 @@ module Avro
         object || lookup_named_type(key, nil)
       end
 
+      # Add a type object directly with the specified name.
+      # The type_object may not have a name or namespace.
+      def add_type_by_name(name, type_object)
+        key = name.to_s
+        if schema_objects.key?(key)
+          raise DuplicateDefinitionError.new(key, type_object, schema_objects[key])
+        else
+          schema_names.add(key)
+          schema_objects.store(key, type_object)
+        end
+      end
+
       private
 
       # Schemas are stored by name, provided that the name is unique.

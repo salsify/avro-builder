@@ -89,6 +89,10 @@ module Avro
         @last_object = super
       end
 
+      def define_type(name, type_object)
+        cache.add_type_by_name(name, type_object)
+      end
+
       private
 
       def cache

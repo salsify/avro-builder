@@ -1,5 +1,8 @@
 # avro-builder changelog
 
+## v0.13.0
+- Add support for user-defined types.
+
 ## v0.12.0
 - Allow methods for complex and primitive types to be used at the top-level and
   anywhere that a type name is accepted.
