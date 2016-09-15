@@ -34,14 +34,12 @@ module Avro
 
       # Add a type object directly with the specified name.
       # The type_object may not have a name or namespace.
-      def add_type_by_name(name, type_object)
-        key = name.to_s
-        if schema_objects.key?(key)
-          raise DuplicateDefinitionError.new(key, type_object, schema_objects[key])
-        else
-          schema_names.add(key)
-          schema_objects.store(key, type_object)
-        end
+      def add_type_by_name(type_object, name, namespace = nil)
+        fullname = Avro::Name.make_fullname(name.to_s, namespace && namespace.to_s)
+        name = fullname.split('.').last
+
+        store_by_name(type_object, name)
+        store_by_fullname(type_object, fullname) if name != fullname
       end
 
       private
@@ -50,8 +48,8 @@ module Avro
       # If the unqualified name is ambiguous then it is removed from the cache.
       # A set of unqualified names is kept to avoid reloading files for
       # ambiguous references.
-      def store_by_name(object)
-        key = object.name.to_s
+      def store_by_name(object, name = nil)
+        key = name || object.name.to_s
         if schema_objects.key?(key)
           schema_objects.delete(key)
         elsif !schema_names.include?(key)
@@ -60,8 +58,8 @@ module Avro
         schema_names.add(key)
       end
 
-      def store_by_fullname(object)
-        key = object.fullname
+      def store_by_fullname(object, fullname = nil)
+        key = fullname || object.fullname
         raise DuplicateDefinitionError.new(key, object, schema_objects[key]) if schema_objects.key?(key)
         schema_objects.store(key, object)
       end

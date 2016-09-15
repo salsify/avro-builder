@@ -89,8 +89,23 @@ module Avro
         @last_object = super
       end
 
-      def define_type(name, type_object)
-        cache.add_type_by_name(name, type_object)
+      # Several variants:
+      # define_type(:foo, long)
+      # define_type(:bar, { namespace: 'com.example' }, long)
+      # define_type(:baz, 'com.example', long)
+      # define_type('foo.bar', long)
+      def define_type(name, *other)
+        type_object = other.last
+        raise "#{type_object.inspect} must be a type object" unless type_object.is_a?(Types::Type)
+        options = case other.first
+                  when Hash
+                    other.first
+                  when String, Symbol
+                    { namespace: other.first }
+                  else
+                    {}
+                  end
+        cache.add_type_by_name(type_object, name, options[:namespace] || namespace)
       end
 
       private
