@@ -1,3 +1,3 @@
 namespace 'test'
 
-define_type(:date, int(logical_type: :date))
+type_macro :date, int(logical_type: :date)

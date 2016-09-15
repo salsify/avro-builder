@@ -316,19 +316,27 @@ record :with_date_array
 end
 ```
 
-### User-defined Types
+### Type Macros
 
-`avro-builder` allows a name to be associated with types that are not usually
-named in Avro schemas. This name will not be retained in the generated schema
-but it allows definitions to be reused across DSL files:
+`avro-builder` allows type macros to be defined that expand to types that
+cannot normally be named in Avro schemas. These macro names are not retained
+in generated schemas but allow definitions to be reused across DSL files:
 
 ```ruby
-define_type(:timestamp, long(logical_type: 'timestamp-millis'))
+type_macro :timestamp, long(logical_type: 'timestamp-millis')
 
 record :user do
   required :created_at, :timestamp
   required :updated_at, :timestamp
 end
+```
+
+Type macros inherit the namespace from the context where they are defined or
+an explicit namespace option may be specified:
+
+```ruby
+type_macro :timestamp, long(logical_type: 'timestamp-millis'),
+           namespace: 'com.my_company'
 ```
 
 ### Auto-loading and Imports
