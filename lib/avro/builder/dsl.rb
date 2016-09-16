@@ -89,6 +89,12 @@ module Avro
         @last_object = super
       end
 
+      def type_macro(name, type_object, options = {})
+        raise "#{type_object.inspect} must be a type object" unless type_object.is_a?(Types::Type)
+        raise "namespace cannot be included in name: #{name}" if name.to_s.index('.')
+        cache.add_type_by_name(type_object, name, options[:namespace] || namespace)
+      end
+
       private
 
       def cache

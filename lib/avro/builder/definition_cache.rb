@@ -32,26 +32,34 @@ module Avro
         object || lookup_named_type(key, nil)
       end
 
+      # Add a type object directly with the specified name.
+      # The type_object may not have a name or namespace.
+      def add_type_by_name(type_object, name, namespace = nil)
+        fullname = Avro::Name.make_fullname(name.to_s, namespace && namespace.to_s)
+        name = fullname.split('.').last
+
+        store_by_name(type_object, name)
+        store_by_fullname(type_object, fullname) if name != fullname
+      end
+
       private
 
       # Schemas are stored by name, provided that the name is unique.
       # If the unqualified name is ambiguous then it is removed from the cache.
       # A set of unqualified names is kept to avoid reloading files for
       # ambiguous references.
-      def store_by_name(object)
-        key = object.name.to_s
-        if schema_objects.key?(key)
-          schema_objects.delete(key)
-        elsif !schema_names.include?(key)
-          schema_objects.store(key, object)
+      def store_by_name(object, name = object.name.to_s)
+        if schema_objects.key?(name)
+          schema_objects.delete(name)
+        elsif !schema_names.include?(name)
+          schema_objects.store(name, object)
         end
-        schema_names.add(key)
+        schema_names.add(name)
       end
 
-      def store_by_fullname(object)
-        key = object.fullname
-        raise DuplicateDefinitionError.new(key, object, schema_objects[key]) if schema_objects.key?(key)
-        schema_objects.store(key, object)
+      def store_by_fullname(object, fullname = object.fullname)
+        raise DuplicateDefinitionError.new(fullname, object, schema_objects[fullname]) if schema_objects.key?(fullname)
+        schema_objects.store(fullname, object)
       end
 
       attr_reader :schema_objects, :schema_names, :builder
