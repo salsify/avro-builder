@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'json_spec'
   spec.add_development_dependency 'simplecov'
-  spec.add_development_dependency 'salsify_rubocop', '~> 0.40.0'
+  spec.add_development_dependency 'salsify_rubocop', '~> 0.45.0'
   spec.add_development_dependency 'overcommit'
 end

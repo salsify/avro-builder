@@ -1,7 +1,7 @@
 describe Avro::Builder do
   context "primitive types" do
     describe "#type" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           type(:string)
         end
@@ -11,7 +11,7 @@ describe Avro::Builder do
     end
 
     describe "#boolean" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           boolean
         end
@@ -21,7 +21,7 @@ describe Avro::Builder do
     end
 
     describe "#int with logical type date" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           int(logical_type: :date)
         end
@@ -31,7 +31,7 @@ describe Avro::Builder do
     end
 
     describe "#long with logical type timestamp" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           long(logical_type: 'timestamp-micros')
         end
@@ -43,7 +43,7 @@ describe Avro::Builder do
 
   context "complex types" do
     describe "#array" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           array(:int)
         end
@@ -53,7 +53,7 @@ describe Avro::Builder do
     end
 
     describe "#map" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           map(int(logical_type: :date))
         end
@@ -63,7 +63,7 @@ describe Avro::Builder do
     end
 
     describe "#union" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           union(array(:long), :string)
         end
@@ -74,7 +74,7 @@ describe Avro::Builder do
   end
 
   context "with a locally defined type" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         timestamp = long(logical_type: 'timestamp-micros')
 
@@ -100,7 +100,7 @@ describe Avro::Builder do
   end
 
   context "enum type" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum :enum1, :ONE, :TWO
       end
@@ -116,7 +116,7 @@ describe Avro::Builder do
   end
 
   context "enum with symbols in hash" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum :enum1, symbols: [:ONE, :TWO], doc: 'Uses hash'
       end
@@ -133,7 +133,7 @@ describe Avro::Builder do
   end
 
   context "enum type with options" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum :enum2, :ONE, :TWO, namespace: 'com.example' do
           doc 'Example Enum'
@@ -155,7 +155,7 @@ describe Avro::Builder do
   end
 
   context "enum with symbols splat" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum :enum3 do
           symbols :A, :B
@@ -173,7 +173,7 @@ describe Avro::Builder do
   end
 
   context "enum with symbols array" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum :enum3 do
           symbols [:A, :B]
@@ -191,7 +191,7 @@ describe Avro::Builder do
   end
 
   context "enum type_name as option" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum type_name: :enum3 do
           symbols :A, :B
@@ -206,13 +206,13 @@ describe Avro::Builder do
       }
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /name must be specified as the first argument/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /name must be specified as the first argument/)
     end
   end
 
   context "enum name as option" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum name: :enum3 do
           symbols :A, :B
@@ -227,27 +227,27 @@ describe Avro::Builder do
       }
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /name must be specified as the first argument/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /name must be specified as the first argument/)
     end
   end
 
   context "enum without symbols" do
-    subject do
+    subject(:schema_json) do
       described_class.build_schema do
         enum :broken_enum
       end
     end
 
     it "is invalid" do
-      expect { subject }
+      expect { schema_json }
         .to raise_error(Avro::Builder::RequiredAttributeError,
                         "attribute :symbols missing for 'broken_enum' of type :enum")
     end
   end
 
   context "enum without name" do
-    subject do
+    subject(:schema_json) do
       described_class.build_schema do
         enum do
           symbols %(A B)
@@ -256,14 +256,14 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }
+      expect { schema_json }
         .to raise_error(Avro::Builder::RequiredAttributeError,
                         'attribute :name missing for type :enum')
     end
   end
 
   context "fixed type" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :eight, 8
       end
@@ -279,7 +279,7 @@ describe Avro::Builder do
   end
 
   context "fixed type with size in hash" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :eight, size: 9
       end
@@ -295,7 +295,7 @@ describe Avro::Builder do
   end
 
   context "fixed type with options" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :seven, namespace: 'com.example' do
           size 7
@@ -316,7 +316,7 @@ describe Avro::Builder do
   end
 
   context "fixed type with type_aliases via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :seven, namespace: 'com.example' do
           size 7
@@ -325,13 +325,13 @@ describe Avro::Builder do
       end
     end
     it "raises and error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'aliases' must be used instead/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'aliases' must be used instead/)
     end
   end
 
   context "fixed type with type_aliases via option" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :seven, namespace: 'com.example', type_aliases: 'MoreThanSix' do
           size 7
@@ -339,13 +339,13 @@ describe Avro::Builder do
       end
     end
     it "raises and error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'aliases' must be used instead/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'aliases' must be used instead/)
     end
   end
 
   context "fixed type with type_namespace option" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :seven, type_namespace: 'com.example' do
           size 7
@@ -353,13 +353,13 @@ describe Avro::Builder do
       end
     end
     it "raises and error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'namespace' must be specified as an option/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'namespace' must be specified as an option/)
     end
   end
 
   context "fixed with block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :eight do
           size 9
@@ -377,21 +377,21 @@ describe Avro::Builder do
   end
 
   context "fixed without size" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :broken_fixed
       end
     end
 
     it "is invalid" do
-      expect { subject }
+      expect { schema_json }
         .to raise_error(Avro::Builder::RequiredAttributeError,
                         "attribute :size missing for 'broken_fixed' of type :fixed")
     end
   end
 
   context "fixed without name" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed do
           size 2
@@ -400,14 +400,14 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }
+      expect { schema_json }
         .to raise_error(Avro::Builder::RequiredAttributeError,
                         'attribute :name missing for type :fixed')
     end
   end
 
   context "record" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :r do
           required :n, :null
@@ -441,7 +441,7 @@ describe Avro::Builder do
   end
 
   context "record with namespace" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         namespace 'com.example.foo'
 
@@ -466,7 +466,7 @@ describe Avro::Builder do
   end
 
   context "record with namespace as an option" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :rec, namespace: 'com.example.foo' do
           optional :id, :long
@@ -489,7 +489,7 @@ describe Avro::Builder do
   end
 
   context "record with name via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record do
           name :invalid
@@ -498,13 +498,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /name must be specified as the first argument/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /name must be specified as the first argument/)
     end
   end
 
   context "record with type_name via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record do
           type_name :invalid
@@ -513,13 +513,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /name must be specified/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /name must be specified/)
     end
   end
 
   context "record with namespace via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :foo do
           namespace :invalid
@@ -528,13 +528,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'namespace' must be specified as an option/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'namespace' must be specified as an option/)
     end
   end
 
   context "record with type_namespace via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :foo do
           type_namespace :invalid
@@ -543,13 +543,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'namespace' must be specified as an option/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'namespace' must be specified as an option/)
     end
   end
 
   context "record with type_namespace as option" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :foo, type_namespace: :valid do
           required :i, :int
@@ -565,13 +565,13 @@ describe Avro::Builder do
       }
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'namespace' must be specified as an option instead/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'namespace' must be specified as an option instead/)
     end
   end
 
   context "record with inline enum" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :with_enum do
           required :e1, :enum, type_name: :e_enum do
@@ -595,7 +595,7 @@ describe Avro::Builder do
   end
 
   context "record with inline fixed" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :with_fixed do
           required :f1, :fixed, type_name: :f5 do
@@ -619,7 +619,7 @@ describe Avro::Builder do
   end
 
   context "record with inline named fixed and reference to it" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :with_magic do
           required :magic, :fixed, type_name: :Magic, size: 4
@@ -642,7 +642,7 @@ describe Avro::Builder do
 
   context "record with reference to anonymous inline fixed" do
     let(:generated_name) { :__with_magic_magic_fixed }
-    subject do
+    subject(:schema_json) do
       reference = generated_name
       described_class.build do
         record :with_magic do
@@ -666,7 +666,7 @@ describe Avro::Builder do
 
 
   context "record with repeated definition of inline named fix" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :with_magic do
           required :magic, :fixed, type_name: :Magic, size: 4
@@ -685,13 +685,13 @@ describe Avro::Builder do
       }
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::DuplicateDefinitionError)
+      expect { schema_json }.to raise_error(Avro::Builder::DuplicateDefinitionError)
     end
   end
 
 
   context "record with type references" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :id, 8
         enum :e, :X, :Y, :Z
@@ -720,7 +720,7 @@ describe Avro::Builder do
   end
 
   context "record with namespace and references" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         namespace 'com.example'
 
@@ -752,7 +752,7 @@ describe Avro::Builder do
   end
 
   context "record with reference in another namespace" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         namespace 'com.example.one'
         fixed :id, 2
@@ -777,7 +777,7 @@ describe Avro::Builder do
   end
 
   context "record that extends another record" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :shared_id_record do
           required :id, :int, default: 0
@@ -803,7 +803,7 @@ describe Avro::Builder do
   end
 
   context "record that extends multiple records" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :shared_id_record do
           required :id, :int, default: 0
@@ -832,7 +832,7 @@ describe Avro::Builder do
   end
 
   context "record with extends and override" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :original do
           required :first, :string
@@ -859,7 +859,7 @@ describe Avro::Builder do
   end
 
   context "record without name" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record do
           required :i, :int
@@ -868,14 +868,14 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }
+      expect { schema_json }
         .to raise_error(Avro::Builder::RequiredAttributeError,
                         'attribute :name missing for type :record')
     end
   end
 
   context "union" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :record_with_union do
           required :s_or_i, :union, types: %i(string int)
@@ -895,7 +895,7 @@ describe Avro::Builder do
   end
 
   context "optional union" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :record_with_optional_union do
           optional :s_or_i, :union, types: %i(string int)
@@ -915,7 +915,7 @@ describe Avro::Builder do
   end
 
   context "optional union that contains null" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :record_with_opt_union_with_null do
           optional :s_or_i, :union, types: %i(string null int)
@@ -935,7 +935,7 @@ describe Avro::Builder do
   end
 
   context "union with references to named types" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :f_type, 5
         enum :e_type, :A, :B
@@ -968,7 +968,7 @@ describe Avro::Builder do
   end
 
   context "union with repeated reference" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :f_type, 5
 
@@ -992,7 +992,7 @@ describe Avro::Builder do
   end
 
   context "union without types" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :broken_union do
           required :u, :union
@@ -1001,14 +1001,14 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }
+      expect { schema_json }
         .to raise_error(Avro::Builder::RequiredAttributeError,
                         "attribute :types missing for field 'u' of type :union")
     end
   end
 
   context "map" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :record_with_map do
           required :stringy_map, :map, values: :string
@@ -1028,7 +1028,7 @@ describe Avro::Builder do
   end
 
   context "map with named type" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum :alpha, :A, :B
 
@@ -1050,7 +1050,7 @@ describe Avro::Builder do
   end
 
   context "map without values type" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :broken_map do
           required :m, :map
@@ -1059,14 +1059,14 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }
+      expect { schema_json }
         .to raise_error(Avro::Builder::RequiredAttributeError,
                         "attribute :values missing for field 'm' of type :map")
     end
   end
 
   context "array" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :record_with_array do
           required :ary_of_ints, :array, items: :int
@@ -1086,7 +1086,7 @@ describe Avro::Builder do
   end
 
   context "array with named type" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :uuid, 8
 
@@ -1108,7 +1108,7 @@ describe Avro::Builder do
   end
 
   context "array without items type" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :broken_array do
           required :a, :array
@@ -1117,14 +1117,14 @@ describe Avro::Builder do
     end
 
     it "is invalid" do
-      expect { subject }
+      expect { schema_json }
         .to raise_error(Avro::Builder::RequiredAttributeError,
                         "attribute :items missing for field 'a' of type :array")
     end
   end
 
   context "array of unions" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :unions do
           required :a, :array, items: union(:string, :int)
@@ -1174,7 +1174,7 @@ describe Avro::Builder do
   end
 
   context "array of unions with block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :unions do
           required :a, :array, items: union { types [:string, :int] }
@@ -1199,7 +1199,7 @@ describe Avro::Builder do
   end
 
   context "array of unions with block for a field" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :unions do
           required :a, :array do
@@ -1226,7 +1226,7 @@ describe Avro::Builder do
   end
 
   context "union of array and map" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :array_or_map do
           required :u, :union, types: [array(:int), map(:string)]
@@ -1278,7 +1278,7 @@ describe Avro::Builder do
   end
 
   context "record with extends" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :base_id do
           required :id, :long
@@ -1304,7 +1304,7 @@ describe Avro::Builder do
   end
 
   context "record with subrecord reference" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :sub_rec, namespace: 'com.example.A' do
           required :i, :int
@@ -1337,7 +1337,7 @@ describe Avro::Builder do
   end
 
   context "inline, nested record" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         namespace 'com.example'
 
@@ -1368,7 +1368,7 @@ describe Avro::Builder do
   end
 
   context "inline, nested record with namespace" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         namespace 'com.example'
 
@@ -1399,7 +1399,7 @@ describe Avro::Builder do
   end
 
   context "triple-nested record" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         namespace 'com.example'
         record :A do
@@ -1458,7 +1458,7 @@ describe Avro::Builder do
 
 
   context "inline, named, nested record" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :my_rec, namespace: 'com.example' do
           required :nested, :record, type_name: :nested_rec do
@@ -1487,7 +1487,7 @@ describe Avro::Builder do
   end
 
   context "inline record named via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :my_rec, namespace: 'com.example' do
           required :nested, :record do
@@ -1498,13 +1498,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'type_name' must be specified as an option/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'type_name' must be specified as an option/)
     end
   end
 
   context "inline record name via option via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :my_rec, namespace: 'com.example' do
           required :nested, :record, name: :nested_rec do
@@ -1514,13 +1514,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'type_name' must be specified as an option/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'type_name' must be specified as an option/)
     end
   end
 
   context "inline record namespaced via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :my_rec do
           required :nested, :record do
@@ -1531,13 +1531,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'type_namespace' must be specified as an option/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'type_namespace' must be specified as an option/)
     end
   end
 
   context "inline record with namespace option" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :my_rec do
           required :nested, :record, namespace: :invalid do
@@ -1547,13 +1547,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'type_namespace' must be specified as an option instead/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'type_namespace' must be specified as an option instead/)
     end
   end
 
   context "inline record type_name via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :my_rec, namespace: 'com.example' do
           required :nested, :record do
@@ -1564,13 +1564,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'type_name' must be specified as an option/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'type_name' must be specified as an option/)
     end
   end
 
   context "inline record type_namespace via block" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :my_rec, namespace: 'com.example' do
           required :nested, :record do
@@ -1581,13 +1581,13 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::AttributeError,
-                                        /'type_namespace' must be specified as an option/)
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /'type_namespace' must be specified as an option/)
     end
   end
 
   context "ambiguous reference requiring namespacing" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         fixed :a_fix, size: 5, namespace: :test
         fixed :a_fix, size: 6, namespace: :other
@@ -1599,12 +1599,12 @@ describe Avro::Builder do
       end
     end
     it "raises an error" do
-      expect { subject }.to raise_error(Avro::Builder::DefinitionNotFoundError)
+      expect { schema_json }.to raise_error(Avro::Builder::DefinitionNotFoundError)
     end
   end
 
   context "reference in a different namespace" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         enum :my_enum, :A, namespace: :outer
 
@@ -1636,7 +1636,7 @@ describe Avro::Builder do
   end
 
   context "references requiring namespacing" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         import 'test.ambiguous'
         import 'other.ambiguous'
@@ -1668,7 +1668,7 @@ describe Avro::Builder do
 
   context "recursive example" do
     # this is an example from the Avro specification
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :LongList, aliases: :LinkedLongs do
           required :value, :long
@@ -1691,7 +1691,7 @@ describe Avro::Builder do
   end
 
   context "a field with aliases and a type with aliases" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :all_the_aliases, aliases: [:top_level] do
           required :rec, :record, type_name: :aliased_rec, aliases: :field_alias do
@@ -1724,7 +1724,7 @@ describe Avro::Builder do
   end
 
   context "doc option on field" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :with_documented_field do
           required :f, :record, doc: 'field documentation' do
@@ -1751,7 +1751,7 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
 
     context "doc attribute on field" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           record :with_documented_field do
             required :f, :record do
@@ -1780,7 +1780,7 @@ describe Avro::Builder do
     end
 
     context "doc option on inline type" do
-      subject do
+      subject(:schema_json) do
         described_class.build do
           record :with_documented_field do
             required :f, :record, type_doc: 'inline type doc' do
@@ -1809,7 +1809,7 @@ describe Avro::Builder do
   end
 
   context "doc attribute on field and inline type" do
-    subject do
+    subject(:schema_json) do
       described_class.build do
         record :with_documented_field do
           required :f, :record do
