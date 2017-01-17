@@ -9,11 +9,6 @@ module Avro
         attr_accessor :name, :task_namespace, :task_desc, :root,
                       :load_paths, :dependencies, :filetype
 
-        FILETYPES = {
-          avsc: '.avsc',
-          json: '.json'
-        }.freeze
-
         def initialize(name: :generate, dependencies: [])
           @name = name
           @task_namespace = :avro
@@ -21,7 +16,7 @@ module Avro
           @load_paths = []
           @root = "#{Rails.root}/avro/dsl" if defined?(Rails)
           @dependencies = dependencies
-          @filetype = :avsc
+          @filetype = 'avsc'
 
           yield self if block_given?
 
@@ -39,7 +34,7 @@ module Avro
               Avro::Builder.add_load_path(*[root, load_paths].flatten)
               Dir["#{root}/**/*.rb"].each do |dsl_file|
                 puts "Generating Avro schema from #{dsl_file}"
-                output_file = dsl_file.sub('/dsl/', '/schema/').sub(/\.rb$/, FILETYPES[filetype])
+                output_file = dsl_file.sub('/dsl/', '/schema/').sub(/\.rb$/, ".#{filetype}")
                 schema = Avro::Builder.build(filename: dsl_file)
                 FileUtils.mkdir_p(File.dirname(output_file))
                 File.write(output_file, schema.end_with?("\n") ? schema : schema << "\n")
