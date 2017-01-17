@@ -398,10 +398,10 @@ Custom rake tasks can also be defined:
 require 'avro/builder/rake/avro_generate_task'
 Avro::Builder::Rake::AvroGenerateTask.new(name: :custom_gen,
                                           dependencies: [:load_app]) do |task|
+  task.filetype = 'avsc' # default option
   task.root = '/path/to/dsl/files'
   task.load_paths << '/additional/dsl/files'
 end
-)
 ```
 
 ## Development
