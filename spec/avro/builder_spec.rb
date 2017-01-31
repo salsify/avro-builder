@@ -1107,6 +1107,76 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "array of records" do
+    subject(:schema_json) do
+      described_class.build do
+        record :array_of_records do
+          required :ary, :array, items: (record(:inlined_record) { required :name, :string })
+        end
+      end
+    end
+
+    let(:expected) do
+      {
+        type: :record,
+        name: :array_of_records,
+        fields: [{
+          name: :ary,
+          type: {
+            type: :array,
+            items: {
+              name: :inlined_record,
+              type: :record,
+              fields: [{ name: :name, type: :string }]
+            }
+          }
+        }]
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "record with array of records" do
+    subject(:schema_json) do
+      described_class.build do
+        record :array_of_records do
+          required :outer_record, :record do
+            required :ary, :array, items: (record(:inlined_record) { required :name, :string })
+          end
+        end
+      end
+    end
+
+    let(:expected) do
+      {
+        type: :record,
+        name: :array_of_records,
+        fields: [
+          {
+            name: :outer_record,
+            type: {
+              type: :record,
+              fields: [{
+                name: :ary,
+                type: {
+                  type: :array,
+                  items: {
+                    name: :inlined_record,
+                    type: :record,
+                    fields: [{ name: :name, type: :string }]
+                  }
+                }
+              }]
+            }
+          }
+        ]
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
   context "array without items type" do
     subject(:schema_json) do
       described_class.build do
