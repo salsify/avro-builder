@@ -29,7 +29,7 @@ module Avro
           Dir["#{load_path}/**/*.rb"].select do |file_path|
             file_path.end_with?(file_name)
           end
-        end
+        end.uniq
         raise "Multiple matches: #{matches}" if matches.size > 1
         raise "File not found #{file_name}" if matches.empty?
 
