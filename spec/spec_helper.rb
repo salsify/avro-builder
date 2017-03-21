@@ -10,6 +10,7 @@ require 'avro/builder'
 
 RSpec.configure do |config|
   config.before do
+    Avro::Builder::DSL.load_paths.clear
     Avro::Builder.add_load_path('spec/avro/dsl')
   end
 end
