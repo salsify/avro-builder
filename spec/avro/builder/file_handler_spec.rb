@@ -85,6 +85,49 @@ describe Avro::Builder::FileHandler do
     end
   end
 
+  context "with duplicated paths" do
+    subject(:schema_json) do
+      Avro::Builder.build do
+        record :with_date do
+          required :dt, :date
+        end
+      end
+    end
+    let(:expected) do
+      {
+        type: :record,
+        name: :with_date,
+        fields: [
+          {
+            name: :dt,
+            type: {
+              type: :int,
+              logicalType: :date
+            }
+          }
+        ]
+      }
+    end
+
+    context "subpath" do
+      before do
+        Avro::Builder.add_load_path('spec/avro/dsl')
+        Avro::Builder.add_load_path('spec/avro/dsl/test')
+      end
+
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+
+    context "normalization required" do
+      before do
+        Avro::Builder.add_load_path('spec/avro/dsl')
+        Avro::Builder.add_load_path(File.join(__dir__, '../dsl'))
+      end
+
+      it { is_expected.to be_json_eql(expected.to_json) }
+    end
+  end
+
   context "a file with a name that ends with a builtin type" do
     let(:file_path) { 'spec/avro/dsl/test/with_array.rb' }
     subject(:schema_json) { Avro::Builder.build(File.read(file_path)) }

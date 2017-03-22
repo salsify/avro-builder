@@ -1847,7 +1847,7 @@ describe Avro::Builder do
           schema_json
         rescue => ex
         end
-        expect(ex.backtrace[1]).to start_with('spec/avro/dsl/test/invalid.rb:4:')
+        expect(ex.backtrace[1]).to match(/^.*spec\/avro\/dsl\/test\/invalid.rb:4:/)
       end
       # rubocop:enable Lint/HandleExceptions
     end

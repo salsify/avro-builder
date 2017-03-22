@@ -1,5 +1,8 @@
 # avro-builder changelog
 
+## v0.14.1
+- File handling fixes.
+
 ## v0.14.0
 - Allow `filetype` to be specified in rake task to generate Avro JSON schema
   files.
