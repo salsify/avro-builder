@@ -1,5 +1,8 @@
 # avro-builder changelog
 
+## v0.15.0
+- Add support for declaring types as abstract.
+
 ## v0.14.1
 - File handling fixes.
 

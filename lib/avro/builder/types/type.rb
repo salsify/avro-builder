@@ -8,7 +8,7 @@ module Avro
         include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
 
-        dsl_attribute :logical_type
+        dsl_attributes :logical_type, :abstract
 
         attr_reader :avro_type_name
 
@@ -16,6 +16,10 @@ module Avro
           @avro_type_name = avro_type_name
           @cache = cache
           @field = field
+        end
+
+        def abstract?
+          !!abstract
         end
 
         def serialize(_reference_state)

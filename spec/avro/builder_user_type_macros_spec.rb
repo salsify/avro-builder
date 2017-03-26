@@ -1,4 +1,18 @@
 describe Avro::Builder, 'type_macros' do
+  context "self.build_dsl" do
+    subject(:dsl) do
+      described_class.build_dsl do
+        type_macro :ts, long(logical_type: 'timestamp-millis')
+      end
+    end
+    let(:expected) do
+      { type: :long, logicalType: 'timestamp-millis' }
+    end
+
+    it { is_expected.to be_abstract }
+    its(:to_json) { is_expected.to be_json_eql(expected.to_json) }
+  end
+
   context "without a type object" do
     let(:schema_json) do
       described_class.build do

@@ -38,6 +38,10 @@ module Avro
         end
       end
 
+      def abstract?
+        @last_object && @last_object.abstract?
+      end
+
       # Define an Avro schema record
       def record(name = nil, options = {}, &block)
         create_named_type(name, :record, options, &block)
@@ -92,7 +96,10 @@ module Avro
       def type_macro(name, type_object, options = {})
         raise "#{type_object.inspect} must be a type object" unless type_object.is_a?(Types::Type)
         raise "namespace cannot be included in name: #{name}" if name.to_s.index('.')
-        cache.add_type_by_name(type_object, name, options[:namespace] || namespace)
+        type_clone = type_object.clone
+        type_clone.send(:abstract=, true)
+        cache.add_type_by_name(type_clone, name, options[:namespace] || namespace)
+        @last_object = type_clone
       end
 
       private

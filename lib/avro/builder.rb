@@ -5,12 +5,17 @@ require 'avro/builder/schema_store'
 module Avro
   module Builder
 
+    # Accepts a string or block to eval and returns the Avro::Builder::DSL object
+    def self.build_dsl(str = nil, filename: nil, &block)
+      Avro::Builder::DSL.new(str, filename: filename, &block)
+    end
+
     # Accepts a string or block to eval to define a JSON schema
     def self.build(str = nil, filename: nil, &block)
       Avro::Builder::DSL.new(str, filename: filename, &block).to_json
     end
 
-    # Accepts a string or block to eval and returns an Avro::Schema
+    # Accepts a string or block to eval and returns an Avro::Schema object
     def self.build_schema(str = nil, filename: nil, &block)
       Avro::Builder::DSL.new(str, filename: filename, &block).as_schema
     end
