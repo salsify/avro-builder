@@ -316,6 +316,25 @@ record :with_date_array
 end
 ```
 
+### Abstract Types
+
+Types can be declared as abstract in the DSL. Declaring a type as abstract
+prevents the rake task from generating an Avro JSON schema for the type.
+
+A type can be declared as abstract using either an option or a method in the
+DSL when defining the type:
+
+```ruby
+record :unique_id, abstract: true
+  required :uuid, :fixed, size: 38
+end
+
+enum :status do
+  symbols %w(valid invalid)
+  abstract true
+end
+```
+
 ### Type Macros
 
 `avro-builder` allows type macros to be defined that expand to types that
@@ -338,6 +357,9 @@ an explicit namespace option may be specified:
 type_macro :timestamp, long(logical_type: 'timestamp-millis'),
            namespace: 'com.my_company'
 ```
+
+Type macros are always marked as abstract and do not generate an Avro JSON
+schema file when using the rake task.
 
 ### Auto-loading and Imports
 

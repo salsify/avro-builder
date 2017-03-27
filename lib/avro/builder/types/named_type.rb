@@ -18,7 +18,7 @@ module Avro
 
         dsl_attribute_alias :type_aliases, :aliases
 
-        # This module most be included after options are defined
+        # This module must be included after options are defined
         include Avro::Builder::Types::NamedErrorHandling
 
         def name(value = nil)
