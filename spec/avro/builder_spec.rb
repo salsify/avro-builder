@@ -6,7 +6,9 @@ describe Avro::Builder do
           type(:string)
         end
       end
+
       let(:expected) { { type: :string } }
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
 
@@ -16,7 +18,9 @@ describe Avro::Builder do
           boolean
         end
       end
+
       let(:expected) { { type: :boolean } }
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
 
@@ -26,7 +30,9 @@ describe Avro::Builder do
           int(logical_type: :date)
         end
       end
+
       let(:expected) { { type: :int, logicalType: :date } }
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
 
@@ -36,7 +42,9 @@ describe Avro::Builder do
           long(logical_type: 'timestamp-micros')
         end
       end
+
       let(:expected) { { type: :long, logicalType: 'timestamp-micros' } }
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
   end
@@ -48,7 +56,9 @@ describe Avro::Builder do
           array(:int)
         end
       end
+
       let(:expected) { { type: :array, items: :int } }
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
 
@@ -58,6 +68,7 @@ describe Avro::Builder do
           map(int(logical_type: :date))
         end
         let(:expected) { { type: :map, values: { type: :int, logicalType: :date } } }
+
         it { is_expected.to be_json_eql(expected.to_json) }
       end
     end
@@ -68,7 +79,9 @@ describe Avro::Builder do
           union(array(:long), :string)
         end
       end
+
       let(:expected) { [{ type: :array, items: :long }, :string] }
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
   end
@@ -83,6 +96,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -96,6 +110,7 @@ describe Avro::Builder do
         }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -105,6 +120,7 @@ describe Avro::Builder do
         enum :enum1, :ONE, :TWO
       end
     end
+
     let(:expected) do
       {
         name: :enum1,
@@ -112,6 +128,7 @@ describe Avro::Builder do
         symbols: [:ONE, :TWO]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -121,6 +138,7 @@ describe Avro::Builder do
         enum :enum1, symbols: [:ONE, :TWO], doc: 'Uses hash'
       end
     end
+
     let(:expected) do
       {
         name: :enum1,
@@ -129,6 +147,7 @@ describe Avro::Builder do
         symbols: [:ONE, :TWO]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -141,6 +160,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :enum2,
@@ -151,6 +171,7 @@ describe Avro::Builder do
         namespace: 'com.example'
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -162,6 +183,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :enum3,
@@ -169,6 +191,7 @@ describe Avro::Builder do
         symbols: [:A, :B]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -180,6 +203,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :enum3,
@@ -187,6 +211,7 @@ describe Avro::Builder do
         symbols: [:A, :B]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -198,6 +223,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :enum3,
@@ -205,6 +231,7 @@ describe Avro::Builder do
         symbols: [:A, :B]
       }
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /name must be specified as the first argument/)
@@ -219,6 +246,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :enum3,
@@ -226,6 +254,7 @@ describe Avro::Builder do
         symbols: [:A, :B]
       }
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /name must be specified as the first argument/)
@@ -268,6 +297,7 @@ describe Avro::Builder do
         fixed :eight, 8
       end
     end
+
     let(:expected) do
       {
         name: :eight,
@@ -275,6 +305,7 @@ describe Avro::Builder do
         size: 8
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -284,6 +315,7 @@ describe Avro::Builder do
         fixed :eight, size: 9
       end
     end
+
     let(:expected) do
       {
         name: :eight,
@@ -291,6 +323,7 @@ describe Avro::Builder do
         size: 9
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -303,6 +336,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :seven,
@@ -312,6 +346,7 @@ describe Avro::Builder do
         namespace: 'com.example'
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -324,6 +359,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises and error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'aliases' must be used instead/)
@@ -338,6 +374,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises and error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'aliases' must be used instead/)
@@ -352,6 +389,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises and error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'namespace' must be specified as an option/)
@@ -366,6 +404,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :eight,
@@ -373,6 +412,7 @@ describe Avro::Builder do
         size: 9
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -421,6 +461,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -437,6 +478,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -451,6 +493,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -462,6 +505,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -474,6 +518,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -485,6 +530,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -497,6 +543,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /name must be specified as the first argument/)
@@ -512,6 +559,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /name must be specified/)
@@ -527,6 +575,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'namespace' must be specified as an option/)
@@ -542,6 +591,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'namespace' must be specified as an option/)
@@ -556,6 +606,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :foo,
@@ -564,6 +615,7 @@ describe Avro::Builder do
         fields: [{ name: :i, type: :int }]
       }
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'namespace' must be specified as an option instead/)
@@ -581,6 +633,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :with_enum,
@@ -591,6 +644,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -605,6 +659,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :with_fixed,
@@ -615,6 +670,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -627,6 +683,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :with_magic,
@@ -637,20 +694,12 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
   context "record with reference to anonymous inline fixed" do
     let(:generated_name) { :__with_magic_magic_fixed }
-    subject(:schema_json) do
-      reference = generated_name
-      described_class.build do
-        record :with_magic do
-          required :magic, :fixed, size: 4
-          required :more_magic, reference
-        end
-      end
-    end
     let(:expected) do
       {
         name: :with_magic,
@@ -661,6 +710,17 @@ describe Avro::Builder do
         ]
       }
     end
+
+    subject(:schema_json) do
+      reference = generated_name
+      described_class.build do
+        record :with_magic do
+          required :magic, :fixed, size: 4
+          required :more_magic, reference
+        end
+      end
+    end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -674,6 +734,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :with_magic,
@@ -684,6 +745,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::DuplicateDefinitionError)
     end
@@ -704,6 +766,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -716,6 +779,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -732,6 +796,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -748,6 +813,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -763,6 +829,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :uses_id,
@@ -773,6 +840,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -789,6 +857,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -799,6 +868,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -818,6 +888,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -828,6 +899,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -845,6 +917,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -855,6 +928,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -882,6 +956,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -891,6 +966,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -902,6 +978,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -911,6 +988,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -922,6 +1000,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -931,6 +1010,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -948,6 +1028,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -964,6 +1045,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -978,6 +1060,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -988,6 +1071,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1015,6 +1099,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1024,6 +1109,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1037,6 +1123,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1046,6 +1133,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1073,6 +1161,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1082,6 +1171,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1095,6 +1185,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1104,6 +1195,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1131,6 +1223,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1145,6 +1238,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1156,6 +1250,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1170,6 +1265,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1181,6 +1277,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1195,6 +1292,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1208,6 +1306,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1222,6 +1321,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1233,6 +1333,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1248,6 +1349,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1259,6 +1361,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1274,6 +1377,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1290,6 +1394,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :uses_id,
@@ -1300,6 +1405,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1315,6 +1421,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :top_rec,
@@ -1333,6 +1440,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1348,6 +1456,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :my_rec,
@@ -1364,6 +1473,7 @@ describe Avro::Builder do
         }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1379,6 +1489,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :my_rec,
@@ -1395,6 +1506,7 @@ describe Avro::Builder do
         }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1416,6 +1528,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :A,
@@ -1453,6 +1566,7 @@ describe Avro::Builder do
                  }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1467,6 +1581,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :my_rec,
@@ -1483,6 +1598,7 @@ describe Avro::Builder do
         }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1497,6 +1613,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'type_name' must be specified as an option/)
@@ -1513,6 +1630,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'type_name' must be specified as an option/)
@@ -1530,6 +1648,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'type_namespace' must be specified as an option/)
@@ -1546,6 +1665,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'type_namespace' must be specified as an option instead/)
@@ -1563,6 +1683,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'type_name' must be specified as an option/)
@@ -1580,6 +1701,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
                                             /'type_namespace' must be specified as an option/)
@@ -1598,6 +1720,7 @@ describe Avro::Builder do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(Avro::Builder::DefinitionNotFoundError)
     end
@@ -1614,6 +1737,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1632,6 +1756,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1646,6 +1771,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         name: :with_ambiguous,
@@ -1663,6 +1789,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1676,6 +1803,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1687,6 +1815,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1701,6 +1830,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1720,6 +1850,7 @@ describe Avro::Builder do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1733,6 +1864,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1748,6 +1880,7 @@ describe Avro::Builder do
         }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
 
     context "doc attribute on field" do
@@ -1761,6 +1894,7 @@ describe Avro::Builder do
           end
         end
       end
+
       let(:expected) do
         {
           type: :record,
@@ -1776,6 +1910,7 @@ describe Avro::Builder do
           }]
         }
       end
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
 
@@ -1789,6 +1924,7 @@ describe Avro::Builder do
           end
         end
       end
+
       let(:expected) do
         {
           type: :record,
@@ -1804,6 +1940,7 @@ describe Avro::Builder do
           }]
         }
       end
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
   end
@@ -1820,6 +1957,7 @@ describe Avro::Builder do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -1836,6 +1974,7 @@ describe Avro::Builder do
         }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -1866,6 +2005,7 @@ describe Avro::Builder do
 
     context "loading a DSL file" do
       let(:file_path) { 'spec/avro/dsl/test/invalid.rb' }
+
       subject(:schema_json) do
         described_class.build(File.read(file_path), filename: file_path)
       end
@@ -1875,6 +2015,7 @@ describe Avro::Builder do
 
     context "loading with just a filename" do
       let(:file_path) { 'spec/avro/dsl/test/invalid.rb' }
+
       subject(:schema_json) do
         described_class.build(filename: file_path)
       end

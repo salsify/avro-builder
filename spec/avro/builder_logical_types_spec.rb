@@ -16,6 +16,7 @@ describe Avro::Builder, 'logical_types' do
           end
         end
       end
+
       let(:expected) do
         {
           type: :record,
@@ -41,6 +42,7 @@ describe Avro::Builder, 'logical_types' do
           end
         end
       end
+
       let(:expected) do
         {
           type: :record,
@@ -65,6 +67,7 @@ describe Avro::Builder, 'logical_types' do
           end
         end
       end
+
       let(:expected) do
         {
           type: :record,
@@ -93,6 +96,7 @@ describe Avro::Builder, 'logical_types' do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -118,6 +122,7 @@ describe Avro::Builder, 'logical_types' do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -126,6 +131,7 @@ describe Avro::Builder, 'logical_types' do
                    type: [:int, :string], logicalType: :num_or_string }]
       }
     end
+
     it "raises an error" do
       expect { schema_json }
         .to raise_error(Avro::Builder::AttributeError,
@@ -145,6 +151,7 @@ describe Avro::Builder, 'logical_types' do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -161,6 +168,7 @@ describe Avro::Builder, 'logical_types' do
                    } }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -172,6 +180,7 @@ describe Avro::Builder, 'logical_types' do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -181,6 +190,7 @@ describe Avro::Builder, 'logical_types' do
                            items: { type: :int, logicalType: :date } } }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
@@ -192,6 +202,7 @@ describe Avro::Builder, 'logical_types' do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -201,6 +212,7 @@ describe Avro::Builder, 'logical_types' do
                            items: { type: :long, logicalType: 'timestamp-micros' } } }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 end

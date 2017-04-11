@@ -9,6 +9,7 @@ describe Avro::Builder::FileHandler do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -38,6 +39,7 @@ describe Avro::Builder::FileHandler do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -67,6 +69,7 @@ describe Avro::Builder::FileHandler do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(/File not found/)
     end
@@ -80,6 +83,7 @@ describe Avro::Builder::FileHandler do
         end
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(/Multiple matches:/)
     end
@@ -93,6 +97,7 @@ describe Avro::Builder::FileHandler do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -130,7 +135,6 @@ describe Avro::Builder::FileHandler do
 
   context "a file with a name that ends with a builtin type" do
     let(:file_path) { 'spec/avro/dsl/test/with_array.rb' }
-    subject(:schema_json) { Avro::Builder.build(File.read(file_path)) }
     let(:expected) do
       {
         type: :record,
@@ -141,6 +145,8 @@ describe Avro::Builder::FileHandler do
         ]
       }
     end
+
+    subject(:schema_json) { Avro::Builder.build(File.read(file_path)) }
 
     it "does not match a partial file name" do
       # previously this triggered an infinite loop

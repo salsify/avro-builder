@@ -1,4 +1,5 @@
 # coding: utf-8
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'avro/builder/version'
@@ -28,6 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'json_spec'
   spec.add_development_dependency 'simplecov'
-  spec.add_development_dependency 'salsify_rubocop', '~> 0.47.0'
+  spec.add_development_dependency 'salsify_rubocop', '~> 0.48.0'
   spec.add_development_dependency 'overcommit'
 end
