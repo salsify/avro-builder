@@ -109,6 +109,7 @@ describe Avro::Builder, "#build_dsl" do
         type_macro :string_map, map(:string)
       end
     end
+
     let(:expected) do
       { type: :map, values: :string }
     end

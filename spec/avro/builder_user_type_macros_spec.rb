@@ -1,10 +1,11 @@
 describe Avro::Builder, 'type_macros' do
-  context "self.build_dsl" do
+  context ".build_dsl" do
     subject(:dsl) do
       described_class.build_dsl do
         type_macro :ts, long(logical_type: 'timestamp-millis')
       end
     end
+
     let(:expected) do
       { type: :long, logicalType: 'timestamp-millis' }
     end
@@ -19,6 +20,7 @@ describe Avro::Builder, 'type_macros' do
         type_macro :num, :int
       end
     end
+
     it "raises an error" do
       expect { schema_json }.to raise_error(':int must be a type object')
     end
@@ -35,6 +37,7 @@ describe Avro::Builder, 'type_macros' do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -45,6 +48,7 @@ describe Avro::Builder, 'type_macros' do
         ]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
 
     context "with namespace included" do
@@ -59,6 +63,7 @@ describe Avro::Builder, 'type_macros' do
           ]
         }
       end
+
       context "namespace in options" do
         subject(:schema_json) do
           described_class.build do
@@ -70,6 +75,7 @@ describe Avro::Builder, 'type_macros' do
             end
           end
         end
+
         it { is_expected.to be_json_eql(expected.to_json) }
       end
 
@@ -85,6 +91,7 @@ describe Avro::Builder, 'type_macros' do
             end
           end
         end
+
         it { is_expected.to be_json_eql(expected.to_json) }
       end
 
@@ -99,6 +106,7 @@ describe Avro::Builder, 'type_macros' do
             end
           end
         end
+
         it "raises an error" do
           expect { schema_json }
             .to raise_error('namespace cannot be included in name: test.foo.id_array')
@@ -115,6 +123,7 @@ describe Avro::Builder, 'type_macros' do
         end
       end
     end
+
     let(:expected) do
       {
         type: :record,
@@ -122,6 +131,7 @@ describe Avro::Builder, 'type_macros' do
         fields: [{ name: :d, type: { type: :int, logicalType: :date } }]
       }
     end
+
     it { is_expected.to be_json_eql(expected.to_json) }
 
     context "with namespace specified for type macro" do
@@ -132,6 +142,7 @@ describe Avro::Builder, 'type_macros' do
           end
         end
       end
+
       it { is_expected.to be_json_eql(expected.to_json) }
     end
   end
