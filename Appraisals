@@ -1,7 +1,7 @@
 appraise 'avro-official' do
-  gem 'avro', '1.8.1'
+  gem 'avro', '1.8.2'
 end
 
-appraise 'avro-salsify-fork' do
-  gem 'avro-salsify-fork', '1.9.0.0', require: 'avro'
+appraise 'avro-patches' do
+  gem 'avro-patches'
 end
