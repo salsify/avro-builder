@@ -1,8 +1,8 @@
 language: ruby
 rvm:
-  - 2.4.0
-  - 2.3.3
-  - 2.2.6
+  - 2.4.1
+  - 2.3.4
+  - 2.2.7
 before_install:
   - gem update --system
 before_script:
@@ -10,4 +10,4 @@ before_script:
 script:
   - bundle exec rubocop
   - bundle exec appraisal avro-official rspec
-  - bundle exec appraisal avro-salsify-fork rspec
+  - bundle exec appraisal avro-patches rspec

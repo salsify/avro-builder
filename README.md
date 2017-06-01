@@ -283,12 +283,13 @@ are more limited.
 The official Ruby `avro` gem does not yet support logical types:
 [AVRO-1695](https://issues.apache.org/jira/browse/AVRO-1695).
 
-There is a `avro-salsify-fork` gem released from this
-[fork](https://github.com/salsify/avro) that includes changes to support
-encoding and decoding logical types. To use this gem, reference it in your Gemfile:
+There is a [avro-patches](https://github.com/salsify/avro-patches) gem that patches
+the official Avro Ruby gem to support
+encoding and decoding logical types. To use this gem, reference it in your Gemfile
+instead of the official Avro gem:
 
 ```ruby
-gem 'avro-salsify-fork', require: 'avro'
+gem 'avro-patches'
 ```
 
 A logical type can be specified for a field using the `logical_type` attribute:
