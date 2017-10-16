@@ -19,6 +19,8 @@ module Avro
         File.read(find_file(name))
       end
 
+      FileNotFoundError = Class.new(StandardError)
+
       def find_file(name)
         # Ensure that the file_name that is searched for begins with a slash (/)
         # and ends with a .rb extension. Additionally, if the name contains
@@ -31,7 +33,7 @@ module Avro
           end
         end.uniq
         raise "Multiple matches: #{matches}" if matches.size > 1
-        raise "File not found #{file_name}" if matches.empty?
+        raise FileNotFoundError.new("File not found #{file_name}") if matches.empty?
 
         matches.first
       end

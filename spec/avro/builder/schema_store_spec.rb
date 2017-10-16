@@ -14,7 +14,7 @@ describe Avro::Builder::SchemaStore do
       end
 
       it "raises a file not found exception" do
-        expect { schema }.to raise_error(RuntimeError)
+        expect { schema }.to raise_error(::Avro::Builder::FileHandler::FileNotFoundError)
       end
     end
 

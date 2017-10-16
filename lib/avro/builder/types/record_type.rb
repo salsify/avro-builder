@@ -53,8 +53,8 @@ module Avro
 
         # Adds fields from the record with the specified name to the current
         # record.
-        def extends(name)
-          fields.merge!(cache.lookup_named_type(name, namespace).duplicated_fields)
+        def extends(name, options = {})
+          fields.merge!(cache.lookup_named_type(name, options.delete(:namespace) || namespace).duplicated_fields)
         end
 
         def to_h(reference_state = SchemaSerializerReferenceState.new)

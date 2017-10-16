@@ -50,7 +50,7 @@ module Avro
       # Imports from the file with specified name fragment.
       def import(name)
         previous_namespace = namespace
-        result = eval_file(name)
+        result = eval_file(name, previous_namespace)
         namespace(previous_namespace)
         result
       end
@@ -117,8 +117,16 @@ module Avro
                                                          &block)
       end
 
-      def eval_file(name)
-        file_path = find_file(name)
+      def eval_file(name, namespace = nil)
+        file_path = if namespace
+                      begin
+                        find_file([namespace, name].join('.'))
+                      rescue FileNotFoundError => _
+                        find_file(name)
+                      end
+                    else
+                      find_file(name)
+                    end
         instance_eval(File.read(file_path), file_path)
       end
     end
