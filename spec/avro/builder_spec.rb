@@ -1820,14 +1820,14 @@ describe Avro::Builder do
           namespace: 'test.namespace',
           type: :record,
           fields: [
-              {
-                  name: :foo,
-                  type: :string
-              },
-              {
-                  name: :bar,
-                  type: :string
-              }
+            {
+                name: :foo,
+                type: :string
+            },
+            {
+                name: :bar,
+                type: :string
+            }
           ]
       }
     end
