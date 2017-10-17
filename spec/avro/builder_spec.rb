@@ -1793,6 +1793,48 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "extends from explicit namespace" do
+    subject(:schema_json) do
+      described_class.build do
+        namespace 'test.namespace'
+
+        record :original, namespace: 'test.extended' do
+          required :foo, :string
+          required :bar, :string
+        end
+
+        record :original do
+          required :bop, :string
+          required :baz, :string
+        end
+
+        record :extended do
+          extends :original, namespace: 'test.extended'
+        end
+      end
+    end
+
+    let(:expected) do
+      {
+          name: :extended,
+          namespace: 'test.namespace',
+          type: :record,
+          fields: [
+            {
+                name: :foo,
+                type: :string
+            },
+            {
+                name: :bar,
+                type: :string
+            }
+          ]
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
   context "recursive example" do
     # this is an example from the Avro specification
     subject(:schema_json) do

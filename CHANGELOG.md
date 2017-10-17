@@ -1,5 +1,9 @@
 # avro-builder changelog
 
+## v0.16.0
+- Add support for providing an explicit `namespace` on `extend`. 
+- Default lookup to current namespace before falling back on global search. 
+
 ## v0.15.0
 - Add support for declaring types as abstract.
 

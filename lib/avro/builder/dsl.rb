@@ -118,7 +118,15 @@ module Avro
       end
 
       def eval_file(name)
-        file_path = find_file(name)
+        file_path = if namespace
+                      begin
+                        find_file([namespace, name].join('.'))
+                      rescue FileNotFoundError
+                        find_file(name)
+                      end
+                    else
+                      find_file(name)
+                    end
         instance_eval(File.read(file_path), file_path)
       end
     end
