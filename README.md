@@ -382,6 +382,40 @@ record using `extends <record_name>`. This adds all of the fields from
 the referenced record to the current record. The current record may override
 fields in the record that it extends.
 
+```
+record :original do
+  required :first, :string
+  required :second, :int
+end
+
+record :extended do
+  extends :original
+  optional :first, :string
+end
+```
+
+Additionally you can provide a `namespace` to `extends` if necessary to remove ambiguity.
+
+```
+namespace 'com.newbie'
+
+record :original, namespace: 'com.og' do
+  required :first, :string
+  required :second, :int
+end
+
+record :original do
+  required :first, :string
+  required :second, :int
+end
+
+record :extended do
+  extends :original, namespace: 'com.og'
+  optional :first, :string
+end
+```
+
+
 ## Schema Store
 
 The `Avro::Builder::SchemaStore` can be used to load DSL files and return cached
