@@ -121,7 +121,7 @@ module Avro
         file_path = if namespace
                       begin
                         find_file([namespace, name].join('.'))
-                      rescue FileNotFoundError => _
+                      rescue FileNotFoundError
                         find_file(name)
                       end
                     else
