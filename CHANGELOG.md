@@ -1,5 +1,8 @@
 # avro-builder changelog
 
+## v0.16.1
+- Require avro version prior to v1.10.0.
+
 ## v0.16.0
 - Add support for providing an explicit `namespace` on `extend`. 
 - Default lookup to current namespace before falling back on global search. 
