@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.4.5
+  - 2.4.6
   - 2.5.5
   - 2.6.3
 before_script:
@@ -9,5 +9,6 @@ script:
   - bundle exec rubocop
   - bundle exec appraisal avro-1.8.2 rspec
   - bundle exec appraisal avro-1.9.0 rspec
+  - bundle exec appraisal avro-1.9.1 rspec
   - bundle exec appraisal avro-patches-0.x rspec
   - bundle exec appraisal avro-patches-1.x rspec
