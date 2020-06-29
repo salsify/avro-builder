@@ -1,5 +1,9 @@
 # avro-builder changelog
 
+## v0.16.2
+- Allow avro version up to v1.10.x. Support will be added for new
+  functionality in Avro v1.10 in a later release.
+
 ## v0.16.1
 - Require avro version prior to v1.10.0.
 

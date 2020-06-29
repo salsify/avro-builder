@@ -1,8 +1,8 @@
 language: ruby
 rvm:
-  - 2.4.6
-  - 2.5.5
-  - 2.6.3
+  - 2.5.8
+  - 2.6.6
+  - 2.7.1
 before_script:
   - bundle exec appraisal install --jobs=3
 script:
@@ -10,5 +10,6 @@ script:
   - bundle exec appraisal avro-1.8.2 rspec
   - bundle exec appraisal avro-1.9.0 rspec
   - bundle exec appraisal avro-1.9.1 rspec
+  - bundle exec appraisal avro-1.10.0 rspec
   - bundle exec appraisal avro-patches-0.x rspec
   - bundle exec appraisal avro-patches-1.x rspec
