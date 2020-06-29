@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Avro::Builder, 'logical_types' do
   let(:schema) { Avro::Schema.parse(schema_json) }
 
@@ -52,6 +54,7 @@ describe Avro::Builder, 'logical_types' do
       end
 
       it { is_expected.to be_json_eql(expected.to_json) }
+
       with_logical_types do
         it "sets the logical type on the field" do
           expect(schema.fields.first.type.logical_type).to eq('timestamp-micros')
@@ -77,6 +80,7 @@ describe Avro::Builder, 'logical_types' do
       end
 
       it { is_expected.to be_json_eql(expected.to_json) }
+
       with_logical_types do
         it "sets the logical type on the field" do
           expect(schema.fields.first.type.logical_type).to eq('timestamp-millis')
@@ -107,6 +111,7 @@ describe Avro::Builder, 'logical_types' do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
+
     with_logical_types do
       it "sets the logical type on the field" do
         expect(schema.fields.first.type.logical_type).to eq('duration')

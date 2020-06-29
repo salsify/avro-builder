@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'avro/builder/type_factory'
 require 'avro/builder/aliasable'
 
@@ -12,7 +14,7 @@ module Avro
       include Avro::Builder::Aliasable
       include Avro::Builder::AnonymousTypes
 
-      INTERNAL_ATTRIBUTES = %i(optional_field).to_set.freeze
+      INTERNAL_ATTRIBUTES = [:optional_field].to_set.freeze
 
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :default, :order

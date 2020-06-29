@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'avro/builder/dsl_attributes'
 
 module Avro

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 appraise 'avro-1.8.2' do
   gem 'avro', '1.8.2'
 end

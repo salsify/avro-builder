@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'avro/builder/version'
 require 'avro/builder/dsl'
 require 'avro/builder/schema_store'

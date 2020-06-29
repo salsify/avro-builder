@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Avro
   module Builder
     module Types
@@ -6,7 +8,7 @@ module Avro
       class RecordType < Avro::Builder::Types::NamedType
         include Avro::Builder::AnonymousTypes
 
-        DSL_METHODS = %i(required optional extends).to_set.freeze
+        DSL_METHODS = [:required, :optional, :extends].to_set.freeze
 
         dsl_attribute :doc
         dsl_attribute_alias :type_doc, :doc
