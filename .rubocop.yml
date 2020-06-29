@@ -2,9 +2,10 @@ inherit_gem:
   salsify_rubocop: conf/rubocop.yml
 
 AllCops:
+  inherit_mode:
+    merge:
+      - Exclude
   NewCops: disable
-
-Bundler/GemComment:
   Exclude:
     - "gemfiles/*"
 
