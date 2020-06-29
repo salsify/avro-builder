@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rake/tasklib'
 require 'avro/builder'
 
@@ -31,6 +33,7 @@ module Avro
             desc task_desc
             task(name.to_sym => dependencies) do
               raise '"root" must be specified for Avro DSL files' unless root
+
               Avro::Builder.add_load_path(*[root, load_paths].flatten)
               Dir["#{root}/**/*.rb"].each do |dsl_file|
                 puts "Generating Avro schema from #{dsl_file}"

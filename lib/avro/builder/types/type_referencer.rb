@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'avro/builder/type_factory'
 
 module Avro

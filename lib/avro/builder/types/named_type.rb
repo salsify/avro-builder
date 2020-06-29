@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'avro/builder/namespaceable'
 require 'avro/builder/aliasable'
 require 'avro/builder/types/named_error_handling'

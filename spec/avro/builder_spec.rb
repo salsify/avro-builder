@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Avro::Builder do
   context "primitive types" do
     describe "#type" do
@@ -156,7 +158,7 @@ describe Avro::Builder do
       described_class.build do
         enum :enum2, :ONE, :TWO, namespace: 'com.example' do
           doc 'Example Enum'
-          aliases %w(Foo Bar)
+          aliases ['Foo', 'Bar']
         end
       end
     end
@@ -166,7 +168,7 @@ describe Avro::Builder do
         name: :enum2,
         type: :enum,
         doc: 'Example Enum',
-        aliases: %w(Foo Bar),
+        aliases: ['Foo', 'Bar'],
         symbols: [:ONE, :TWO],
         namespace: 'com.example'
       }
@@ -639,8 +641,8 @@ describe Avro::Builder do
         name: :with_enum,
         type: :record,
         fields: [
-          { name: :e1, type: { type: :enum, name: :e_enum, symbols: %i(A B) } },
-          { name: :e2, type: { type: :enum, name: :__with_enum_e2_enum, symbols: %i(X Y) } }
+          { name: :e1, type: { type: :enum, name: :e_enum, symbols: [:A, :B] } },
+          { name: :e2, type: { type: :enum, name: :__with_enum_e2_enum, symbols: [:X, :Y] } }
         ]
       }
     end
@@ -774,7 +776,7 @@ describe Avro::Builder do
         fields: [
           { name: :must_id, type: { name: :id, type: :fixed, size: 8 } },
           { name: :maybe_id, type: [:null, :id], default: nil },
-          { name: :must_enum, type: { name: :e, type: :enum, symbols: %i(X Y Z) } },
+          { name: :must_enum, type: { name: :e, type: :enum, symbols: [:X, :Y, :Z] } },
           { name: :maybe_enum, type: [:null, :e], default: nil }
         ]
       }
@@ -807,7 +809,7 @@ describe Avro::Builder do
             name: :maybe_enum,
             default: nil,
             type: [:null,
-                   { name: :e, type: :enum, symbols: %i(A B), namespace: 'com.example' }]
+                   { name: :e, type: :enum, symbols: [:A, :B], namespace: 'com.example' }]
           },
           { name: :must_enum, type: 'com.example.e' }
         ]
@@ -952,7 +954,7 @@ describe Avro::Builder do
     subject(:schema_json) do
       described_class.build do
         record :record_with_union do
-          required :s_or_i, :union, types: %i(string int)
+          required :s_or_i, :union, types: [:string, :int]
         end
       end
     end
@@ -974,7 +976,7 @@ describe Avro::Builder do
     subject(:schema_json) do
       described_class.build do
         record :record_with_optional_union do
-          optional :s_or_i, :union, types: %i(string int)
+          optional :s_or_i, :union, types: [:string, :int]
         end
       end
     end
@@ -996,7 +998,7 @@ describe Avro::Builder do
     subject(:schema_json) do
       described_class.build do
         record :record_with_opt_union_with_null do
-          optional :s_or_i, :union, types: %i(string null int)
+          optional :s_or_i, :union, types: [:string, :null, :int]
         end
       end
     end
@@ -1024,7 +1026,7 @@ describe Avro::Builder do
         end
 
         record :union_with_refs do
-          required :u, :union, types: %i(f_type e_type rec)
+          required :u, :union, types: [:f_type, :e_type, :rec]
         end
       end
     end
@@ -1038,7 +1040,7 @@ describe Avro::Builder do
             name: :u,
             type: [
               { name: :f_type, type: :fixed, size: 5 },
-              { name: :e_type, type: :enum, symbols: %i(A B) },
+              { name: :e_type, type: :enum, symbols: [:A, :B] },
               { name: :rec, type: :record, fields: [{ name: :s, type: :string }] }
             ]
           }
@@ -1056,7 +1058,7 @@ describe Avro::Builder do
 
         record :union_with_repeated_ref do
           required :g, :f_type
-          required :u, :union, types: %i(null f_type)
+          required :u, :union, types: [:null, :f_type]
         end
       end
     end
@@ -1129,7 +1131,7 @@ describe Avro::Builder do
         type: :record,
         name: :map_with_named_type,
         fields: [
-          { name: :named_map, type: { type: :map, values: { type: :enum, name: :alpha, symbols: %i(A B) } } }
+          { name: :named_map, type: { type: :map, values: { type: :enum, name: :alpha, symbols: [:A, :B] } } }
         ]
       }
     end
@@ -1750,7 +1752,7 @@ describe Avro::Builder do
               type: :enum,
               name: :my_enum,
               namespace: :outer,
-              symbols: %w(A)
+              symbols: ['A']
             }
           }
         ]
@@ -2022,15 +2024,15 @@ describe Avro::Builder do
 
   context "DSL stack trace" do
     shared_examples_for "it reports error location in the stack trace" do
-      # rubocop:disable Lint/HandleExceptions
       it "includes the DSL file line number" do
         begin
           schema_json
-        rescue => ex
+        rescue StandardError => e
+          # capture error
         end
-        expect(ex.backtrace[1]).to match(/^.*spec\/avro\/dsl\/test\/invalid.rb:4:/)
+        expect(e.backtrace[1]).to match(/^.*spec\/avro\/dsl\/test\/invalid.rb:6:/)
       end
-      # rubocop:enable Lint/HandleExceptions
+
     end
 
     context "loading a reference from file" do

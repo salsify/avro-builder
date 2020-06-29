@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Avro
   module Builder
 
@@ -22,9 +24,7 @@ module Avro
         key_str = Avro::Name.make_fullname(key.to_s, namespace && namespace.to_s)
         object = schema_objects[key_str]
 
-        if object.nil? && !schema_names.include?(key.to_s)
-          object = builder.import(key)
-        end
+        object = builder.import(key) if object.nil? && !schema_names.include?(key.to_s)
 
         raise DefinitionNotFoundError.new(key) if object.nil? && namespace.nil?
 
@@ -59,6 +59,7 @@ module Avro
 
       def store_by_fullname(object, fullname = object.fullname)
         raise DuplicateDefinitionError.new(fullname, object, schema_objects[fullname]) if schema_objects.key?(fullname)
+
         schema_objects.store(fullname, object)
       end
 

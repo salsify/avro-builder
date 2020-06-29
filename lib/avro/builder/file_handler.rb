@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Avro
   module Builder
     # TODO: eventually this should be refactored into something standalone

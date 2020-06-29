@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Avro
   module Builder
     class Railtie < Rails::Railtie
@@ -7,7 +9,7 @@ module Avro
       end
 
       rake_tasks do
-        load File.expand_path('../rake/rails_avro_generate_task.rake', __FILE__)
+        load File.expand_path('rake/rails_avro_generate_task.rake', __dir__)
       end
     end
   end

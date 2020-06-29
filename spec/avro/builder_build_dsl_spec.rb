@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Avro::Builder, "#build_dsl" do
 
   shared_examples_for "dsl for an abstact type" do
@@ -47,13 +49,13 @@ describe Avro::Builder, "#build_dsl" do
 
   context "enum" do
     let(:expected) do
-      { type: :enum, name: :letters, symbols: %w(A B C) }
+      { type: :enum, name: :letters, symbols: ['A', 'B', 'C'] }
     end
 
     context "abstract as an option" do
       subject(:dsl) do
         described_class.build_dsl do
-          enum :letters, symbols: %w(A B C), abstract: true
+          enum :letters, symbols: ['A', 'B', 'C'], abstract: true
         end
       end
 
@@ -64,7 +66,7 @@ describe Avro::Builder, "#build_dsl" do
       subject(:dsl) do
         described_class.build_dsl do
           enum :letters do
-            symbols %w(A B C)
+            symbols ['A', 'B', 'C']
             abstract true
           end
         end

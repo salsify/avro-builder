@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Avro
   module Builder
     module Types
@@ -82,9 +84,7 @@ module Avro
 
         def validate_required_attribute!(attribute_name)
           value = public_send(attribute_name)
-          if value.nil? || value.respond_to?(:empty?) && value.empty?
-            required_attribute_error!(attribute_name)
-          end
+          required_attribute_error!(attribute_name) if value.nil? || value.respond_to?(:empty?) && value.empty?
         end
 
         attr_accessor :field, :cache

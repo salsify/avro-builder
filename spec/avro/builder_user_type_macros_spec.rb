@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 describe Avro::Builder, 'type_macros' do
-  context ".build_dsl" do
+  describe ".build_dsl" do
     subject(:dsl) do
       described_class.build_dsl do
         type_macro :ts, long(logical_type: 'timestamp-millis')

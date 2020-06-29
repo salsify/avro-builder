@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Avro
   module Builder
     module Types
@@ -5,7 +7,7 @@ module Avro
         include Avro::Builder::Types::ComplexType
         include Avro::Builder::Types::TypeReferencer
 
-        NULL_TYPE = 'null'.freeze
+        NULL_TYPE = 'null'
 
         dsl_attribute :types do |*types|
           if !types.empty?

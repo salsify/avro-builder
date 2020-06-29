@@ -1,5 +1,13 @@
 inherit_gem:
   salsify_rubocop: conf/rubocop.yml
 
+AllCops:
+  inherit_mode:
+    merge:
+      - Exclude
+  NewCops: disable
+  Exclude:
+    - "gemfiles/*"
+
 Style/RaiseArgs:
   EnforcedStyle: compact

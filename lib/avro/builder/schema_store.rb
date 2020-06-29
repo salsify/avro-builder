@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Avro
   module Builder
     # This class implements a schema store that loads Avro::Builder
