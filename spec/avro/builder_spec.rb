@@ -134,6 +134,25 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "enum type with default" do
+    subject(:schema_json) do
+      described_class.build do
+        enum :enum1, :ONE, :TWO, default: :ONE
+      end
+    end
+
+    let(:expected) do
+      {
+        name: :enum1,
+        type: :enum,
+        symbols: [:ONE, :TWO],
+        default: :ONE
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
   context "enum with symbols in hash" do
     subject(:schema_json) do
       described_class.build do
@@ -147,6 +166,64 @@ describe Avro::Builder do
         type: :enum,
         doc: 'Uses hash',
         symbols: [:ONE, :TWO]
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "enum with symbols in hash and default" do
+    subject(:schema_json) do
+      described_class.build do
+        enum :enum1, symbols: [:ONE, :TWO], doc: 'Uses hash', default: :ONE
+      end
+    end
+
+    let(:expected) do
+      {
+        name: :enum1,
+        type: :enum,
+        doc: 'Uses hash',
+        symbols: [:ONE, :TWO],
+        default: :ONE
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "enum with string symbols and symbol default" do
+    subject(:schema_json) do
+      described_class.build do
+        enum :enum1, symbols: ['ONE', 'TWO'], default: :ONE
+      end
+    end
+
+    let(:expected) do
+      {
+        name: :enum1,
+        type: :enum,
+        symbols: [:ONE, :TWO],
+        default: :ONE
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
+  context "enum with symbols and string default" do
+    subject(:schema_json) do
+      described_class.build do
+        enum :enum1, symbols: [:ONE, :TWO], default: 'ONE'
+      end
+    end
+
+    let(:expected) do
+      {
+        name: :enum1,
+        type: :enum,
+        symbols: [:ONE, :TWO],
+        default: :ONE
       }
     end
 
@@ -197,6 +274,28 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "enum with symbols splat and default" do
+    subject(:schema_json) do
+      described_class.build do
+        enum :enum3 do
+          symbols :A, :B
+          default :B
+        end
+      end
+    end
+
+    let(:expected) do
+      {
+        name: :enum3,
+        type: :enum,
+        symbols: [:A, :B],
+        default: :B
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+  end
+
   context "enum with symbols array" do
     subject(:schema_json) do
       described_class.build do
@@ -217,6 +316,22 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
+  context "enum with invalid default" do
+    subject(:schema_json) do
+      described_class.build do
+        enum :enum_invalid_default do
+          symbols :A, :B
+          default :C
+        end
+      end
+    end
+
+    it "raises an error" do
+      expect { schema_json }.to raise_error(Avro::Builder::AttributeError,
+                                            /enum default 'C' must be one of the enum symbols:/)
+    end
+  end
+
   context "enum type_name as option" do
     subject(:schema_json) do
       described_class.build do
@@ -224,14 +339,6 @@ describe Avro::Builder do
           symbols :A, :B
         end
       end
-    end
-
-    let(:expected) do
-      {
-        name: :enum3,
-        type: :enum,
-        symbols: [:A, :B]
-      }
     end
 
     it "raises an error" do
@@ -247,14 +354,6 @@ describe Avro::Builder do
           symbols :A, :B
         end
       end
-    end
-
-    let(:expected) do
-      {
-        name: :enum3,
-        type: :enum,
-        symbols: [:A, :B]
-      }
     end
 
     it "raises an error" do
