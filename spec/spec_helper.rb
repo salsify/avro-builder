@@ -18,6 +18,7 @@ RSpec.configure do |config|
   end
 
   enum_default_supported = Avro::Schema::EnumSchema.instance_methods.include?(:default)
+  aliases_supported = Avro::Schema::NamedSchema.instance_methods.include?(:aliases)
 
   config.around(:each, :enum_default) do |example|
     # The Avro gem does not correctly set a version :(
@@ -26,6 +27,14 @@ RSpec.configure do |config|
       example.run
     else
       skip "enum_default not supported by this Avro version"
+    end
+  end
+
+  config.around(:each, :aliases) do |example|
+    if aliases_supported
+      example.run
+    else
+      skip "aliases not supported by this Avro version"
     end
   end
 end

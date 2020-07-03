@@ -258,6 +258,10 @@ describe Avro::Builder do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "sets aliases for the type", :aliases do
+      expect(schema.aliases).to eq(['Foo', 'Bar'])
+    end
   end
 
   context "enum with symbols splat" do
@@ -455,6 +459,10 @@ describe Avro::Builder do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "sets aliases for the schema", :aliases do
+      expect(schema.aliases).to eq(['MoreThanSix'])
+    end
   end
 
   context "fixed type with type_aliases via block" do
@@ -1966,6 +1974,10 @@ describe Avro::Builder do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "sets an alias for the record", :aliases do
+      expect(schema.aliases).to eq(['LinkedLongs'])
+    end
   end
 
   context "a field with aliases and a type with aliases" do
@@ -2001,6 +2013,10 @@ describe Avro::Builder do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "sets aliases for fields", :aliases do
+      expect(schema.fields.first.aliases).to eq(['field_alias'])
+    end
   end
 
   context "doc option on field" do
