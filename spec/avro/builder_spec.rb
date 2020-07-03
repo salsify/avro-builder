@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 describe Avro::Builder do
+  let(:schema) { Avro::Schema.parse(schema_json) }
+
   context "primitive types" do
     describe "#type" do
       subject(:schema_json) do
@@ -151,6 +153,10 @@ describe Avro::Builder do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "sets the default on the schema", :enum_default do
+      expect(schema.default).to eq('ONE')
+    end
   end
 
   context "enum with symbols in hash" do
