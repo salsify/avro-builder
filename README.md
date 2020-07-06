@@ -165,6 +165,9 @@ fixed :g, size: 8
 enum :e, :X, :Y, :Z
 enum :d, symbols: [:A, :B]
 
+# defaults can be set for enums with Ruby Avro v1.10.0
+enum :c, symbols: [:A, :B], default: :A
+
 record :my_record_with_named do
   required :f_ref, :f
   required :fixed_inline, :fixed, size: 9
