@@ -1,5 +1,8 @@
 # avro-builder changelog
 
+## v0.17.0 (unreleased)
+- Add support for enum defaults introduced in Avro v1.10.0.
+
 ## v0.16.2
 - Allow avro version up to v1.10.x. Support will be added for new
   functionality in Avro v1.10 in a later release.
