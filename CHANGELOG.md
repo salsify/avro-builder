@@ -1,9 +1,11 @@
 # avro-builder changelog
 
-## Unreleased
+## v1.0.0 (unreleased)
 - Drop support for Avro < 1.9.
 - Drop support for Ruby < 2.6.
 - Add Ruby 3.0 support.
+- Bug fix: Use multi_json to encode schemas and ensure that a JSON encoder
+  is always present.
 
 ## v0.17.0
 - Add support for enum defaults introduced in Avro v1.10.0.

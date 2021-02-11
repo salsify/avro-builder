@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'avro'
+require 'multi_json'
 require 'avro/builder/errors'
 require 'avro/builder/dsl_options'
 require 'avro/builder/dsl_attributes'
@@ -77,7 +78,7 @@ module Avro
       # Return the last schema object processed as an Avro JSON schema
       def to_json(validate: true, pretty: true)
         hash = to_h
-        (pretty ? JSON.pretty_generate(hash) : hash.to_json).tap do |json|
+        MultiJson.dump(hash, { pretty: pretty }).tap do |json|
           # Uncomment the next line to debug:
           # puts json
           # Parse the schema to validate before returning
