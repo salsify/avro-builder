@@ -1,0 +1,77 @@
+version: 2.1
+jobs:
+  lint:
+    docker:
+      - image: salsify/ruby_ci:2.6.6
+    working_directory: ~/avro-builder
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v2-gems-ruby-2.6.6-{{ checksum "avro-builder.gemspec" }}-{{ checksum "Gemfile" }}
+            - v2-gems-ruby-2.6.6-
+      - run:
+          name: Install Gems
+          command: |
+            if ! bundle check --path=vendor/bundle; then
+              bundle install --path=vendor/bundle --jobs=4 --retry=3
+              bundle clean
+            fi
+      - save_cache:
+          key: v2-gems-ruby-2.6.6-{{ checksum "avro-builder.gemspec" }}-{{ checksum "Gemfile" }}
+          paths:
+            - "vendor/bundle"
+            - "gemfiles/vendor/bundle"
+      - run:
+          name: Run Rubocop
+          command: bundle exec rubocop
+  test:
+    parameters:
+      gemfile:
+        type: string
+      ruby-version:
+        type: string
+    docker:
+      - image: salsify/ruby_ci:<< parameters.ruby-version >>
+    environment:
+      CIRCLE_TEST_REPORTS: "test-results"
+      BUNDLE_GEMFILE: << parameters.gemfile >>
+    working_directory: ~/avro-builder
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v2-gems-ruby-<< parameters.ruby-version >>-{{ checksum "avro-builder.gemspec" }}-{{ checksum "<< parameters.gemfile >>" }}
+            - v2-gems-ruby-<< parameters.ruby-version >>-
+      - run:
+          name: Install Gems
+          command: |
+            if ! bundle check --path=vendor/bundle; then
+              bundle install --path=vendor/bundle --jobs=4 --retry=3
+              bundle clean
+            fi
+      - save_cache:
+          key: v2-gems-ruby-<< parameters.ruby-version >>-{{ checksum "avro-builder.gemspec" }}-{{ checksum "<< parameters.gemfile >>" }}
+          paths:
+            - "vendor/bundle"
+            - "gemfiles/vendor/bundle"
+      - run:
+          name: Run Tests
+          command: |
+            bundle exec rspec --format RspecJunitFormatter --out $CIRCLE_TEST_REPORTS/rspec/junit.xml --format progress spec
+      - store_test_results:
+          path: "test-results"
+workflows:
+  build:
+    jobs:
+      - lint
+      - test:
+          matrix:
+            parameters:
+              gemfile:
+                - "gemfiles/avro_1.9.gemfile"
+                - "gemfiles/avro_1.10.gemfile"
+              ruby-version:
+              - "2.6.6"
+              - "2.7.2"
+              - "3.0.0"

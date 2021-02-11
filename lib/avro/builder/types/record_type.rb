@@ -13,7 +13,8 @@ module Avro
         dsl_attribute :doc
         dsl_attribute_alias :type_doc, :doc
 
-        def initialize(name = nil, options: {}, cache:, field: nil, &block)
+        def initialize(name = nil, cache:, options: {}, field: nil, &block) # rubocop:disable Lint/MissingSuper
+          # TODO: Fix missing call to super
           @avro_type_name = :record
           @name = name
           @cache = cache

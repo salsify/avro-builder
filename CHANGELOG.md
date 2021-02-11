@@ -1,5 +1,10 @@
 # avro-builder changelog
 
+## Unreleased
+- Drop support for Avro < 1.9.
+- Drop support for Ruby < 2.6.
+- Add Ruby 3.0 support.
+
 ## v0.17.0
 - Add support for enum defaults introduced in Avro v1.10.0.
 

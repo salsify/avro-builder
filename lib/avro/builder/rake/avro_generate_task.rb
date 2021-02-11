@@ -12,6 +12,7 @@ module Avro
                       :load_paths, :dependencies, :filetype
 
         def initialize(name: :generate, dependencies: [])
+          super()
           @name = name
           @task_namespace = :avro
           @task_desc = 'Generate Avro schema files from Avro::Builder DSL'
