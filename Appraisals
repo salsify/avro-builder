@@ -1,26 +1,9 @@
 # frozen_string_literal: true
 
-appraise 'avro-1.8.2' do
-  gem 'avro', '1.8.2'
+appraise 'avro-1.9' do
+  gem 'avro', '1.9.2'
 end
 
-appraise 'avro-1.9.0' do
-  gem 'avro', '1.9.0'
-end
-
-appraise 'avro-1.9.1' do
-  gem 'avro', '1.9.1'
-end
-
-appraise 'avro-1.10.0' do
-  gem 'avro', '1.10.0'
-end
-
-appraise 'avro-patches-0.x' do
-  gem 'avro', '1.8.2'
-  gem 'avro-patches', '< 1.0.0'
-end
-
-appraise 'avro-patches-1.x' do
-  gem 'avro-patches', '>= 1.0.0'
+appraise 'avro-1.10' do
+  gem 'avro', '1.10.1'
 end

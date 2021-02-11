@@ -1,9 +1,9 @@
 # Avro::Builder
 
-[![Build Status](https://travis-ci.org/salsify/avro-builder.svg?branch=master)][travis]
+[![Build Status](https://circleci.com/gh/salsify/avro-builder.svg?style=svg)][circleci]
 [![Gem Version](https://badge.fury.io/rb/avro-builder.svg)](https://badge.fury.io/rb/avro-builder)
 
-[travis]: http://travis-ci.org/salsify/avro-builder
+[circleci]: https://circleci.com/gh/salsify/avro-builder
 
 `Avro::Builder` provides a Ruby DSL to create [Apache Avro](https://avro.apache.org/docs/current/) Schemas.
 
@@ -282,18 +282,6 @@ end
 The DSL supports setting a logical type on any type except a union. The logical
 types defined in the Avro [spec](https://avro.apache.org/docs/1.8.1/spec.html#Logical+Types)
 are more limited.
-
-The official Ruby `avro` gem does not yet support logical types:
-[AVRO-1695](https://issues.apache.org/jira/browse/AVRO-1695).
-
-There is a [avro-patches](https://github.com/salsify/avro-patches) gem that patches
-the official Avro Ruby gem to support
-encoding and decoding logical types. To use this gem, reference it in your Gemfile
-instead of the official Avro gem:
-
-```ruby
-gem 'avro-patches'
-```
 
 A logical type can be specified for a field using the `logical_type` attribute:
 
