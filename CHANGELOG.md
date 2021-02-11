@@ -1,6 +1,6 @@
 # avro-builder changelog
 
-## v1.0.0 (unreleased)
+## v1.0.0
 - Drop support for Avro < 1.9.
 - Drop support for Ruby < 2.6.
 - Add Ruby 3.0 support.
