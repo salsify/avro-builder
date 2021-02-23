@@ -1,5 +1,9 @@
 # avro-builder changelog
 
+## v1.0.1
+- Bug fix: Fix pretty formatting of schemas for Rails applications that don't 
+  use oj or yajl by removing the dependency on multi_json.
+
 ## v1.0.0
 - Drop support for Avro < 1.9.
 - Drop support for Ruby < 2.6.

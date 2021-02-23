@@ -23,7 +23,6 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.6'
 
   spec.add_runtime_dependency 'avro', '>= 1.9.0', '< 1.11'
-  spec.add_runtime_dependency 'multi_json'
 
   spec.add_development_dependency 'appraisal'
   spec.add_development_dependency 'bundler', '~> 2.0'
