@@ -839,7 +839,6 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
-
   context "record with repeated definition of inline named fix" do
     subject(:schema_json) do
       described_class.build do
@@ -865,7 +864,6 @@ describe Avro::Builder do
       expect { schema_json }.to raise_error(Avro::Builder::DuplicateDefinitionError)
     end
   end
-
 
   context "record with type references" do
     subject(:schema_json) do
@@ -1685,7 +1683,6 @@ describe Avro::Builder do
     it { is_expected.to be_json_eql(expected.to_json) }
   end
 
-
   context "inline, named, nested record" do
     subject(:schema_json) do
       described_class.build do
@@ -2187,5 +2184,17 @@ describe Avro::Builder do
 
       it_behaves_like "it reports error location in the stack trace"
     end
+  end
+
+  context "pretty printing" do
+    subject(:schema_json) do
+      described_class.build do
+        type(:string)
+      end
+    end
+
+    let(:expected) { { type: :string } }
+
+    it { is_expected.to eq("{\n  \"type\": \"string\"\n}") }
   end
 end
