@@ -1,5 +1,9 @@
 # avro-builder changelog
 
+## v1.1.0 (unreleased)
+- Add support for Avro 1.11
+- Add support for decimal logical types.
+
 ## v1.0.1
 - Bug fix: Fix pretty formatting of schemas for Rails applications that don't 
   use oj or yajl by removing the dependency on multi_json.

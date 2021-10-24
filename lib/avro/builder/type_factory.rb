@@ -30,7 +30,9 @@ module Avro
       # Return a new Type instance
       def create_builtin_type(avro_type_name, field:, cache:)
         name = avro_type_name.to_s.downcase
-        if Avro::Schema::PRIMITIVE_TYPES.include?(name)
+        if name == 'bytes'
+          Avro::Builder::Types::BytesType.new(field: field, cache: cache)
+        elsif Avro::Schema::PRIMITIVE_TYPES.include?(name)
           Avro::Builder::Types::Type.new(name, field: field, cache: cache)
         elsif field.nil? && NAMED_TYPES.include?(name)
           Avro::Builder.const_get(name.capitalize).new(cache: cache)

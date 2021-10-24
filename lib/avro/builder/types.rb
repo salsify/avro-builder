@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'avro/builder/types/type'
+require 'avro/builder/types/bytes_type'
 require 'avro/builder/types/complex_type'
 require 'avro/builder/types/type_referencer'
 require 'avro/builder/types/named_type'

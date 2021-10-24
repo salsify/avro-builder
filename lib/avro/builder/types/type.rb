@@ -24,17 +24,16 @@ module Avro
           !!abstract
         end
 
-        def serialize(_reference_state)
+        def serialize(_reference_state, overrides: {})
           if logical_type
-            { type: avro_type_name, logicalType: logical_type }
+            serialized_attributes_hash(overrides)
           else
             avro_type_name
           end
         end
 
-        def to_h(_reference_state)
-          { type: avro_type_name, logicalType: logical_type }
-            .reject { |_, v| v.nil? }
+        def to_h(_reference_state, overrides: {})
+          serialized_attributes_hash(overrides)
         end
 
         def namespace
@@ -74,6 +73,12 @@ module Avro
         end
 
         private
+
+        def serialized_attributes_hash(overrides)
+          { type: avro_type_name, logicalType: logical_type }
+            .merge(overrides)
+            .reject { |_, v| v.nil? }
+        end
 
         def required_attribute_error!(attribute_name)
           raise RequiredAttributeError.new(type: avro_type_name,

@@ -3,13 +3,11 @@
 describe Avro::Builder, 'logical_types' do
   let(:schema) { Avro::Schema.parse(schema_json) }
 
-  def self.with_logical_types
-    yield if Avro::Schema.instance_methods.include?(:logical_type)
+  def self.with_decimal_validation
+    yield if Avro::Schema::FixedSchema.instance_methods.include?(:precision)
   end
 
   context "primitive types" do
-    # These are the logical types supported in https://github.com/apache/avro/pull/116
-
     context "date logical type" do
       subject(:schema_json) do
         described_class.build do
@@ -29,10 +27,8 @@ describe Avro::Builder, 'logical_types' do
 
       it { is_expected.to be_json_eql(expected.to_json) }
 
-      with_logical_types do
-        it "sets the logical type on the field" do
-          expect(schema.fields.first.type.logical_type).to eq('date')
-        end
+      it "sets the logical type on the field" do
+        expect(schema.fields.first.type.logical_type).to eq('date')
       end
     end
 
@@ -55,10 +51,8 @@ describe Avro::Builder, 'logical_types' do
 
       it { is_expected.to be_json_eql(expected.to_json) }
 
-      with_logical_types do
-        it "sets the logical type on the field" do
-          expect(schema.fields.first.type.logical_type).to eq('timestamp-micros')
-        end
+      it "sets the logical type on the field" do
+        expect(schema.fields.first.type.logical_type).to eq('timestamp-micros')
       end
     end
 
@@ -81,40 +75,128 @@ describe Avro::Builder, 'logical_types' do
 
       it { is_expected.to be_json_eql(expected.to_json) }
 
-      with_logical_types do
-        it "sets the logical type on the field" do
-          expect(schema.fields.first.type.logical_type).to eq('timestamp-millis')
+      it "sets the logical type on the field" do
+        expect(schema.fields.first.type.logical_type).to eq('timestamp-millis')
+      end
+    end
+
+    context "decimal bytes logical type" do
+      subject(:schema_json) do
+        described_class.build do
+          record :with_bytes_decimal do
+            required :value, :bytes, logical_type: 'decimal', precision: 5, scale: 2
+          end
+        end
+      end
+
+      let(:expected) do
+        {
+          type: :record,
+          name: :with_bytes_decimal,
+          fields: [{ name: :value, type: { type: :bytes, logicalType: 'decimal', precision: 5, scale: 2 } }]
+        }
+      end
+
+      it { is_expected.to be_json_eql(expected.to_json) }
+
+      it "sets the logical type on the field" do
+        expect(schema.fields.first.type.logical_type).to eq('decimal')
+      end
+
+      context "validation" do
+        subject(:schema_json) do
+          described_class.build do
+            record :with_bytes_decimal do
+              required :value, :bytes, logical_type: 'decimal'
+            end
+          end
+        end
+
+        with_decimal_validation do
+          it "relies on Avro schema parse to validate" do
+            expect do
+              schema
+            end.to raise_error(Avro::SchemaParseError, 'Precision must be positive')
+          end
         end
       end
     end
   end
 
   context "fixed type" do
-    # This is not actually supported by ruby avro but demonstrates support for
-    # logical_type on the fixed type.
+    context "duration" do
+      # This is not actually supported by ruby avro but demonstrates support for
+      # logical_type on the fixed type.
 
-    subject(:schema_json) do
-      described_class.build do
-        record :with_duration do
-          required :dur, :fixed, size: 12, logical_type: 'duration', type_name: :dur_fixed
+      subject(:schema_json) do
+        described_class.build do
+          record :with_duration do
+            required :dur, :fixed, size: 12, logical_type: 'duration', type_name: :dur_fixed
+          end
         end
+      end
+
+      let(:expected) do
+        {
+          type: :record,
+          name: :with_duration,
+          fields: [{ name: :dur,
+                     type: { type: :fixed, size: 12, name: :dur_fixed, logicalType: 'duration' } }]
+        }
+      end
+
+      it { is_expected.to be_json_eql(expected.to_json) }
+
+      it "sets the logical type on the field" do
+        expect(schema.fields.first.type.logical_type).to eq('duration')
       end
     end
 
-    let(:expected) do
-      {
-        type: :record,
-        name: :with_duration,
-        fields: [{ name: :dur,
-                   type: { type: :fixed, size: 12, name: :dur_fixed, logicalType: 'duration' } }]
-      }
-    end
+    context "decimal" do
+      # The decimal logic type is parsed and serialized for fixed schemas but is not yet
+      # fully supported (validation, encode/decode)
 
-    it { is_expected.to be_json_eql(expected.to_json) }
+      subject(:schema_json) do
+        described_class.build do
+          record 'with_decimal_fixed' do
+            required :value, :fixed, size: 8, logical_type: 'decimal', precision: 5, scale: 2, type_name: :dec_fixed
+          end
+        end
+      end
 
-    with_logical_types do
+      let(:expected) do
+        {
+          type: :record,
+          name: :with_decimal_fixed,
+          fields: [{ name: :value,
+                     type: { type: :fixed, size: 8, name: :dec_fixed,
+                             logicalType: 'decimal', precision: 5, scale: 2 } }]
+        }
+      end
+
+      it { is_expected.to be_json_eql(expected.to_json) }
+
       it "sets the logical type on the field" do
-        expect(schema.fields.first.type.logical_type).to eq('duration')
+        expect(schema.fields.first.type.logical_type).to eq('decimal')
+      end
+
+      context "validation" do
+        subject(:schema_json) do
+          described_class.build do
+            record :with_fixed_decimal do
+              required :value, :fixed, size: 8, logical_type: 'decimal', type_name: :dec_fixed
+            end
+          end
+        end
+
+        with_decimal_validation do
+          # Avro v1.11.0 does not yet validate fixed decimals
+          it "relies on Avro schema parse to validate" do
+            expect do
+              schema
+            end.not_to raise_error(Avro::SchemaParseError)
+          end
+        end
       end
     end
   end
