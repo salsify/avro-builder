@@ -2,14 +2,14 @@ version: 2.1
 jobs:
   lint:
     docker:
-      - image: salsify/ruby_ci:2.6.6
+      - image: salsify/ruby_ci:2.6.8
     working_directory: ~/avro-builder
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v2-gems-ruby-2.6.6-{{ checksum "avro-builder.gemspec" }}-{{ checksum "Gemfile" }}
-            - v2-gems-ruby-2.6.6-
+            - v2-gems-ruby-2.6.8-{{ checksum "avro-builder.gemspec" }}-{{ checksum "Gemfile" }}
+            - v2-gems-ruby-2.6.8-
       - run:
           name: Install Gems
           command: |
@@ -18,7 +18,7 @@ jobs:
               bundle clean
             fi
       - save_cache:
-          key: v2-gems-ruby-2.6.6-{{ checksum "avro-builder.gemspec" }}-{{ checksum "Gemfile" }}
+          key: v2-gems-ruby-2.6.8-{{ checksum "avro-builder.gemspec" }}-{{ checksum "Gemfile" }}
           paths:
             - "vendor/bundle"
             - "gemfiles/vendor/bundle"
@@ -71,7 +71,8 @@ workflows:
               gemfile:
                 - "gemfiles/avro_1.9.gemfile"
                 - "gemfiles/avro_1.10.gemfile"
+                - "gemfiles/avro_1.11.gemfile"
               ruby-version:
-              - "2.6.6"
-              - "2.7.2"
-              - "3.0.0"
+              - "2.6.8"
+              - "2.7.4"
+              - "3.0.2"

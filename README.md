@@ -279,9 +279,10 @@ end
 
 ### Logical Types
 
-The DSL supports setting a logical type on any type except a union. The logical
-types defined in the Avro [spec](https://avro.apache.org/docs/1.8.1/spec.html#Logical+Types)
-are more limited.
+The DSL supports setting a logical type on any type except a union. The Avro
+[spec](https://avro.apache.org/docs/current/spec.html#Logical+Types) lists the logical types
+that are currently defined. Note: `avro-builder` is more permissive and any logical type can
+be specified on a type.
 
 A logical type can be specified for a field using the `logical_type` attribute:
 
@@ -307,6 +308,13 @@ record :with_date_array
   required :date_array, :array, int(logical_type: date)
 end
 ```
+
+#### Decimal Logical Types
+
+The decimal logical type, for bytes and fixed types, is currently the only logical type that requires additional
+attributes. For decimals, precision must be specified and scale may optionally be specified. `avro-builder`
+supports both of these attributes for bytes and fixed decimals. See the Avro
+[spec](https://avro.apache.org/docs/current/spec.html#Decimal) for more details.
 
 ### Abstract Types
 

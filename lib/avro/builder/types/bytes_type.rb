@@ -3,9 +3,13 @@
 module Avro
   module Builder
     module Types
-      class FixedType < NamedType
+      # Subclass for the primitive Bytes type because it supports the decimal logical type.
+      class BytesType < Type
+        dsl_attributes :precision, :scale
 
-        dsl_attributes :size, :precision, :scale
+        def initialize(cache:, field: nil)
+          super('bytes', field: field, cache: cache)
+        end
 
         def serialize(reference_state)
           super(reference_state, overrides: serialized_attributes)
@@ -15,15 +19,10 @@ module Avro
           super(reference_state, overrides: serialized_attributes)
         end
 
-        def validate!
-          super
-          validate_required_attribute!(:size)
-        end
-
         private
 
         def serialized_attributes
-          { size: size, precision: precision, scale: scale }
+          { precision: precision, scale: scale }
         end
       end
     end

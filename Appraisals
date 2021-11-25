@@ -5,5 +5,9 @@ appraise 'avro-1.9' do
 end
 
 appraise 'avro-1.10' do
-  gem 'avro', '1.10.1'
+  gem 'avro', '1.10.2'
+end
+
+appraise 'avro-1.11' do
+  gem 'avro', '~> 1.11.0'
 end
