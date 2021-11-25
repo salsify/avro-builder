@@ -1,6 +1,6 @@
 # avro-builder changelog
 
-## v1.1.0 (unreleased)
+## v1.1.0
 - Add support for Avro 1.11
 - Add support for decimal logical types.
 
