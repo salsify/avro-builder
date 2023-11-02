@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   lint:
     docker:
-      - image: salsify/ruby_ci:2.7.7
+      - image: cimg/ruby:2.7.7
     working_directory: ~/avro-builder
     steps:
       - checkout
@@ -32,7 +32,7 @@ jobs:
       ruby-version:
         type: string
     docker:
-      - image: salsify/ruby_ci:<< parameters.ruby-version >>
+      - image: cimg/ruby:<< parameters.ruby-version >>
     environment:
       CIRCLE_TEST_REPORTS: "test-results"
       BUNDLE_GEMFILE: << parameters.gemfile >>
