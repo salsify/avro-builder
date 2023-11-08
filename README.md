@@ -8,7 +8,7 @@
 `Avro::Builder` provides a Ruby DSL to create [Apache Avro](https://avro.apache.org/docs/current/) Schemas.
 
 This DSL was created because:
-* The [Avro IDL](https://avro.apache.org/docs/current/idl.html) is not supported in Ruby.
+* The [Avro IDL](https://avro.apache.org/docs/current/idl-language/) is not supported in Ruby.
 * The Avro IDL can only be used to define Protocols.
 * Schemas can be extracted as JSON from an IDL Protocol but support
   for imports is still limited.
