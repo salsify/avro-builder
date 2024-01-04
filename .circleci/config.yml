@@ -64,16 +64,17 @@ jobs:
 workflows:
   build:
     jobs:
-      - lint
-      - test:
-          matrix:
-            parameters:
-              gemfile:
-                - "gemfiles/avro_1.9.gemfile"
-                - "gemfiles/avro_1.10.gemfile"
-                - "gemfiles/avro_1.11.gemfile"
-              ruby-version:
-              - "2.7.7"
-              - "3.0.5"
-              - "3.1.3"
-              - "3.2.0"
+    - lint
+    - test:
+        matrix:
+          parameters:
+            gemfile:
+            - gemfiles/avro_1.9.gemfile
+            - gemfiles/avro_1.10.gemfile
+            - gemfiles/avro_1.11.gemfile
+            ruby-version:
+            - 2.7.7
+            - 3.0.5
+            - 3.1.3
+            - 3.2.0
+            - 3.3.0
