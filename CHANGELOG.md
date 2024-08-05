@@ -1,6 +1,6 @@
 # avro-builder changelog
 
-## v2.1.0 (unreleased)
+## v2.1.0
 - Add support for Avro 1.12.
 
 ## v2.0.0
