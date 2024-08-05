@@ -80,6 +80,31 @@ describe Avro::Builder, 'logical_types' do
       end
     end
 
+    context "timestamp-nanos logical type" do
+      subject(:schema_json) do
+        described_class.build do
+          record :with_timestamp_nanos do
+            required :ts, :long, logical_type: 'timestamp-nanos'
+          end
+        end
+      end
+
+      let(:expected) do
+        {
+          type: :record,
+          name: :with_timestamp_nanos,
+          fields: [{ name: :ts, type: { type: :long, logicalType: 'timestamp-nanos' } }]
+        }
+      end
+
+      it { is_expected.to be_json_eql(expected.to_json) }
+
+      it "sets the logical type on the field" do
+        expect(schema.fields.first.type.logical_type).to eq('timestamp-nanos')
+      end
+    end
+
+
     context "decimal bytes logical type" do
       subject(:schema_json) do
         described_class.build do
