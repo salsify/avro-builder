@@ -10,8 +10,7 @@ module Avro
 
       # This is an abstract class that represents a type that can be defined
       # with a name, outside a record.
-      class NamedType < Type
-        include Avro::Builder::Types::ComplexType
+      class NamedType < ComplexType
         include Avro::Builder::Namespaceable
         include Avro::Builder::Aliasable
 
@@ -55,33 +54,30 @@ module Avro
         end
 
         # As a type for a field
-        # Subclasses may call super with additional overrides to be added
-        # to the serialized value.
-        def serialize(reference_state, overrides: {})
+        def serialize(reference_state)
+          # Return the full type definition if it hasn't been seen yet.
+          # Otherwise, just return its name.
           reference_state.definition_or_reference(fullname) do
-            serialized_attribute_hash.merge(overrides).reject { |_, v| v.nil? }
+            super
           end
         end
 
         # As a top-level, named type
-        # Subclasses may call super with additional overrides to be added
-        # to the hash representation.
-        def to_h(_reference_state, overrides: {})
-          serialized_attribute_hash
-            .merge(aliases: aliases)
-            .merge(overrides)
-            .reject { |_, v| v.nil? }
+        def to_h(reference_state)
+          # Always return the type definition. It's an error if the type has already been seen.
+          reference_state.definition(fullname) do
+            super
+          end
         end
 
         private
 
-        def serialized_attribute_hash
-          {
+        def serialized_attribute_hash(_reference_state)
+          super.merge(
             name: name,
-            type: avro_type_name,
             namespace: namespace,
-            logicalType: logical_type
-          }
+            aliases: aliases
+          )
         end
       end
     end

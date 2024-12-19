@@ -3,8 +3,7 @@
 module Avro
   module Builder
     module Types
-      class UnionType < Type
-        include Avro::Builder::Types::ComplexType
+      class UnionType < ComplexType
         include Avro::Builder::Types::TypeReferencer
 
         NULL_TYPE = 'null'
@@ -18,8 +17,12 @@ module Avro
         end
 
         # Unions are serialized as an array of types
-        def serialize(referenced_state)
-          types.map { |type| type.serialize(referenced_state) }
+        def serialize(reference_state)
+          types.map { |type| type.serialize(reference_state) }
+        end
+
+        def to_h(reference_state)
+          serialize(reference_state)
         end
 
         # serialized will be an array of types. If the array includes

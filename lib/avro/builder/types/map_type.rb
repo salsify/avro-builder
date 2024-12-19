@@ -3,8 +3,7 @@
 module Avro
   module Builder
     module Types
-      class MapType < Type
-        include Avro::Builder::Types::ComplexType
+      class MapType < ComplexType
         include Avro::Builder::Types::TypeReferencer
 
         dsl_attribute :values do |value_type = nil|
@@ -15,13 +14,14 @@ module Avro
           end
         end
 
-        def serialize(referenced_state)
-          super(referenced_state,
-                overrides: { values: values.serialize(referenced_state) })
-        end
-
         def validate!
           validate_required_attribute!(:values)
+        end
+
+        private
+
+        def serialized_attribute_hash(reference_state)
+          super.merge(values: values.serialize(reference_state))
         end
       end
     end

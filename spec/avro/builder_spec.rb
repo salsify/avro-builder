@@ -568,7 +568,7 @@ describe Avro::Builder do
           required :n, :null
           required :b, :boolean
           required :s, :string
-          required :i, :int
+          required :i, :int, order: 'descending'
           optional :l, :long
           required :f, :float
           optional :d, :double
@@ -585,7 +585,7 @@ describe Avro::Builder do
           { name: :n, type: :null },
           { name: :b, type: :boolean },
           { name: :s, type: :string },
-          { name: :i, type: :int },
+          { name: :i, type: :int, order: 'descending' },
           { name: :l, type: [:null, :long], default: nil },
           { name: :f, type: :float },
           { name: :d, type: [:null, :double], default: nil },

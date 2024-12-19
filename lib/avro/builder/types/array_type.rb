@@ -3,8 +3,7 @@
 module Avro
   module Builder
     module Types
-      class ArrayType < Type
-        include Avro::Builder::Types::ComplexType
+      class ArrayType < ComplexType
         include Avro::Builder::Types::TypeReferencer
 
         dsl_attribute :items do |items_type = nil|
@@ -19,9 +18,10 @@ module Avro
           validate_required_attribute!(:items)
         end
 
-        def serialize(referenced_state)
-          super(referenced_state,
-                overrides: { items: items.serialize(referenced_state) })
+        private
+
+        def serialized_attribute_hash(reference_state)
+          super.merge(items: items.serialize(reference_state))
         end
       end
     end

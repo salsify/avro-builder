@@ -7,14 +7,6 @@ module Avro
 
         dsl_attributes :size, :precision, :scale
 
-        def serialize(reference_state)
-          super(reference_state, overrides: serialized_attributes)
-        end
-
-        def to_h(reference_state)
-          super(reference_state, overrides: serialized_attributes)
-        end
-
         def validate!
           super
           validate_required_attribute!(:size)
@@ -22,8 +14,8 @@ module Avro
 
         private
 
-        def serialized_attributes
-          { size: size, precision: precision, scale: scale }
+        def serialized_attribute_hash(_reference_state)
+          super.merge(size: size, precision: precision, scale: scale)
         end
       end
     end
