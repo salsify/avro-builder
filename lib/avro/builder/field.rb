@@ -2,6 +2,7 @@
 
 require 'avro/builder/type_factory'
 require 'avro/builder/aliasable'
+require 'avro/builder/metadata'
 
 module Avro
   module Builder
@@ -13,6 +14,7 @@ module Avro
       include Avro::Builder::DslAttributes
       include Avro::Builder::Aliasable
       include Avro::Builder::AnonymousTypes
+      include Avro::Builder::Metadata
 
       INTERNAL_ATTRIBUTES = [:optional_field].to_set.freeze
 
@@ -84,14 +86,17 @@ module Avro
       end
 
       def serialize(reference_state)
-        # TODO: order is not included here
-        {
+        attrs = {
           name: name,
           type: serialized_type(reference_state),
-          doc: doc,
-          default: default,
           aliases: aliases
-        }.reject { |_, v| v.nil? }.tap do |result|
+        }
+
+        self.class.dsl_attribute_names.each do |attr|
+          attrs[attr] = send(attr)
+        end
+
+        attrs.reject { |_, v| v.nil? }.tap do |result|
           result.merge!(default: nil) if optional_field
         end
       end
