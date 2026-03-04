@@ -60,28 +60,6 @@ module Avro
           fields.merge!(cache.lookup_named_type(name, options.delete(:namespace) || namespace).duplicated_fields)
         end
 
-        def to_h(reference_state = SchemaSerializerReferenceState.new)
-          reference_state.definition_or_reference(fullname) do
-            attrs = {
-              type: :record,
-              name: name,
-              namespace: namespace,
-              fields: fields.values.map { |field| field.serialize(reference_state) }
-            }
-
-            self.class.dsl_attribute_names.reject do |attr|
-              [:abstract, :type_name, :type_namespace, :type_aliases, :type_doc].include?(attr)
-            end.each do |attr|
-              attrs[attr] = send(attr)
-            end
-
-            attrs[:logicalType] = attrs.delete(:logical_type)
-
-            attrs.reject { |_, v| v.nil? }
-          end
-        end
-        alias_method :serialize, :to_h
-
         protected
 
         def duplicated_fields
@@ -92,6 +70,13 @@ module Avro
         end
 
         private
+
+        def serialized_attribute_hash(reference_state)
+          super.merge(
+            doc: doc,
+            fields: fields.values.map { |field| field.serialize(reference_state) }
+          )
+        end
 
         # Add field, replacing any existing field with the same name.
         def add_field(field)

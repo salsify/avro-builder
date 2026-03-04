@@ -61,30 +61,29 @@ module Avro
         # to the serialized value.
         def serialize(reference_state, overrides: {})
           reference_state.definition_or_reference(fullname) do
-            serialized_attribute_hash.merge(overrides).merge(extra_metadata_hash).reject { |_, v| v.nil? }
+            serialized_attribute_hash(reference_state).merge(overrides).compact
           end
         end
 
         # As a top-level, named type
         # Subclasses may call super with additional overrides to be added
         # to the hash representation.
-        def to_h(_reference_state, overrides: {})
-          serialized_attribute_hash
-            .merge(aliases: aliases)
-            .merge(overrides)
-            .merge(extra_metadata_hash)
-            .reject { |_, v| v.nil? }
+        def to_h(reference_state, overrides: {})
+          reference_state.definition(fullname) do
+            serialized_attribute_hash(reference_state).merge(overrides).compact
+          end
         end
 
         private
 
-        def serialized_attribute_hash
+        def serialized_attribute_hash(_reference_state)
           {
             name: name,
             type: avro_type_name,
             namespace: namespace,
-            logicalType: logical_type
-          }
+            logicalType: logical_type,
+            aliases: aliases
+          }.merge(extra_metadata_hash)
         end
       end
     end

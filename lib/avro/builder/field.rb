@@ -86,18 +86,15 @@ module Avro
       end
 
       def serialize(reference_state)
-        attrs = {
+        {
           name: name,
           type: serialized_type(reference_state),
-          aliases: aliases
-        }
-
-        self.class.dsl_attribute_names.each do |attr|
-          attrs[attr] = send(attr)
-        end
-
-        attrs.reject { |_, v| v.nil? }.tap do |result|
-          result.merge!(default: nil) if optional_field
+          doc: doc,
+          default: default,
+          aliases: aliases,
+          order: order
+        }.merge(extra_metadata_hash).compact.tap do |result|
+          result[:default] = nil if optional_field
         end
       end
 
