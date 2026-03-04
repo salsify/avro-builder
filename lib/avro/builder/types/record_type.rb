@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'avro/builder/metadata'
-
 module Avro
   module Builder
     module Types
@@ -9,7 +7,6 @@ module Avro
       # at the top-level or as the type for a field in a record.
       class RecordType < Avro::Builder::Types::NamedType
         include Avro::Builder::AnonymousTypes
-        include Avro::Builder::Metadata
 
         DSL_METHODS = [:required, :optional, :extends].to_set.freeze
 

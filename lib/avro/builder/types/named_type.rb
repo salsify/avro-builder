@@ -2,6 +2,7 @@
 
 require 'avro/builder/namespaceable'
 require 'avro/builder/aliasable'
+require 'avro/builder/metadata'
 require 'avro/builder/types/named_error_handling'
 
 module Avro
@@ -14,6 +15,7 @@ module Avro
         include Avro::Builder::Types::ComplexType
         include Avro::Builder::Namespaceable
         include Avro::Builder::Aliasable
+        include Avro::Builder::Metadata
 
         dsl_option :name, dsl_name: :type_name
         dsl_option :namespace, dsl_name: :type_namespace
@@ -59,7 +61,7 @@ module Avro
         # to the serialized value.
         def serialize(reference_state, overrides: {})
           reference_state.definition_or_reference(fullname) do
-            serialized_attribute_hash.merge(overrides).reject { |_, v| v.nil? }
+            serialized_attribute_hash.merge(overrides).merge(extra_metadata_hash).reject { |_, v| v.nil? }
           end
         end
 
@@ -70,6 +72,7 @@ module Avro
           serialized_attribute_hash
             .merge(aliases: aliases)
             .merge(overrides)
+            .merge(extra_metadata_hash)
             .reject { |_, v| v.nil? }
         end
 

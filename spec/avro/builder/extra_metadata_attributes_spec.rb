@@ -52,6 +52,10 @@ describe Avro::Builder, ".extra_metadata_attributes" do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "is parseable by the avro gem" do
+      expect { Avro::Schema.parse(schema_json) }.not_to raise_error
+    end
   end
 
   context "applying attributes to the record" do
@@ -80,5 +84,64 @@ describe Avro::Builder, ".extra_metadata_attributes" do
     end
 
     it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "is parseable by the avro gem" do
+      expect { Avro::Schema.parse(schema_json) }.not_to raise_error
+    end
+  end
+
+  context "applying attributes to an enum" do
+    subject(:schema_json) do
+      described_class.build do
+        enum :status, :ACTIVE, :INACTIVE, reference: 'com.example.status', documentation_url: 'https://example.com/status'
+      end
+    end
+
+    let(:expected) do
+      {
+        type: :enum,
+        name: :status,
+        symbols: [:ACTIVE, :INACTIVE],
+        reference: 'com.example.status',
+        documentation_url: 'https://example.com/status'
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "is parseable by the avro gem" do
+      expect { Avro::Schema.parse(schema_json) }.not_to raise_error
+    end
+  end
+
+  context "applying attributes to a fixed" do
+    subject(:schema_json) do
+      described_class.build do
+        fixed :checksum, 16, reference: 'com.example.checksum'
+      end
+    end
+
+    let(:expected) do
+      {
+        type: :fixed,
+        name: :checksum,
+        size: 16,
+        reference: 'com.example.checksum'
+      }
+    end
+
+    it { is_expected.to be_json_eql(expected.to_json) }
+
+    it "is parseable by the avro gem" do
+      expect { Avro::Schema.parse(schema_json) }.not_to raise_error
+    end
+  end
+
+  context "conflict validation" do
+    it "raises an error when an attribute conflicts with an existing attribute" do
+      expect do
+        Avro::Builder.extra_metadata_attributes(:doc)
+      end.to raise_error(ArgumentError, /conflict with existing/)
+    end
   end
 end
