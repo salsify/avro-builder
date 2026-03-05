@@ -3,8 +3,7 @@
 module Avro
   module Builder
     module Types
-      class MapType < Type
-        include Avro::Builder::Types::ComplexType
+      class MapType < ComplexType
         include Avro::Builder::Types::TypeReferencer
 
         dsl_attribute :values do |value_type = nil|

@@ -3,8 +3,7 @@
 module Avro
   module Builder
     module Types
-      class ArrayType < Type
-        include Avro::Builder::Types::ComplexType
+      class ArrayType < ComplexType
         include Avro::Builder::Types::TypeReferencer
 
         dsl_attribute :items do |items_type = nil|

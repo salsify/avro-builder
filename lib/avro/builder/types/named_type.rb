@@ -10,8 +10,7 @@ module Avro
 
       # This is an abstract class that represents a type that can be defined
       # with a name, outside a record.
-      class NamedType < Type
-        include Avro::Builder::Types::ComplexType
+      class NamedType < ComplexType
         include Avro::Builder::Namespaceable
         include Avro::Builder::Aliasable
 

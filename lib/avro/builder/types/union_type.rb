@@ -3,8 +3,7 @@
 module Avro
   module Builder
     module Types
-      class UnionType < Type
-        include Avro::Builder::Types::ComplexType
+      class UnionType < ComplexType
         include Avro::Builder::Types::TypeReferencer
 
         NULL_TYPE = 'null'
