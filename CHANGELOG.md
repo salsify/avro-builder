@@ -1,5 +1,10 @@
 # avro-builder changelog
 
+## Unreleased
+- Add support for configurable extra metadata attributes on fields, records,
+  and primitive types via `Avro::Builder.extra_metadata_attributes`.
+- Add support for field `order` attribute in serialized output.
+
 ## v2.1.0
 - Add support for Avro 1.12.
 

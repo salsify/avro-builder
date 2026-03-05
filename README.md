@@ -460,7 +460,7 @@ end
 
 ### Extra metadata attributes
 
-According to the [Avro specification](https://avro.apache.org/docs/1.12.0/specification/) any attribute can be added to a record or field and be used as extra metadata provided it does not clash with the attributes specified.
+According to the [Avro specification](https://avro.apache.org/docs/1.12.0/specification/) any attribute can be added to a type or field and be used as extra metadata provided it does not clash with the attributes specified.
 
 To enable the use of specific custom metadata attributes on records or fields you can define them with:
 
