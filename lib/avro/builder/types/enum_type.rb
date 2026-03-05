@@ -16,14 +16,6 @@ module Avro
           end
         end
 
-        def serialize(reference_state)
-          super(reference_state, overrides: serialized_attributes)
-        end
-
-        def to_h(reference_state)
-          super(reference_state, overrides: serialized_attributes)
-        end
-
         def validate!
           super
           validate_required_attribute!(:symbols)
@@ -38,8 +30,8 @@ module Avro
           end
         end
 
-        def serialized_attributes
-          { symbols: symbols, doc: doc, default: default }
+        def serialized_attribute_hash(_reference_state)
+          super.merge(symbols: symbols, doc: doc, default: default)
         end
       end
     end

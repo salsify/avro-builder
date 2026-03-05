@@ -15,6 +15,7 @@ RSpec.configure do |config|
   config.before do
     Avro::Builder::DSL.load_paths.clear
     Avro::Builder.add_load_path('spec/avro/dsl')
+    Avro::Builder.extra_metadata_attributes(:reference, :deprecated_by, :documentation_url)
   end
 
   enum_default_supported = Avro::Schema::EnumSchema.instance_methods.include?(:default)

@@ -2,7 +2,6 @@
 
 require 'avro/builder/namespaceable'
 require 'avro/builder/aliasable'
-require 'avro/builder/metadata'
 require 'avro/builder/types/named_error_handling'
 
 module Avro
@@ -15,7 +14,6 @@ module Avro
         include Avro::Builder::Types::ComplexType
         include Avro::Builder::Namespaceable
         include Avro::Builder::Aliasable
-        include Avro::Builder::Metadata
 
         dsl_option :name, dsl_name: :type_name
         dsl_option :namespace, dsl_name: :type_namespace
@@ -57,33 +55,30 @@ module Avro
         end
 
         # As a type for a field
-        # Subclasses may call super with additional overrides to be added
-        # to the serialized value.
-        def serialize(reference_state, overrides: {})
+        def serialize(reference_state)
+          # Return the full type definition if it hasn't been seen yet.
+          # Otherwise, just return its name.
           reference_state.definition_or_reference(fullname) do
-            serialized_attribute_hash(reference_state).merge(overrides).compact
+            super
           end
         end
 
         # As a top-level, named type
-        # Subclasses may call super with additional overrides to be added
-        # to the hash representation.
-        def to_h(reference_state, overrides: {})
+        def to_h(reference_state)
+          # Always return the type definition. It's an error if the type has already been seen.
           reference_state.definition(fullname) do
-            serialized_attribute_hash(reference_state).merge(overrides).compact
+            super
           end
         end
 
         private
 
         def serialized_attribute_hash(_reference_state)
-          {
+          super.merge(
             name: name,
-            type: avro_type_name,
             namespace: namespace,
-            logicalType: logical_type,
             aliases: aliases
-          }.merge(extra_metadata_hash)
+          )
         end
       end
     end

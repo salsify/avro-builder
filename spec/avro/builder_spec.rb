@@ -7,11 +7,11 @@ describe Avro::Builder do
     describe "#type" do
       subject(:schema_json) do
         described_class.build do
-          type(:string)
+          type(:string, reference: 'com.example.string')
         end
       end
 
-      let(:expected) { { type: :string } }
+      let(:expected) { { type: :string, reference: 'com.example.string' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -19,6 +19,7 @@ describe Avro::Builder do
     describe "#boolean" do
       subject(:schema_json) do
         described_class.build do
+          # TODO: Metadata test - for all primitive shortcuts?
           boolean
         end
       end
@@ -57,11 +58,11 @@ describe Avro::Builder do
     describe "#array" do
       subject(:schema_json) do
         described_class.build do
-          array(:int)
+          array(:int, reference: 'com.example.array')
         end
       end
 
-      let(:expected) { { type: :array, items: :int } }
+      let(:expected) { { type: :array, items: :int, reference: 'com.example.array' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -69,9 +70,15 @@ describe Avro::Builder do
     describe "#map" do
       subject(:schema_json) do
         described_class.build do
-          map(int(logical_type: :date))
+          map(int(logical_type: :date), reference: 'com.example.map')
         end
-        let(:expected) { { type: :map, values: { type: :int, logicalType: :date } } }
+        let(:expected) do
+          {
+            type: :map,
+            reference: 'com.example.map',
+            values: { type: :int, logicalType: :date }
+          }
+        end
 
         it { is_expected.to be_json_eql(expected.to_json) }
       end
@@ -121,7 +128,7 @@ describe Avro::Builder do
   context "enum type" do
     subject(:schema_json) do
       described_class.build do
-        enum :enum1, :ONE, :TWO
+        enum :enum1, :ONE, :TWO, reference: 'com.example.enum'
       end
     end
 
@@ -129,7 +136,8 @@ describe Avro::Builder do
       {
         name: :enum1,
         type: :enum,
-        symbols: [:ONE, :TWO]
+        symbols: [:ONE, :TWO],
+        reference: 'com.example.enum'
       }
     end
 
@@ -405,7 +413,7 @@ describe Avro::Builder do
   context "fixed type" do
     subject(:schema_json) do
       described_class.build do
-        fixed :eight, 8
+        fixed :eight, 8, reference: 'com.example.fixed'
       end
     end
 
@@ -413,7 +421,8 @@ describe Avro::Builder do
       {
         name: :eight,
         type: :fixed,
-        size: 8
+        size: 8,
+        reference: 'com.example.fixed'
       }
     end
 
@@ -516,6 +525,7 @@ describe Avro::Builder do
       described_class.build do
         fixed :eight do
           size 9
+          reference 'com.example.fixed'
         end
       end
     end
@@ -524,7 +534,8 @@ describe Avro::Builder do
       {
         name: :eight,
         type: :fixed,
-        size: 9
+        size: 9,
+        reference: 'com.example.fixed'
       }
     end
 
@@ -565,8 +576,9 @@ describe Avro::Builder do
     subject(:schema_json) do
       described_class.build do
         record :r do
+          documentation_url 'https://example.com/docs'
           required :n, :null
-          required :b, :boolean
+          required :b, :boolean, reference: 'com.example.bool', deprecated_by: 'com.example.bool_v2'
           required :s, :string
           required :i, :int
           optional :l, :long
@@ -581,9 +593,10 @@ describe Avro::Builder do
       {
         type: :record,
         name: :r,
+        documentation_url: 'https://example.com/docs',
         fields: [
           { name: :n, type: :null },
-          { name: :b, type: :boolean },
+          { name: :b, type: :boolean, reference: 'com.example.bool', deprecated_by: 'com.example.bool_v2' },
           { name: :s, type: :string },
           { name: :i, type: :int },
           { name: :l, type: [:null, :long], default: nil },
@@ -2196,5 +2209,13 @@ describe Avro::Builder do
     let(:expected) { { type: :string } }
 
     it { is_expected.to eq("{\n  \"type\": \"string\"\n}") }
+  end
+
+  context "extra metadata conflict" do
+    it "raises an error when an attribute conflicts with an existing attribute" do
+      expect do
+        Avro::Builder.extra_metadata_attributes(:doc)
+      end.to raise_error(ArgumentError, /conflict with existing/)
+    end
   end
 end

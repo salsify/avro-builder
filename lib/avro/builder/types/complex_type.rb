@@ -17,19 +17,13 @@ module Avro
           super(self.class.avro_type_name, cache: cache, field: field)
         end
 
+        def serialize(reference_state)
+          # Override the behavior in Type to always return the full type definition.
+          serialized_attribute_hash(reference_state).compact
+        end
+
         def namespace
           field.namespace
-        end
-
-        def serialize(_reference_state, overrides: {})
-          {
-            type: avro_type_name,
-            logicalType: logical_type
-          }.merge(overrides).reject { |_, v| v.nil? }
-        end
-
-        def to_h(reference_state)
-          serialize(reference_state)
         end
 
         module ClassMethods

@@ -30,9 +30,7 @@ module Avro
     # Define extra allowable metadata attributes for fields and named types
     def self.extra_metadata_attributes(*attrs)
       Avro::Builder::Field.extra_metadata_attributes(attrs)
-      Avro::Builder::Record.extra_metadata_attributes(attrs)
-      Avro::Builder::Enum.extra_metadata_attributes(attrs)
-      Avro::Builder::Fixed.extra_metadata_attributes(attrs)
+      Avro::Builder::Types::Type.extra_metadata_attributes(attrs)
     end
   end
 end

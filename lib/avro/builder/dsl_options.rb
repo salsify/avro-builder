@@ -17,7 +17,7 @@ module Avro
       end
 
       def dsl_option?(name)
-        self.class.dsl_option_names.include?(name.to_sym)
+        self.class.dsl_option?(name)
       end
 
       module ClassMethods
@@ -34,17 +34,24 @@ module Avro
           private(aliased_writer)
         end
 
-        def dsl_option_names
-          @dsl_option_names ||=
-            if superclass.respond_to?(:dsl_option_names)
-              superclass.dsl_option_names.dup
-            else
-              Set.new
-            end
+        def dsl_option?(name)
+          if own_dsl_option_names.include?(name.to_sym)
+            true
+          elsif superclass.respond_to?(:dsl_option?)
+            superclass.dsl_option?(name)
+          else
+            false
+          end
         end
 
         def add_option_name(name)
-          dsl_option_names << name
+          own_dsl_option_names << name
+        end
+
+        private
+
+        def own_dsl_option_names
+          @own_dsl_option_names ||= Set.new
         end
       end
     end

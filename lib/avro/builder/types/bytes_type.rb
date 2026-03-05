@@ -11,18 +11,10 @@ module Avro
           super('bytes', field: field, cache: cache)
         end
 
-        def serialize(reference_state)
-          super(reference_state, overrides: serialized_attributes)
-        end
-
-        def to_h(reference_state)
-          super(reference_state, overrides: serialized_attributes)
-        end
-
         private
 
-        def serialized_attributes
-          { precision: precision, scale: scale }
+        def serialized_attribute_hash(reference_state)
+          super.merge(precision: precision, scale: scale)
         end
       end
     end

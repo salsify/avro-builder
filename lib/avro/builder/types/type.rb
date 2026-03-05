@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'avro/builder/metadata'
+
 module Avro
   module Builder
     module Types
@@ -9,6 +11,7 @@ module Avro
       class Type
         include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
+        include Avro::Builder::Metadata
 
         dsl_attributes :logical_type, :abstract
 
@@ -24,16 +27,16 @@ module Avro
           !!abstract
         end
 
-        def serialize(_reference_state, overrides: {})
+        def serialize(reference_state)
           if logical_type
-            serialized_attributes_hash(overrides)
+            serialized_attribute_hash(reference_state).compact
           else
             avro_type_name
           end
         end
 
-        def to_h(_reference_state, overrides: {})
-          serialized_attributes_hash(overrides)
+        def to_h(reference_state)
+          serialized_attribute_hash(reference_state).compact
         end
 
         def namespace
@@ -74,10 +77,8 @@ module Avro
 
         private
 
-        def serialized_attributes_hash(overrides)
-          { type: avro_type_name, logicalType: logical_type }
-            .merge(overrides)
-            .reject { |_, v| v.nil? }
+        def serialized_attribute_hash(_reference_state)
+          { type: avro_type_name, logicalType: logical_type }.merge(extra_metadata_hash)
         end
 
         def required_attribute_error!(attribute_name)
