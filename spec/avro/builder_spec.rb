@@ -19,12 +19,11 @@ describe Avro::Builder do
     describe "#boolean" do
       subject(:schema_json) do
         described_class.build do
-          # TODO: Metadata test - for all primitive shortcuts?
-          boolean
+          boolean reference: 'com.example.boolean'
         end
       end
 
-      let(:expected) { { type: :boolean } }
+      let(:expected) { { type: :boolean, reference: 'com.example.boolean' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -32,11 +31,11 @@ describe Avro::Builder do
     describe "#int with logical type date" do
       subject(:schema_json) do
         described_class.build do
-          int(logical_type: :date)
+          int(logical_type: :date, reference: 'com.example.date')
         end
       end
 
-      let(:expected) { { type: :int, logicalType: :date } }
+      let(:expected) { { type: :int, logicalType: :date, reference: 'com.example.date' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -44,11 +43,11 @@ describe Avro::Builder do
     describe "#long with logical type timestamp" do
       subject(:schema_json) do
         described_class.build do
-          long(logical_type: 'timestamp-micros')
+          long(logical_type: 'timestamp-micros', reference: 'com.example.timestamp')
         end
       end
 
-      let(:expected) { { type: :long, logicalType: 'timestamp-micros' } }
+      let(:expected) { { type: :long, logicalType: 'timestamp-micros', reference: 'com.example.timestamp' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -70,13 +69,13 @@ describe Avro::Builder do
     describe "#map" do
       subject(:schema_json) do
         described_class.build do
-          map(int(logical_type: :date), reference: 'com.example.map')
+          map(int(logical_type: :date, reference: 'com.example.date'), reference: 'com.example.map')
         end
         let(:expected) do
           {
             type: :map,
             reference: 'com.example.map',
-            values: { type: :int, logicalType: :date }
+            values: { type: :int, logicalType: :date, reference: 'com.example.date' }
           }
         end
 
@@ -580,11 +579,11 @@ describe Avro::Builder do
           required :n, :null
           required :b, :boolean, reference: 'com.example.bool', deprecated_by: 'com.example.bool_v2'
           required :s, :string
-          required :i, :int
-          optional :l, :long
+          required :i, :int, order: 'descending'
+          optional :l, :long, reference: 'com.example.long'
           required :f, :float
           optional :d, :double
-          required :many_bits, :bytes
+          required :many_bits, :bytes, reference: 'com.example.bytes'
         end
       end
     end
@@ -598,11 +597,11 @@ describe Avro::Builder do
           { name: :n, type: :null },
           { name: :b, type: :boolean, reference: 'com.example.bool', deprecated_by: 'com.example.bool_v2' },
           { name: :s, type: :string },
-          { name: :i, type: :int },
-          { name: :l, type: [:null, :long], default: nil },
+          { name: :i, type: :int, order: 'descending' },
+          { name: :l, type: [:null, :long], default: nil, reference: 'com.example.long' },
           { name: :f, type: :float },
           { name: :d, type: [:null, :double], default: nil },
-          { name: :many_bits, type: :bytes }
+          { name: :many_bits, type: :bytes, reference: 'com.example.bytes' }
         ]
       }
     end
