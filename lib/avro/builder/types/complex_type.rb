@@ -18,11 +18,6 @@ module Avro
           super(self.class.avro_type_name, cache: cache, field: field)
         end
 
-        def serialize(reference_state)
-          # Override the behavior in Type to always return the full type definition.
-          serialized_attribute_hash(reference_state).compact
-        end
-
         def namespace
           field.namespace
         end

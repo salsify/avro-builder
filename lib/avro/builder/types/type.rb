@@ -28,11 +28,7 @@ module Avro
         end
 
         def serialize(reference_state)
-          if logical_type
-            serialized_attribute_hash(reference_state).compact
-          else
-            avro_type_name
-          end
+          serialized_attribute_hash(reference_state).compact
         end
 
         def to_h(reference_state)

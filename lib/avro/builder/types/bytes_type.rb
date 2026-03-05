@@ -4,7 +4,7 @@ module Avro
   module Builder
     module Types
       # Subclass for the primitive Bytes type because it supports the decimal logical type.
-      class BytesType < Type
+      class BytesType < PrimitiveType
         dsl_attributes :precision, :scale
 
         def initialize(cache:, field: nil)
