@@ -6,8 +6,8 @@ module Avro
     # This concern is used by classes that create new Type instances.
     module TypeFactory
 
-      NAMED_TYPES = ['enum', 'fixed', 'record'].map(&:freeze).to_set.freeze
-      COMPLEX_TYPES = ['array', 'enum', 'fixed', 'map', 'record', 'union'].map(&:freeze).to_set.freeze
+      NAMED_TYPES = ['enum', 'fixed', 'record'].to_set.freeze
+      COMPLEX_TYPES = ['array', 'enum', 'fixed', 'map', 'record', 'union'].to_set.freeze
       BUILTIN_TYPES = Avro::Schema::PRIMITIVE_TYPES.union(COMPLEX_TYPES).freeze
 
       private
