@@ -3,15 +3,23 @@
 describe Avro::Builder do
   let(:schema) { Avro::Schema.parse(schema_json) }
 
+  before do
+    Avro::Builder.extra_metadata_attributes(:reference, :deprecated_by, :documentation_url)
+  end
+
+  after do
+    Avro::Builder.reset_extra_metadata_attributes!
+  end
+
   context "primitive types" do
     describe "#type" do
       subject(:schema_json) do
         described_class.build do
-          type(:string)
+          type(:string, reference: 'com.example.string')
         end
       end
 
-      let(:expected) { { type: :string } }
+      let(:expected) { { type: :string, reference: 'com.example.string' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -19,11 +27,11 @@ describe Avro::Builder do
     describe "#boolean" do
       subject(:schema_json) do
         described_class.build do
-          boolean
+          boolean reference: 'com.example.boolean'
         end
       end
 
-      let(:expected) { { type: :boolean } }
+      let(:expected) { { type: :boolean, reference: 'com.example.boolean' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -31,11 +39,11 @@ describe Avro::Builder do
     describe "#int with logical type date" do
       subject(:schema_json) do
         described_class.build do
-          int(logical_type: :date)
+          int(logical_type: :date, reference: 'com.example.date')
         end
       end
 
-      let(:expected) { { type: :int, logicalType: :date } }
+      let(:expected) { { type: :int, logicalType: :date, reference: 'com.example.date' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -43,11 +51,11 @@ describe Avro::Builder do
     describe "#long with logical type timestamp" do
       subject(:schema_json) do
         described_class.build do
-          long(logical_type: 'timestamp-micros')
+          long(logical_type: 'timestamp-micros', reference: 'com.example.timestamp')
         end
       end
 
-      let(:expected) { { type: :long, logicalType: 'timestamp-micros' } }
+      let(:expected) { { type: :long, logicalType: 'timestamp-micros', reference: 'com.example.timestamp' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -57,11 +65,11 @@ describe Avro::Builder do
     describe "#array" do
       subject(:schema_json) do
         described_class.build do
-          array(:int)
+          array(:int, reference: 'com.example.array')
         end
       end
 
-      let(:expected) { { type: :array, items: :int } }
+      let(:expected) { { type: :array, items: :int, reference: 'com.example.array' } }
 
       it { is_expected.to be_json_eql(expected.to_json) }
     end
@@ -69,12 +77,19 @@ describe Avro::Builder do
     describe "#map" do
       subject(:schema_json) do
         described_class.build do
-          map(int(logical_type: :date))
+          map(int(logical_type: :date, reference: 'com.example.date'), reference: 'com.example.map')
         end
-        let(:expected) { { type: :map, values: { type: :int, logicalType: :date } } }
-
-        it { is_expected.to be_json_eql(expected.to_json) }
       end
+
+      let(:expected) do
+        {
+          type: :map,
+          reference: 'com.example.map',
+          values: { type: :int, logicalType: :date, reference: 'com.example.date' }
+        }
+      end
+
+      it { is_expected.to be_json_eql(expected.to_json) }
     end
 
     describe "#union" do
@@ -121,7 +136,7 @@ describe Avro::Builder do
   context "enum type" do
     subject(:schema_json) do
       described_class.build do
-        enum :enum1, :ONE, :TWO
+        enum :enum1, :ONE, :TWO, reference: 'com.example.enum'
       end
     end
 
@@ -129,7 +144,8 @@ describe Avro::Builder do
       {
         name: :enum1,
         type: :enum,
-        symbols: [:ONE, :TWO]
+        symbols: [:ONE, :TWO],
+        reference: 'com.example.enum'
       }
     end
 
@@ -405,7 +421,7 @@ describe Avro::Builder do
   context "fixed type" do
     subject(:schema_json) do
       described_class.build do
-        fixed :eight, 8
+        fixed :eight, 8, reference: 'com.example.fixed'
       end
     end
 
@@ -413,7 +429,8 @@ describe Avro::Builder do
       {
         name: :eight,
         type: :fixed,
-        size: 8
+        size: 8,
+        reference: 'com.example.fixed'
       }
     end
 
@@ -516,6 +533,7 @@ describe Avro::Builder do
       described_class.build do
         fixed :eight do
           size 9
+          reference 'com.example.fixed'
         end
       end
     end
@@ -524,7 +542,8 @@ describe Avro::Builder do
       {
         name: :eight,
         type: :fixed,
-        size: 9
+        size: 9,
+        reference: 'com.example.fixed'
       }
     end
 
@@ -595,14 +614,15 @@ describe Avro::Builder do
     subject(:schema_json) do
       described_class.build do
         record :r do
+          documentation_url 'https://example.com/docs'
           required :n, :null
-          required :b, :boolean
+          required :b, :boolean, reference: 'com.example.bool', deprecated_by: 'com.example.bool_v2'
           required :s, :string
           required :i, :int, order: 'descending'
-          optional :l, :long
+          optional :l, :long, reference: 'com.example.long'
           required :f, :float
           optional :d, :double
-          required :many_bits, :bytes
+          required :many_bits, :bytes, reference: 'com.example.bytes'
         end
       end
     end
@@ -611,15 +631,16 @@ describe Avro::Builder do
       {
         type: :record,
         name: :r,
+        documentation_url: 'https://example.com/docs',
         fields: [
           { name: :n, type: :null },
-          { name: :b, type: :boolean },
+          { name: :b, type: :boolean, reference: 'com.example.bool', deprecated_by: 'com.example.bool_v2' },
           { name: :s, type: :string },
           { name: :i, type: :int, order: 'descending' },
-          { name: :l, type: [:null, :long], default: nil },
+          { name: :l, type: [:null, :long], default: nil, reference: 'com.example.long' },
           { name: :f, type: :float },
           { name: :d, type: [:null, :double], default: nil },
-          { name: :many_bits, type: :bytes }
+          { name: :many_bits, type: :bytes, reference: 'com.example.bytes' }
         ]
       }
     end
@@ -2178,7 +2199,7 @@ describe Avro::Builder do
         rescue StandardError => e
           # capture error
         end
-        expect(e.backtrace[1]).to match(/^.*spec\/avro\/dsl\/test\/invalid.rb:6:/)
+        expect(e.backtrace).to include(/^.*spec\/avro\/dsl\/test\/invalid.rb:6:/)
       end
 
     end
@@ -2226,5 +2247,13 @@ describe Avro::Builder do
     let(:expected) { { type: :string } }
 
     it { is_expected.to eq("{\n  \"type\": \"string\"\n}") }
+  end
+
+  context "extra metadata conflict" do
+    it "raises an error when an attribute conflicts with a reserved name" do
+      expect do
+        Avro::Builder.extra_metadata_attributes(:doc)
+      end.to raise_error(ArgumentError, /reserved name/)
+    end
   end
 end

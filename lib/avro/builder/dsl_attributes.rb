@@ -17,6 +17,29 @@ module Avro
     # When a DSL attribute is defined, the class also keeps track of the
     # attribute names.
     module DslAttributes
+      ATTRIBUTE_NAMES = [
+        :abstract,
+        :aliases,
+        :default,
+        :doc,
+        :items,
+        :logicalType,
+        :logical_type,
+        :namespace,
+        :order,
+        :precision,
+        :scale,
+        :size,
+        :symbols,
+        :type,
+        :type_aliases,
+        :type_doc,
+        :type_name,
+        :type_namespace,
+        :types,
+        :values
+      ].freeze
+
       def self.included(base)
         base.extend ClassMethods
       end
@@ -59,6 +82,10 @@ module Avro
         end
 
         def add_attribute_name(name)
+          unless ATTRIBUTE_NAMES.include?(name)
+            raise "DSL attribute #{name.inspect} must be added to Avro::Builder::DslAttributes::RESERVED_NAMES"
+          end
+
           dsl_attribute_names << name
           add_option_name(name)
         end

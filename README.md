@@ -458,6 +458,22 @@ Avro::Builder::Rake::AvroGenerateTask.new(name: :custom_gen,
 end
 ```
 
+### Extra metadata attributes
+
+The [Avro specification](https://avro.apache.org/docs/1.12.0/specification/) allows metadata attribute to be added to any type or field as long as it does not clash with Avro specification attributes.
+
+```ruby
+# Configure the metadata attributes an initializer
+Avro::Builder.extra_metadata_attributes(:deprecated_by, :documentation_url)
+
+# Use metadata attributes in your schema definition like any other DSL attributes
+record :my_record do
+  documentation_url 'https://example.com/docs'
+  required :my_boolean, :boolean, deprecated_by: 'com.example.my_boolean2'
+  required :my_boolean2, :boolean
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

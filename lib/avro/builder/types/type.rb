@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require 'avro/builder/metadata'
+
 module Avro
   module Builder
     module Types
       class Type
         include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
+        include Avro::Builder::Metadata
 
         dsl_attributes :logical_type, :abstract
 
@@ -68,7 +71,7 @@ module Avro
         private
 
         def serialized_attribute_hash(_reference_state)
-          { type: avro_type_name, logicalType: logical_type }
+          extra_metadata.merge(type: avro_type_name, logicalType: logical_type)
         end
 
         def required_attribute_error!(attribute_name)
