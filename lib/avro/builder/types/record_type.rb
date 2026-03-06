@@ -13,12 +13,9 @@ module Avro
         dsl_attribute :doc
         dsl_attribute_alias :type_doc, :doc
 
-        def initialize(name = nil, cache:, options: {}, field: nil, &block) # rubocop:disable Lint/MissingSuper
-          # TODO: Fix missing call to super
-          @avro_type_name = :record
+        def initialize(name = nil, cache:, options: {}, field: nil, &block)
+          super(cache: cache, field: field)
           @name = name
-          @cache = cache
-          @field = field
 
           configure_options(options)
           instance_eval(&block) if block_given?
@@ -60,21 +57,6 @@ module Avro
           fields.merge!(cache.lookup_named_type(name, options.delete(:namespace) || namespace).duplicated_fields)
         end
 
-        def to_h(reference_state = SchemaSerializerReferenceState.new)
-          reference_state.definition_or_reference(fullname) do
-            {
-              type: :record,
-              name: name,
-              namespace: namespace,
-              doc: doc,
-              aliases: aliases,
-              logicalType: logical_type,
-              fields: fields.values.map { |field| field.serialize(reference_state) }
-            }.reject { |_, v| v.nil? }
-          end
-        end
-        alias_method :serialize, :to_h
-
         protected
 
         def duplicated_fields
@@ -85,6 +67,13 @@ module Avro
         end
 
         private
+
+        def serialized_attribute_hash(reference_state)
+          super.merge(
+            doc: doc,
+            fields: fields.values.map { |field| field.serialize(reference_state) }
+          )
+        end
 
         # Add field, replacing any existing field with the same name.
         def add_field(field)

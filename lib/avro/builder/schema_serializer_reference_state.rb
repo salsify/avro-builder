@@ -24,6 +24,15 @@ module Avro
           yield
         end
       end
+
+      def definition(fullname)
+        if references.include?(fullname)
+          raise ArgumentError.new("Type '#{fullname}' has already been defined")
+        else
+          references << fullname
+          yield
+        end
+      end
     end
   end
 end

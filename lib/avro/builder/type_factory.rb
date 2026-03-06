@@ -33,7 +33,7 @@ module Avro
         if name == 'bytes'
           Avro::Builder::Types::BytesType.new(field: field, cache: cache)
         elsif Avro::Schema::PRIMITIVE_TYPES.include?(name)
-          Avro::Builder::Types::Type.new(name, field: field, cache: cache)
+          Avro::Builder::Types::PrimitiveType.new(name, field: field, cache: cache)
         elsif field.nil? && NAMED_TYPES.include?(name)
           Avro::Builder.const_get(name.capitalize).new(cache: cache)
         elsif COMPLEX_TYPES.include?(name)

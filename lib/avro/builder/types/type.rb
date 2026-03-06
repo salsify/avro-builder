@@ -3,9 +3,6 @@
 module Avro
   module Builder
     module Types
-      # Base class for simple types. The type name is specified when the
-      # type is constructed. The type has no additional attributes, and
-      # the type is serialized as just the type name.
       class Type
         include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
@@ -24,16 +21,12 @@ module Avro
           !!abstract
         end
 
-        def serialize(_reference_state, overrides: {})
-          if logical_type
-            serialized_attributes_hash(overrides)
-          else
-            avro_type_name
-          end
+        def serialize(reference_state)
+          serialized_attribute_hash(reference_state).compact
         end
 
-        def to_h(_reference_state, overrides: {})
-          serialized_attributes_hash(overrides)
+        def to_h(reference_state)
+          serialized_attribute_hash(reference_state).compact
         end
 
         def namespace
@@ -74,10 +67,8 @@ module Avro
 
         private
 
-        def serialized_attributes_hash(overrides)
+        def serialized_attribute_hash(_reference_state)
           { type: avro_type_name, logicalType: logical_type }
-            .merge(overrides)
-            .reject { |_, v| v.nil? }
         end
 
         def required_attribute_error!(attribute_name)

@@ -84,15 +84,15 @@ module Avro
       end
 
       def serialize(reference_state)
-        # TODO: order is not included here
         {
           name: name,
           type: serialized_type(reference_state),
           doc: doc,
           default: default,
-          aliases: aliases
-        }.reject { |_, v| v.nil? }.tap do |result|
-          result.merge!(default: nil) if optional_field
+          aliases: aliases,
+          order: order
+        }.compact.tap do |result|
+          result[:default] = nil if optional_field
         end
       end
 
