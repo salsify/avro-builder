@@ -35,7 +35,7 @@ module Avro
 
         def configure_options(options = {})
           options.each do |key, value|
-            send("#{key}=", value) if dsl_option?(key)
+            send("#{key}=", value)
           end
         end
 

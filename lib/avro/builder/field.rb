@@ -36,10 +36,11 @@ module Avro
         # Find existing Type or build a new instance of a builtin Type using
         # the supplied block
         @field_type = type_lookup(avro_type_or_name, namespace) do |avro_type_name|
+          type_internal = NAMED_TYPES.include?(avro_type_name.to_s) ? { type_namespace: namespace } : {}
           create_and_configure_builtin_type(avro_type_name,
                                             field: self,
                                             cache: cache,
-                                            internal: internal,
+                                            internal: type_internal,
                                             validate_type: false,
                                             options: type_options)
         end

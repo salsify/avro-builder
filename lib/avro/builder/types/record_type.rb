@@ -13,11 +13,9 @@ module Avro
         dsl_attribute :doc
         dsl_attribute_alias :type_doc, :doc
 
-        def initialize(name = nil, cache:, options: {}, field: nil, &block)
+        def initialize(name = nil, cache:, field: nil, &block)
           super(cache: cache, field: field)
           @name = name
-
-          configure_options(options)
           instance_eval(&block) if block_given?
         end
 

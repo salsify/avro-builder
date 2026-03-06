@@ -561,6 +561,20 @@ describe Avro::Builder do
     end
   end
 
+  context "invalid option on a type" do
+    let(:schema_json) do
+      described_class.build do
+        record :rec do
+          required :s, :string, bogus: true
+        end
+      end
+    end
+
+    it "raises an error" do
+      expect { schema_json }.to raise_error(NoMethodError, /bogus/)
+    end
+  end
+
   context "record" do
     subject(:schema_json) do
       described_class.build do
