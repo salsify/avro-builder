@@ -5,6 +5,9 @@
   primitives via `Avro::Builder.extra_metadata_attributes`.
 - Add support for field `order` attribute in serialized output.
 - Raise an error when invalid options are passed to a type instead of silently ignoring them.
+- Add support for Ruby 3.4, and 4.0.
+- Drop support for Avro < 1.11.
+- Drop support for Ruby < 3.3.
 
 ## v2.1.0
 - Add support for Avro 1.12.
