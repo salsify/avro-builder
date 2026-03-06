@@ -2,6 +2,7 @@
 
 ## Unreleased
 - Add support for field `order` attribute in serialized output.
+- Raise an error when invalid options are passed to a type instead of silently ignoring them.
 
 ## v2.1.0
 - Add support for Avro 1.12.
