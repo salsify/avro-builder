@@ -3,9 +3,6 @@
 module Avro
   module Builder
     module Types
-      # Base class for simple types. The type name is specified when the
-      # type is constructed. The type has no additional attributes, and
-      # the type is serialized as just the type name.
       class Type
         include Avro::Builder::DslOptions
         include Avro::Builder::DslAttributes
