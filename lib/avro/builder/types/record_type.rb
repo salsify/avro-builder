@@ -29,7 +29,7 @@ module Avro
                                                avro_type_or_name: avro_type_or_name,
                                                record: self,
                                                cache: cache,
-                                               internal: { type_namespace: namespace },
+                                               optional: false,
                                                options: options,
                                                &block)
           add_field(new_field)
@@ -42,8 +42,7 @@ module Avro
                                                avro_type_or_name: avro_type_or_name,
                                                record: self,
                                                cache: cache,
-                                               internal: { type_namespace: namespace,
-                                                           optional_field: true },
+                                               optional: true,
                                                options: options,
                                                &block)
           add_field(new_field)
