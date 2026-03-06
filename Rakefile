@@ -8,9 +8,13 @@ RSpec::Core::RakeTask.new(:default_spec)
 
 Appraisal::Task.new
 
+# rubocop:disable Rake/DuplicateTask
+# rubocop:disable Rake/Desc
 if !ENV['APPRAISAL_INITIALIZED']
   task default: :appraisal
   task spec: :appraisal
 else
   task default: :default_spec
 end
+# rubocop:enable Rake/DuplicateTask
+# rubocop:enable Rake/Desc
