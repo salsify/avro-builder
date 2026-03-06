@@ -13,11 +13,9 @@ module Avro
         dsl_attribute :doc
         dsl_attribute_alias :type_doc, :doc
 
-        def initialize(name = nil, cache:, options: {}, field: nil, &block)
+        def initialize(name = nil, cache:, field: nil, &block)
           super(cache: cache, field: field)
           @name = name
-
-          configure_options(options)
           instance_eval(&block) if block_given?
         end
 
@@ -31,7 +29,7 @@ module Avro
                                                avro_type_or_name: avro_type_or_name,
                                                record: self,
                                                cache: cache,
-                                               internal: { type_namespace: namespace },
+                                               optional: false,
                                                options: options,
                                                &block)
           add_field(new_field)
@@ -44,8 +42,7 @@ module Avro
                                                avro_type_or_name: avro_type_or_name,
                                                record: self,
                                                cache: cache,
-                                               internal: { type_namespace: namespace,
-                                                           optional_field: true },
+                                               optional: true,
                                                options: options,
                                                &block)
           add_field(new_field)

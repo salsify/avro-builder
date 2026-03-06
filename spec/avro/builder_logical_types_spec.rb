@@ -217,9 +217,7 @@ describe Avro::Builder, 'logical_types' do
         with_decimal_validation do
           # Avro v1.11.0 does not yet validate fixed decimals
           it "relies on Avro schema parse to validate" do
-            expect do
-              schema
-            end.not_to raise_error(Avro::SchemaParseError)
+            schema
           end
         end
       end

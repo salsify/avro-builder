@@ -14,19 +14,14 @@ module Avro
       include Avro::Builder::Aliasable
       include Avro::Builder::AnonymousTypes
 
-      INTERNAL_ATTRIBUTES = [:optional_field].to_set.freeze
-
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :default, :order
 
-      def initialize(name:, avro_type_or_name:, record:, cache:, internal: {}, options: {}, &block)
+      def initialize(name:, avro_type_or_name:, record:, cache:, optional:, options: {}, &block)
         @cache = cache
         @record = record
         @name = name.to_s
-
-        internal.each do |key, value|
-          send("#{key}=", value) if INTERNAL_ATTRIBUTES.include?(key)
-        end
+        @optional_field = optional
 
         type_options = options.dup
         options.keys.each do |key|
@@ -36,10 +31,11 @@ module Avro
         # Find existing Type or build a new instance of a builtin Type using
         # the supplied block
         @field_type = type_lookup(avro_type_or_name, namespace) do |avro_type_name|
+          type_internal = NAMED_TYPES.include?(avro_type_name.to_s) ? { type_namespace: namespace } : {}
           create_and_configure_builtin_type(avro_type_name,
                                             field: self,
                                             cache: cache,
-                                            internal: internal,
+                                            internal: type_internal,
                                             validate_type: false,
                                             options: type_options)
         end
