@@ -2,6 +2,7 @@
 
 require 'avro/builder/type_factory'
 require 'avro/builder/aliasable'
+require 'avro/builder/metadata'
 
 module Avro
   module Builder
@@ -13,6 +14,7 @@ module Avro
       include Avro::Builder::DslAttributes
       include Avro::Builder::Aliasable
       include Avro::Builder::AnonymousTypes
+      include Avro::Builder::Metadata
 
       # These attributes may be set as options or via a block in the DSL
       dsl_attributes :doc, :default, :order
@@ -25,7 +27,7 @@ module Avro
 
         type_options = options.dup
         options.keys.each do |key|
-          send(key, type_options.delete(key)) if dsl_attribute?(key)
+          send(key, type_options.delete(key)) if dsl_attribute?(key) || extra_metadata_attribute?(key)
         end
 
         # Find existing Type or build a new instance of a builtin Type using
@@ -52,7 +54,15 @@ module Avro
       end
 
       def method_missing(id, *args, &block)
-        field_type.dsl_respond_to?(id) ? field_type.send(id, *args, &block) : super
+        # We can't just rely on Metadata#method_missing because we want to give precedence to defining
+        # metadata on the field rather than the type
+        if extra_metadata_accessor?(id)
+          extra_metadata_access(id, args)
+        elsif field_type.dsl_respond_to?(id)
+          field_type.send(id, *args, &block)
+        else
+          super
+        end
       end
 
       def name_fragment
@@ -87,7 +97,7 @@ module Avro
           default: default,
           aliases: aliases,
           order: order
-        }.compact.tap do |result|
+        }.merge(extra_metadata).compact.tap do |result|
           result[:default] = nil if optional_field
         end
       end

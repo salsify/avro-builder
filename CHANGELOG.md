@@ -1,6 +1,8 @@
 # avro-builder changelog
 
 ## Unreleased
+- Add support for configurable metadata on fields, records, enums, fixed types, and
+  primitives via `Avro::Builder.extra_metadata_attributes`.
 - Add support for field `order` attribute in serialized output.
 - Raise an error when invalid options are passed to a type instead of silently ignoring them.
 - Add support for Ruby 3.4, and 4.0.
